@@ -9,7 +9,7 @@
 - 형상 관리: Github
 - 이슈 관리: Github Issue
 - 진행 관리: Github Project
-- [결정 과정](github.com/f-lab-edu/resell-platform/wiki/협업-툴-및-규칙-결정-과정)
+- [결정 과정](https://github.com/f-lab-edu/resell-platform/wiki/협업-툴-및-규칙-결정-과정)
 
 
 # **아키텍처**
