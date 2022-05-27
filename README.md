@@ -9,7 +9,7 @@
 - 형상 관리: Github
 - 이슈 관리: Github Issue
 - 진행 관리: Github Project
-- [결정 과정]([https://github.com/f-lab-edu/resell-platform.wiki.git](https://github.com/f-lab-edu/resell-platform/wiki/%ED%98%91%EC%97%85-%ED%88%B4-%EB%B0%8F-%EA%B7%9C%EC%B9%99-%EA%B2%B0%EC%A0%95-%EA%B3%BC%EC%A0%95))
+- [결정 과정](github.com/f-lab-edu/resell-platform/wiki/협업-툴-및-규칙-결정-과정)
 
 
 # **아키텍처**
