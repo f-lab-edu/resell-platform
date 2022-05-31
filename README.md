@@ -19,6 +19,13 @@
 # **주요 기능**
 
 # **애플리케이션 UI**
+- **프로토 타이핑 툴:** 카카오 오븐
+- **구현 목적:** 기능 정의 래퍼런스
 
+[자세한 구현 내용 및 웹 테스트](https://github.com/f-lab-edu/resell-platform/wiki/Application-UI)
+
+**대표 예시)**
+
+![애플리케이션 UI 예시](https://github.com/f-lab-edu/resell-platform/blob/prototype-functionDefine-ERD_Design-README&WIKI-update/wiki_images/prototype/prototype123.jpg?raw=true)
 # **ERD**
 
