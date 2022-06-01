@@ -31,7 +31,7 @@
 <br>
 
 # **ERD**
-- **설계 래퍼런스**: [애플리케이션 UI](https://github.com/f-lab-edu/resell-platform/wiki/Application-UI), 기능 정의
+- **설계 래퍼런스**: [애플리케이션 UI](https://github.com/f-lab-edu/resell-platform/wiki/Application-UI), [기능 정의](https://github.com/f-lab-edu/resell-platform/wiki/API-(%EC%B4%88%EC%95%88))
 - **ERD 설계 툴**: MySQL Workbench
 
   
