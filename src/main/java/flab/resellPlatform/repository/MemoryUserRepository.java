@@ -20,9 +20,15 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public User update(Long id, User user) {
-        user.setId(id);
-        storage.replace(id, user);
+    public User update(Long id, User updatedUser) {
+        User user = findById(id);
+        user.setUsername(updatedUser.getUsername());
+        user.setPassword(updatedUser.getPassword());
+        user.setPhoneNumber(updatedUser.getPhoneNumber());
+        user.setName(updatedUser.getName());
+        user.setNickname(updatedUser.getNickname());
+        user.setEmail(updatedUser.getEmail());
+        user.setShoeSize(updatedUser.getShoeSize());
         return user;
     }
 

@@ -21,8 +21,7 @@ public class UserService {
     }
 
     public User updateAccount(Long id, User user) {
-        userRepository.update(id, user);
-        return user;
+        return userRepository.update(id, user);
     }
 
 }
