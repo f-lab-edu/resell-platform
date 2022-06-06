@@ -1,9 +1,9 @@
 package flab.resellPlatform.user.service;
 
-import flab.resellPlatform.user.User;
+import flab.resellPlatform.user.domain.UserDTO;
 
 public interface UserService {
-    String join(User userInfo);
-    String findId(User userInfo);
-    String findPassword(User userInfo);
+    String join(UserDTO userInfo);
+    String findId(UserDTO userInfo);
+    String findPassword(UserDTO userInfo);
 }

@@ -1,6 +1,6 @@
 package flab.resellPlatform.user.repository;
 
-import flab.resellPlatform.user.User;
+import flab.resellPlatform.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,19 +14,19 @@ public class MybatisUserRepository implements UserRepository {
     private final UserMapper userMapper;
 
     @Override
-    public User save(User user) {
-        System.out.println("MybatisUserRepository");
-        userMapper.save(user);
-        return user;
+    public UserEntity save(UserEntity userEntity) {
+//        System.out.println("MybatisUserRepository");
+        userMapper.save(userEntity);
+        return userEntity;
     }
 
     @Override
-    public Optional<User> findById(long id) {
+    public Optional<UserEntity> findById(long id) {
         return userMapper.findById(id);
     }
 
     @Override
-    public List<User> findAll() {
+    public List<UserEntity> findAll() {
         return userMapper.findAll();
     }
 

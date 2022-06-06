@@ -1,11 +1,11 @@
-package flab.resellPlatform.user;
+package flab.resellPlatform.user.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class User {
+public class UserEntity {
     private long id;
     private String username;
     private String password;
@@ -24,7 +24,7 @@ public class User {
      * @param email
      * @param shoeSize
      */
-    public User(String username, String password, String phoneNumber, String name, String nickname, String email, String shoeSize) {
+    public UserEntity(String username, String password, String phoneNumber, String name, String nickname, String email, String shoeSize) {
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
