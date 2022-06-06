@@ -17,11 +17,17 @@ public class UserService {
     }
 
     public User viewAccount(Long id) {
-        return userRepository.findById(id);
+        return userRepository.findById(id).orElse(null);
     }
 
     public User updateAccount(Long id, User user) {
         return userRepository.update(id, user);
+    }
+
+    public User login(String username, String password) {
+        return userRepository.findByUsername(username)
+                .filter(user -> user.getPassword().equals(password))
+                .orElse(null);
     }
 
 }

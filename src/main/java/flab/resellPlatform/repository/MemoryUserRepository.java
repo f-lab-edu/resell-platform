@@ -4,6 +4,7 @@ import flab.resellPlatform.domain.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
@@ -21,7 +22,9 @@ public class MemoryUserRepository implements UserRepository {
 
     @Override
     public User update(Long id, User updatedUser) {
-        User user = findById(id);
+        User user = findById(id).orElse(null);
+        if (user == null) return null;
+
         user.setUsername(updatedUser.getUsername());
         user.setPassword(updatedUser.getPassword());
         user.setPhoneNumber(updatedUser.getPhoneNumber());
@@ -33,8 +36,15 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public User findById(Long id) {
-        return storage.get(id);
+    public Optional<User> findById(Long id) {
+        return Optional.ofNullable(storage.get(id));
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return storage.values().stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst();
     }
 
 }
