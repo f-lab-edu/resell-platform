@@ -39,4 +39,4 @@
 
 **완성본)**
 
-![ERD 그림](https://github.com/f-lab-edu/resell-platform/blob/prototype-functionDefine-ERD_Design-README&WIKI-update/wiki_images/erd/resell_platform_erd.jpg?raw=true)
+![ERD 그림](https://github.com/f-lab-edu/resell-platform/blob/prototype-functionDefine-ERD_Design-README&WIKI-update/wiki_images/erd/resell_platform_erd.png?raw=true)
