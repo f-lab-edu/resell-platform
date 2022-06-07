@@ -26,12 +26,13 @@
 
 **대표 예시)**
 
-![애플리케이션 UI 예시](https://github.com/f-lab-edu/resell-platform/blob/prototype-functionDefine-ERD_Design-README&WIKI-update/wiki_images/prototype/prototype123.jpg?raw=true)
+![애플리케이션 UI 예시](https://user-images.githubusercontent.com/50356726/172335907-86d653d8-fdcf-4700-af92-5efac2ab018c.png)
+
 
 <br>
 
 # **ERD**
-- **설계 래퍼런스**: [애플리케이션 UI](https://github.com/f-lab-edu/resell-platform/wiki/Application-UI), [기능 정의](https://github.com/f-lab-edu/resell-platform/wiki/API-(%EC%B4%88%EC%95%88))
+- **설계 래퍼런스**: [애플리케이션 UI](https://user-images.githubusercontent.com/50356726/172335644-ab179281-5d27-4718-bf0b-91cfa01ab470.png)
 - **ERD 설계 툴**: MySQL Workbench
 
   
@@ -39,4 +40,4 @@
 
 **완성본)**
 
-![ERD 그림](https://github.com/f-lab-edu/resell-platform/blob/prototype-functionDefine-ERD_Design-README&WIKI-update/wiki_images/erd/resell_platform_erd.png?raw=true)
+![ERD 그림](https://user-images.githubusercontent.com/50356726/172335779-9e802e98-2169-4c07-aec9-8255c77f6aae.png)
