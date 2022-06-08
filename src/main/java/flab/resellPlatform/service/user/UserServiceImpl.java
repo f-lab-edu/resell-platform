@@ -1,8 +1,8 @@
-package flab.resellPlatform.user.service;
+package flab.resellPlatform.service.user;
 
-import flab.resellPlatform.user.domain.UserDTO;
-import flab.resellPlatform.user.domain.UserEntity;
-import flab.resellPlatform.user.repository.UserRepository;
+import flab.resellPlatform.domain.user.UserDTO;
+import flab.resellPlatform.domain.user.UserEntity;
+import flab.resellPlatform.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

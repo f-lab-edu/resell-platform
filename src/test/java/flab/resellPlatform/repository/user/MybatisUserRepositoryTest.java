@@ -1,6 +1,6 @@
-package flab.resellPlatform.user.repository;
+package flab.resellPlatform.repository.user;
 
-import flab.resellPlatform.user.domain.UserEntity;
+import flab.resellPlatform.domain.user.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

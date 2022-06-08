@@ -1,6 +1,6 @@
-package flab.resellPlatform.user.service;
+package flab.resellPlatform.service.user;
 
-import flab.resellPlatform.user.domain.UserDTO;
+import flab.resellPlatform.domain.user.UserDTO;
 
 public interface UserService {
     String join(UserDTO userInfo);

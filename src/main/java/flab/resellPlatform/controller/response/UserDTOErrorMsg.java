@@ -1,11 +1,11 @@
-package flab.resellPlatform.user.domain;
+package flab.resellPlatform.controller.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserDTOErrorMsg {
     private String username;
     private String password;
     private String phoneNumber;
@@ -13,5 +13,4 @@ public class UserDTO {
     private String nickname;
     private String email;
     private String shoeSize;
-
 }

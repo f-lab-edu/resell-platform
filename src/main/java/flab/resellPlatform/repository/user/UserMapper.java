@@ -1,6 +1,6 @@
-package flab.resellPlatform.user.repository;
+package flab.resellPlatform.repository.user;
 
-import flab.resellPlatform.user.domain.UserEntity;
+import flab.resellPlatform.domain.user.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

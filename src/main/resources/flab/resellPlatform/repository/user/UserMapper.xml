@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="flab.resellPlatform.user.repository.UserMapper">
+<mapper namespace="flab.resellPlatform.repository.user.UserMapper">
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into user (username, password, phoneNumber, name, nickname, email, shoeSize)

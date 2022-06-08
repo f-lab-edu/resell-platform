@@ -1,18 +1,28 @@
-package flab.resellPlatform.user.domain;
+package flab.resellPlatform.domain.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 public class UserEntity {
     private long id;
+
     private String username;
+
     private String password;
+
     private String phoneNumber;
+
     private String name;
+
     private String nickname;
+
     private String email;
+
     private String shoeSize;
 
     /**
