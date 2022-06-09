@@ -25,11 +25,41 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> create(@Valid @RequestBody UserDTO user) {
+    public String create(@Valid @RequestBody UserDTO user, WebRequest webRequest) {
+        webRequest.setAttribute("user", user, RequestAttributes.SCOPE_REQUEST);
         userService.join(user);
-        return ResponseEntity.ok().body("UserDTO 객체 검증 성공");
+        return "create success";
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<DefaultResponse<UserDTO>> catchDuplicateId(IllegalArgumentException e, WebRequest webRequest) {
+        // 에러 메세지 생성
+        HashMap<String, String> errors = new HashMap<>();
+        errors.put("username", "이미 존재하는 아이디입니다.");
+        // RequestBody 생성
+        UserDTO requestBody = (UserDTO) webRequest.getAttribute("user", RequestAttributes.SCOPE_REQUEST);
+
+        /*
+        * 예시
+        {
+            "requestDTO": {
+                "username": "ms",
+                "password": "bb",
+                "phoneNumber": "010-4589-1252",
+                ...
+            },
+            "errorMessages": {
+                "username": "이미 존재하는 아이디입니다."
+            }
+        }
+        */
+        // custom response 생성
+        DefaultResponse<UserDTO> response = DefaultResponse.<UserDTO>builder()
+                .requestDTO(requestBody)
+                .errorMessages(errors)
+                .build();
+        return ResponseEntity.badRequest().<DefaultResponse<UserDTO>>body(response);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<DefaultResponse<UserDTO>> catchInvalidCreateInput(MethodArgumentNotValidException me) {
@@ -38,7 +68,7 @@ public class UserController {
         me.getFieldErrors()
                 .forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
         // RequestBody 생성
-        UserDTO requestBody = (UserDTO)me.getBindingResult().getTarget();
+        UserDTO requestBody = (UserDTO)me.getTarget();
 
         // custom response 생성
         DefaultResponse<UserDTO> defaultResponse = DefaultResponse.<UserDTO>builder()

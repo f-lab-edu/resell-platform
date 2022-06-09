@@ -8,14 +8,20 @@
         values (#{username}, #{password}, #{phoneNumber}, #{name}, #{nickname}, #{email}, #{shoeSize})
     </insert>
 
-    <select id="findById" resultType="UserEntity">
+    <select id="findByPhoneNumber" resultType="UserEntity">
         select *
         from user
-        where id = #{id}
+        where phoneNumber = #{phoneNumber}
     </select>
 
     <select id="findAll" resultType="UserEntity">
         select *
         from user
+    </select>
+
+    <select id="getUsernameCount" resultType="int">
+        select COUNT(username)
+        from user
+        where username = #{username}
     </select>
 </mapper>

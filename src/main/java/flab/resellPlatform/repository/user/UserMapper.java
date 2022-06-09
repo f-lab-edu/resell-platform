@@ -9,6 +9,7 @@ import java.util.Optional;
 @Mapper
 public interface UserMapper {
     void save(UserEntity userEntity);
-    Optional<UserEntity> findById(long id);
+    Optional<UserEntity> findByPhoneNumber(String phoneNumber);
     List<UserEntity> findAll();
+    int getUsernameCount(String username);
 }

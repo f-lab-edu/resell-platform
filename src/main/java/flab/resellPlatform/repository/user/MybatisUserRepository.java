@@ -21,13 +21,18 @@ public class MybatisUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findById(long id) {
-        return userMapper.findById(id);
+    public Optional<UserEntity> findByPhoneNumber(String phoneNumber) {
+        return userMapper.findByPhoneNumber(phoneNumber);
     }
 
     @Override
     public List<UserEntity> findAll() {
         return userMapper.findAll();
+    }
+
+    @Override
+    public int getUsernameCount(String username) {
+        return userMapper.getUsernameCount(username);
     }
 
 }

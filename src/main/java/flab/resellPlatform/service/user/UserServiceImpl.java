@@ -16,10 +16,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public String join(UserDTO userInfo) {
-//        System.out.println("in UserServiceImpl");
         UserEntity userEntity = modelMapper.map(userInfo, UserEntity.class);
-        userRepository.save(userEntity);
+        if (checkIfUserNameDuplication(userEntity))
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+        else
+            userRepository.save(userEntity);
         return null;
+    }
+
+    public boolean checkIfUserNameDuplication(UserEntity userEntity) {
+        int userNameCount = userRepository.getUsernameCount(userEntity.getUsername());
+        return userNameCount >= 1 ? true : false;
     }
 
     @Override
