@@ -1,4 +1,4 @@
-package flab.resellPlatform.web.interceptor;
+package flab.resellPlatform.common.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;

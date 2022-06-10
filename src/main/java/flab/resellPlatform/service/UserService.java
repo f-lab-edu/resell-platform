@@ -11,10 +11,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public Long createAccount(User user) {
-        userRepository.save(user);
-        return user.getId();
-    }
+    public User createAccount(User user) { return userRepository.save(user); }
 
     public User viewAccount(Long id) {
         return userRepository.findById(id).orElse(null);

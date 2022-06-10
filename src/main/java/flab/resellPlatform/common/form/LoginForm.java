@@ -1,4 +1,4 @@
-package flab.resellPlatform.web.login;
+package flab.resellPlatform.common.form;
 
 import lombok.Data;
 
