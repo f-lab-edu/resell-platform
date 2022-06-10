@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserRepository {
     UserEntity save(UserEntity userEntity);
-    Optional<UserEntity> findByPhoneNumber(String phoneNumber);
+    Optional<UserEntity> findByUsername(String username);
     List<UserEntity> findAll();
     int getUsernameCount(String username);
 }

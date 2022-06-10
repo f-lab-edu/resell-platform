@@ -8,10 +8,10 @@
         values (#{username}, #{password}, #{phoneNumber}, #{name}, #{nickname}, #{email}, #{shoeSize})
     </insert>
 
-    <select id="findByPhoneNumber" resultType="UserEntity">
+    <select id="findByUsername" resultType="UserEntity">
         select *
         from user
-        where phoneNumber = #{phoneNumber}
+        where username = #{username}
     </select>
 
     <select id="findAll" resultType="UserEntity">

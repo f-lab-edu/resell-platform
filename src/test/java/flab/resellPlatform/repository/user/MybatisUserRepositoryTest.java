@@ -32,7 +32,7 @@ class MybatisUserRepositoryTest {
                 .build();
     }
 
-    @DisplayName("repository save 검사 by phoneNumber")
+    @DisplayName("repository save 검사 by username")
     @Test
     void save() {
         // given
@@ -40,7 +40,7 @@ class MybatisUserRepositoryTest {
         // when
         userRepository.save(userEntity);
         // then
-        UserEntity foundUserEntity = userRepository.findByPhoneNumber(userEntity.getPhoneNumber()).get();
+        UserEntity foundUserEntity = userRepository.findByUsername(userEntity.getUsername()).get();
         assertThat(userEntity).isEqualTo(foundUserEntity);
     }
 
