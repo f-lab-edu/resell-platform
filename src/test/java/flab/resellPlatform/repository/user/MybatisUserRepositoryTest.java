@@ -1,63 +1,58 @@
 package flab.resellPlatform.repository.user;
 
+import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
-import org.apache.catalina.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@Transactional
-@SpringBootTest
+
+//@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class MybatisUserRepositoryTest {
 
-    @Autowired
-    UserRepository userRepository;
+    @Mock
+    UserMapper userMapper;
 
-    public UserEntity userInfoSetUp() {
-        return UserEntity.builder()
-                .username("michael")
-                .password("123")
-                .phoneNumber("010-4589-1250")
-                .name("minsuk")
-                .nickname("uj")
-                .email("alstjrdl852@naver.com")
-                .shoeSize("275")
-                .build();
-    }
+    @InjectMocks
+    MybatisUserRepository mybatisUserRepository;
 
     @DisplayName("repository save 검사 by username")
     @Test
     void save() {
-        // given
-        UserEntity userEntity = userInfoSetUp();
-        // when
-        userRepository.save(userEntity);
-        // then
-        UserEntity foundUserEntity = userRepository.findByUsername(userEntity.getUsername()).get();
-        assertThat(userEntity).isEqualTo(foundUserEntity);
+        UserEntity userEntity = UserTestFactory.createUserEntityBuilder().build();
+        mybatisUserRepository.save(userEntity);
+        verify(userMapper, times(1)).save(userEntity);
     }
 
     @Test
     void findAll() {
         // given
-        UserEntity userEntity1 = new UserEntity("michael", "123", "010-4589-1250", "minsuk", "uj", "alstjrdl852@naver.com", "275");
-        UserEntity userEntity2 = new UserEntity("michael", "123", "010-4589-2250", "minsuk", "uj", "alstjrdl852@naver.com", "275");
-        UserEntity userEntity3 = new UserEntity("michael", "123", "010-4589-3250", "minsuk", "uj", "alstjrdl852@naver.com", "275");
-        userRepository.save(userEntity1);
-        userRepository.save(userEntity2);
-        userRepository.save(userEntity3);
+        UserEntity userEntity1 = UserTestFactory.createUserEntityBuilder()
+                .username("min")
+                .build();
+        UserEntity userEntity2 = UserTestFactory.createUserEntityBuilder()
+                .username("hong")
+                .build();
+        UserEntity userEntity3 = UserTestFactory.createUserEntityBuilder()
+                .username("kimjung")
+                .build();
+        when(userMapper.findAll()).thenReturn(Arrays.asList(userEntity1, userEntity2, userEntity3));
 
         // when
-        List<UserEntity> userEntities = userRepository.findAll();
+        List<UserEntity> foundUsers =  mybatisUserRepository.findAll();
 
         // then
-        assertThat(userEntities).contains(userEntity1, userEntity2, userEntity3);
+        verify(userMapper, times(1)).findAll();
+        assertThat(foundUsers).contains(userEntity1, userEntity2, userEntity3);
+        assertThat(foundUsers.size()).isEqualTo(3);
     }
 }

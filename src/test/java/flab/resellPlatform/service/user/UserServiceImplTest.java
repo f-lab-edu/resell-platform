@@ -1,75 +1,60 @@
 package flab.resellPlatform.service.user;
 
+import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@Transactional
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    @Autowired
-    UserServiceImpl userService;
-    @Autowired
+    @Mock
     UserRepository userRepository;
 
-    UserEntity.UserEntityBuilder getUserInfoSetUp1 () {
-        return UserEntity.builder()
-                .username("minsuk")
-                .password("a")
-                .nickname("uj")
-                .email("a@a.com")
-                .shoeSize("275")
-                .name("ms")
-                .phoneNumber("010-3333-1250");
-    }
+    @Mock
+    ModelMapper modelMapper;
 
-    UserEntity.UserEntityBuilder getUserInfoSetUp2 () {
-        return UserEntity.builder()
-                .username("hongsuk")
-                .password("a")
-                .nickname("uj")
-                .email("a@a.com")
-                .shoeSize("275")
-                .name("ms")
-                .phoneNumber("010-4499-1212");
-    }
+    @InjectMocks
+    UserServiceImpl userServiceImpl;
 
     @Test
     void 아이디_중복_yes_검사() {
         // given
-        UserEntity existingUser = getUserInfoSetUp1()
+        UserEntity applicant = UserTestFactory.createUserEntityBuilder()
                 .username("sameUsername")
                 .build();
-        userRepository.save(existingUser);
+        when(userRepository.getUsernameCount(applicant.getUsername())).thenReturn(1);
 
         // when
-        UserEntity newUser = getUserInfoSetUp2()
-                .username("sameUsername")
-                .build();
-        boolean duplicatedNameExists = userService.checkIfUserNameDuplication(newUser);
+        boolean duplicatedNameExists = userServiceImpl.checkIfUserNameDuplication(applicant);
 
         // then
         assertThat(duplicatedNameExists).isTrue();
     }
 
-    @Test
+    @DisplayName("아이디 중복 검사")
     void 아이디_중복_no_검사() {
         // given
-        UserEntity existingUser = UserEntity.builder().username("jack").build();
-        userRepository.save(existingUser);
+        UserEntity applicant = UserTestFactory.createUserEntityBuilder()
+                .username("michael")
+                .build();
+        when(userRepository.getUsernameCount(applicant.getUsername())).thenReturn(0);
 
         // when
-        UserEntity newUser = UserEntity.builder().username("michael").build();
-        boolean duplicatedNameExists = userService.checkIfUserNameDuplication(newUser);
+        boolean duplicatedNameExists = userServiceImpl.checkIfUserNameDuplication(applicant);
 
         // then
         assertThat(duplicatedNameExists).isFalse();
