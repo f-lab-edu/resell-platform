@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-//@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class MybatisUserRepositoryTest {
 
