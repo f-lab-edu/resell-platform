@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Getter
 @Builder
-public class DefaultResponse<T> {
-    T requestDTO;
+public class DefaultResponse {
+    Object requestDTO;
     Map<String, String> errorMessages;
 }

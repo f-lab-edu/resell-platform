@@ -31,15 +31,7 @@ public class UserController {
         return "create success";
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<DefaultResponse<UserDTO>> catchDuplicateId(IllegalArgumentException e, WebRequest webRequest) {
-        // 에러 메세지 생성
-        HashMap<String, String> errors = new HashMap<>();
-        errors.put("username", "이미 존재하는 아이디입니다.");
-        // RequestBody 생성
-        UserDTO requestBody = (UserDTO) webRequest.getAttribute("user", RequestAttributes.SCOPE_REQUEST);
-
-        /*
+    /*
         * 예시
         {
             "requestDTO": {
@@ -52,43 +44,21 @@ public class UserController {
                 "username": "이미 존재하는 아이디입니다."
             }
         }
-        */
-        // custom response 생성
-        DefaultResponse<UserDTO> response = DefaultResponse.<UserDTO>builder()
-                .requestDTO(requestBody)
-                .errorMessages(errors)
-                .build();
-        return ResponseEntity.badRequest().<DefaultResponse<UserDTO>>body(response);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<DefaultResponse<UserDTO>> catchInvalidCreateInput(MethodArgumentNotValidException me) {
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<DefaultResponse> catchDuplicateId(IllegalArgumentException e, WebRequest webRequest) {
         // 에러 메세지 생성
-        Map<String, String> errors = new HashMap<>();
-        me.getFieldErrors()
-                .forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
+        HashMap<String, String> errors = new HashMap<>();
+        errors.put("username", "이미 존재하는 아이디입니다.");
+
         // RequestBody 생성
-        UserDTO requestBody = (UserDTO)me.getTarget();
+        Object requestBody = webRequest.getAttribute("user", RequestAttributes.SCOPE_REQUEST);
 
         // custom response 생성
-        DefaultResponse<UserDTO> defaultResponse = DefaultResponse.<UserDTO>builder()
+        DefaultResponse response = DefaultResponse.builder()
                 .requestDTO(requestBody)
                 .errorMessages(errors)
                 .build();
-        /*
-        * 예시
-        {
-            "requestDTO": {
-                "username": "a",
-                "password": "",
-                "phoneNumber": "010-4589-1250",
-                ...
-            },
-            "errorMessages": {
-                "password": "must not be blank"
-            }
-        }
-        */
-        return ResponseEntity.badRequest().<DefaultResponse<UserDTO>>body(defaultResponse);
+        return ResponseEntity.badRequest().<DefaultResponse>body(response);
     }
 }
