@@ -1,22 +1,18 @@
 package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.controller.response.DefaultResponse;
-import flab.resellPlatform.controller.response.UserDTOErrorMsg;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,10 +21,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public String create(@Valid @RequestBody UserDTO user, WebRequest webRequest) {
+    public ResponseEntity create(@Valid @RequestBody UserDTO user, WebRequest webRequest) {
         webRequest.setAttribute("user", user, RequestAttributes.SCOPE_REQUEST);
-        userService.join(user);
-        return "create success";
+        Optional<UserDTO> joinedInfo = userService.join(user);
+        if (joinedInfo.isEmpty())
+            throw new IllegalArgumentException();
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /*
@@ -49,7 +48,7 @@ public class UserController {
     public ResponseEntity<DefaultResponse> catchDuplicateId(IllegalArgumentException e, WebRequest webRequest) {
         // 에러 메세지 생성
         HashMap<String, String> errors = new HashMap<>();
-        errors.put("username", "이미 존재하는 아이디입니다.");
+        errors.put("username", UserDTO.errorMessage.usernameDuplication);
 
         // RequestBody 생성
         Object requestBody = webRequest.getAttribute("user", RequestAttributes.SCOPE_REQUEST);

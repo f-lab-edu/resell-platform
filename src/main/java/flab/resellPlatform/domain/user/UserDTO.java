@@ -6,6 +6,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static flab.resellPlatform.domain.user.UserDTO.errorMessage.emailFormError;
+
 @ToString
 @Getter
 @Setter
@@ -13,6 +15,11 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 public class UserDTO {
+    public static class errorMessage {
+        public static final String emailFormError = "write in email form";
+        public static final String usernameDuplication = "username already exists";
+    }
+
     @NotBlank
     private String username;
 
@@ -29,7 +36,7 @@ public class UserDTO {
     private String nickname;
 
     @NotBlank
-    @Email
+    @Email(message = emailFormError)
     private String email;
 
     @NotBlank

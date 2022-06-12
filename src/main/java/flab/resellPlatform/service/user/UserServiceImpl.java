@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
@@ -15,13 +17,14 @@ public class UserServiceImpl implements UserService{
     private final ModelMapper modelMapper;
 
     @Override
-    public String join(UserDTO userInfo) {
+    public Optional<UserDTO> join(UserDTO userInfo) {
         UserEntity userEntity = modelMapper.map(userInfo, UserEntity.class);
-        if (checkIfUserNameDuplication(userEntity))
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
-        else
+        if (checkIfUserNameDuplication(userEntity)) {
+            return Optional.empty();
+        } else {
             userRepository.save(userEntity);
-        return null;
+        }
+        return Optional.of(userInfo);
     }
 
     public boolean checkIfUserNameDuplication(UserEntity userEntity) {
