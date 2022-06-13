@@ -4,7 +4,10 @@ import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.domain.user.UserEntity;
 
 public class UserTestFactory {
-    static public UserDTO.UserDTOBuilder createUserDTOBuilder () {
+
+    private UserTestFactory() {}
+
+    public static UserDTO.UserDTOBuilder createUserDTOBuilder () {
         return UserDTO.builder()
                 .username("minsuk")
                 .password("a")

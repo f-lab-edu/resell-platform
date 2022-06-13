@@ -28,7 +28,9 @@ dependencies {
 //Thanks for using https://jar-download.com
 	testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-api', version: '3.14.0'
 //Thanks for using https://jar-download.com
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	 implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// implementation 'org.springframework.boot:spring-boot-starter-security'
+//	implementation 'org.springframework.security:spring-security-test'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'

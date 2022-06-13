@@ -71,7 +71,7 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userData));
         // then
-        DefaultResponse defaultResponse = getDefaultResponse(userDTO, "email", UserDTO.errorMessage.emailFormError);
+        DefaultResponse defaultResponse = getDefaultResponse(userDTO, "email", UserDTO.errorMessage.EMAIL_FORM_ERROR);
         expectDefaultResponse(mapper, defaultResponse, resultActions);
     }
 
@@ -83,6 +83,8 @@ class UserControllerTest {
         when(userService.join(any())).thenReturn(Optional.empty());
         ObjectMapper mapper = new ObjectMapper();
         String userData = mapper.writeValueAsString(userDTO);
+        System.out.println(userDTO);
+        System.out.println(userData);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/users/create")
@@ -90,7 +92,7 @@ class UserControllerTest {
                 .content(userData));
 
         // then
-        DefaultResponse defaultResponse = getDefaultResponse(userDTO, "username", UserDTO.errorMessage.usernameDuplication);
+        DefaultResponse defaultResponse = getDefaultResponse(userDTO, "username", UserDTO.errorMessage.USERNAME_DUPLICATION);
         expectDefaultResponse(mapper, defaultResponse, resultActions);
     }
 

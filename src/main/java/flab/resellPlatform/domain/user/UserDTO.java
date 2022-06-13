@@ -1,12 +1,9 @@
 package flab.resellPlatform.domain.user;
 
 import lombok.*;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-import static flab.resellPlatform.domain.user.UserDTO.errorMessage.emailFormError;
+import static flab.resellPlatform.domain.user.UserDTO.errorMessage.EMAIL_FORM_ERROR;
 
 @ToString
 @Getter
@@ -14,10 +11,10 @@ import static flab.resellPlatform.domain.user.UserDTO.errorMessage.emailFormErro
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDTO {
-    public static class errorMessage {
-        public static final String emailFormError = "write in email form";
-        public static final String usernameDuplication = "username already exists";
+public final class UserDTO {
+    public final static class errorMessage {
+        public static final String EMAIL_FORM_ERROR = "write in email form";
+        public static final String USERNAME_DUPLICATION = "username already exists";
     }
 
     @NotBlank
@@ -36,7 +33,7 @@ public class UserDTO {
     private String nickname;
 
     @NotBlank
-    @Email(message = emailFormError)
+    @Email(message = EMAIL_FORM_ERROR)
     private String email;
 
     @NotBlank

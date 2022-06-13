@@ -4,6 +4,7 @@ import flab.resellPlatform.controller.response.DefaultResponse;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,9 @@ public class UserController {
     public ResponseEntity create(@Valid @RequestBody UserDTO user, WebRequest webRequest) {
         webRequest.setAttribute("user", user, RequestAttributes.SCOPE_REQUEST);
         Optional<UserDTO> joinedInfo = userService.join(user);
-        if (joinedInfo.isEmpty())
-            throw new IllegalArgumentException();
+        if (joinedInfo.isEmpty()) {
+            throw new IllegalArgumentException("http의 대표 메세지로 나옴");
+        }
 
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -48,7 +50,7 @@ public class UserController {
     public ResponseEntity<DefaultResponse> catchDuplicateId(IllegalArgumentException e, WebRequest webRequest) {
         // 에러 메세지 생성
         HashMap<String, String> errors = new HashMap<>();
-        errors.put("username", UserDTO.errorMessage.usernameDuplication);
+        errors.put("username", UserDTO.errorMessage.USERNAME_DUPLICATION);
 
         // RequestBody 생성
         Object requestBody = webRequest.getAttribute("user", RequestAttributes.SCOPE_REQUEST);

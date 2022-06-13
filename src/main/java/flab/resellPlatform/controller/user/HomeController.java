@@ -17,16 +17,16 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 public class HomeController {
 
-    static final String GO_TO_LOGIN_FORM_MSG = "go to login form";
-
     @GetMapping
     public ResponseEntity getHome(HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession(false);
-        if (session == null)
+        if (session == null) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
         LoginInfo loginInfo = (LoginInfo) session.getAttribute(SessionConst.LOGIN_INFO);
-        if (loginInfo == null)
+        if (loginInfo == null) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
 
         return new ResponseEntity(HttpStatus.OK);
     }

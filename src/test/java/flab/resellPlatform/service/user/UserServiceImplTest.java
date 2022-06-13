@@ -8,12 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,9 +18,6 @@ class UserServiceImplTest {
 
     @Mock
     UserRepository userRepository;
-
-    @Mock
-    ModelMapper modelMapper;
 
     @InjectMocks
     UserServiceImpl userServiceImpl;
@@ -45,7 +37,7 @@ class UserServiceImplTest {
         assertThat(duplicatedNameExists).isTrue();
     }
 
-    @DisplayName("아이디 중복 검사")
+    @Test
     void 아이디_중복_no_검사() {
         // given
         UserEntity applicant = UserTestFactory.createUserEntityBuilder()

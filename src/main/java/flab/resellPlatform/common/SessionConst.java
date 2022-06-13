@@ -1,5 +1,7 @@
 package flab.resellPlatform.common;
 
-public class SessionConst {
-    public static String LOGIN_INFO = "loginInfo";
+public final class SessionConst {
+    public static final String LOGIN_INFO = "LOGIN_INFO";
+
+    private SessionConst() {}
 }

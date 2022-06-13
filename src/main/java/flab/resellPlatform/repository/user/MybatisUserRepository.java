@@ -21,8 +21,8 @@ public class MybatisUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findByUsername(String phoneNumber) {
-        return userMapper.findByUsername(phoneNumber);
+    public Optional<UserEntity> findByUsername(String username) {
+        return userMapper.findByUsername(username);
     }
 
     @Override

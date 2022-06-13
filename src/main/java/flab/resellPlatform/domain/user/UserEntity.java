@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class UserEntity {
+public final class UserEntity {
     private long id;
 
     private String username;

@@ -29,9 +29,6 @@ class LoginControllerTest {
     @MockBean
     private LoginService loginService;
 
-    @Mock
-    MockHttpSession mockHttpSession;
-
     @Test
     void 유저_데이터_있음_로그인_테스트() throws Exception {
         // given
@@ -40,7 +37,7 @@ class LoginControllerTest {
 
         // when
         String loginData = "username=minsuk&password=123";
-        ResultActions resultActions = mockMvc.perform(post("/login/loginForm")
+        ResultActions resultActions = mockMvc.perform(post("/login")
                 .content(loginData)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_FORM_URLENCODED));
@@ -57,7 +54,7 @@ class LoginControllerTest {
 
         // when
         String loginData = "username=minsuk&password=123";
-        ResultActions resultActions = mockMvc.perform(post("/login/loginForm")
+        ResultActions resultActions = mockMvc.perform(post("/login")
                 .content(loginData)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_FORM_URLENCODED));

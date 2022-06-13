@@ -23,13 +23,7 @@ public class LoginController {
 
     final LoginService loginService;
 
-    @GetMapping
-    public String getLoginForm() {
-        return "login form";
-    }
-
     @PostMapping
-    @RequestMapping("/loginForm")
     public ResponseEntity doLogin(@Valid LoginInfo loginInfo, HttpServletRequest request) {
         Optional<LoginInfo> loginAvailableInfo = loginService.doLogin(loginInfo);
         if (loginAvailableInfo.isEmpty()) {

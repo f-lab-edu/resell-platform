@@ -29,13 +29,13 @@ public class ExceptionAdvice {
         }
      */
     @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<DefaultResponse> returnLoginInfoError(BindingResult me) {
+    public ResponseEntity<DefaultResponse> returnRestRequestError(BindingResult bindingResult) {
         // 에러 메세지 생성
         Map<String, String> errors = new HashMap<>();
-        me.getFieldErrors()
-                .forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
+        bindingResult.getFieldErrors()
+                .forEach(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
         // RequestBody 생성
-        Object requestBody = me.getTarget();
+        Object requestBody = bindingResult.getTarget();
         // custom response 생성
         DefaultResponse defaultResponse = DefaultResponse.builder()
                 .requestDTO(requestBody)
