@@ -9,6 +9,5 @@ import java.util.Map;
 @Builder
 public class DefaultResponse {
     String messageSummary;
-    Object requestDTO;
-    Map<String, String> errorMessages;
+    Map<String, Object> data;
 }

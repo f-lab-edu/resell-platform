@@ -42,7 +42,7 @@ class LoginControllerTest {
         ResultActions resultActions = mockMvc.perform(post("/login")
                 .content(loginData)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .accept(MediaType.APPLICATION_FORM_URLENCODED));
+                .accept(MediaType.APPLICATION_JSON));
         // then
         resultActions
                 .andExpect(status().isOk())
@@ -60,7 +60,7 @@ class LoginControllerTest {
         ResultActions resultActions = mockMvc.perform(post("/login")
                 .content(loginData)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .accept(MediaType.APPLICATION_FORM_URLENCODED));
+                .accept(MediaType.APPLICATION_JSON));
         // then
         resultActions
                 .andExpect(status().isBadRequest())

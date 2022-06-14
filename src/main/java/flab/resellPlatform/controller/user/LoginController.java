@@ -1,12 +1,13 @@
 package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.common.SessionConst;
+import flab.resellPlatform.controller.response.DefaultResponse;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.service.user.LoginService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,6 +23,7 @@ import java.util.Optional;
 @RequestMapping("/login")
 public class LoginController {
 
+    final MessageSourceAccessor messageSourceAccessor;
     final LoginService loginService;
 
     @PostMapping
@@ -32,7 +35,14 @@ public class LoginController {
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_INFO, loginInfo);
-        return new ResponseEntity(HttpStatus.OK);
+
+        Map<String, Object> returnObjects = Map.of("loginInfo", loginAvailableInfo.get());
+        DefaultResponse defaultResponse = DefaultResponse.builder()
+                .messageSummary(messageSourceAccessor.getMessage("user.login.success"))
+                .data(returnObjects)
+                .build();
+
+        return ResponseEntity.ok(defaultResponse);
     }
 
     @PostMapping
@@ -42,6 +52,15 @@ public class LoginController {
         if (session != null) {
             session.invalidate();
         }
-        return new ResponseEntity(HttpStatus.OK);
+
+        Map<String, Object> returnObjects = Map.of();
+        DefaultResponse defaultResponse = DefaultResponse.builder()
+                .messageSummary(messageSourceAccessor.getMessage("user.logout.success"))
+                .data(returnObjects)
+                .build();
+
+        return ResponseEntity
+                .ok()
+                .<DefaultResponse>body(defaultResponse);
     }
 }

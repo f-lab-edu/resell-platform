@@ -1,27 +1,21 @@
 package flab.resellPlatform.controller.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import flab.resellPlatform.common.ExceptionAdvice;
+import flab.resellPlatform.MessageConfig;
 import flab.resellPlatform.controller.response.DefaultResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import javax.validation.constraints.Email;
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,17 +25,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest({UserController.class, MessageConfig.class})
 class UserControllerTest {
+
+    @Autowired
+    MessageSourceAccessor messageSourceAccessor;
 
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
     UserService userService;
-
-    @InjectMocks
-    UserController userController;
 
     @DisplayName("아이디 생성 성공")
     @Test
@@ -53,7 +47,7 @@ class UserControllerTest {
         String userData = mapper.writeValueAsString(userDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/users/create")
+        ResultActions resultActions = mockMvc.perform(post("/users/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userData));
         // then
@@ -71,38 +65,39 @@ class UserControllerTest {
         String userData = mapper.writeValueAsString(userDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/users/create")
+        ResultActions resultActions = mockMvc.perform(post("/users/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userData));
         // then
-        DefaultResponse defaultResponse = getDefaultResponse(
-                ExceptionAdvice.ErrorMessage.INVALID_INPUT,
-                userDTO, "email",
-                UserDTO.errorMessage.EMAIL_FORM_ERROR);
+        Map<String, Object> returnObjects = Map.of();
+        DefaultResponse defaultResponse = DefaultResponse.builder()
+                .messageSummary(messageSourceAccessor.getMessage("common.argument.invalid"))
+                .data(returnObjects)
+                .build();
+
         expectDefaultResponse(mapper, defaultResponse, resultActions);
     }
 
     @DisplayName("아이디 생성 실패 by 아이디 중복")
     @Test
     void create_failByIdDuplication() throws Exception {
-        /// given
+        // given
         UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
         when(userService.join(any())).thenReturn(Optional.empty());
         ObjectMapper mapper = new ObjectMapper();
         String userData = mapper.writeValueAsString(userDTO);
-        System.out.println(userDTO);
-        System.out.println(userData);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/users/create")
+        ResultActions resultActions = mockMvc.perform(post("/users/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userData));
 
         // then
-        DefaultResponse defaultResponse = getDefaultResponse(
-                UserController.ErrorMessage.NEED_UNIQUE_VALUE,
-                userDTO, "username",
-                UserDTO.errorMessage.USERNAME_DUPLICATION);
+        Map<String, Object> returnObjects = Map.of();
+        DefaultResponse defaultResponse = DefaultResponse.builder()
+                .messageSummary(messageSourceAccessor.getMessage("user.username.duplication"))
+                .data(returnObjects)
+                .build();
         expectDefaultResponse(mapper, defaultResponse, resultActions);
     }
 
@@ -111,14 +106,5 @@ class UserControllerTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(defaultResponseJson));
-    }
-
-    private DefaultResponse getDefaultResponse(String errorMessageSummery, UserDTO userDTO, String email, String emailFormError) {
-        DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(errorMessageSummery)
-                .requestDTO(userDTO)
-                .errorMessages(Map.of(email, emailFormError))
-                .build();
-        return defaultResponse;
     }
 }
