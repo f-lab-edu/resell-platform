@@ -2,6 +2,7 @@ package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.service.user.LoginService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,9 @@ class LoginControllerTest {
     @MockBean
     private LoginService loginService;
 
+    @DisplayName("유저 데이터 DB에 존재. 로그인 테스트")
     @Test
-    void 유저_데이터_있음_로그인_테스트() throws Exception {
+    void doLogin_userDataInDB() throws Exception {
         // given
         LoginInfo loginInfo = new LoginInfo("minsuk", "123");
         when(loginService.doLogin(any())).thenReturn(Optional.of(loginInfo));
@@ -47,8 +49,9 @@ class LoginControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("유저 데이터 DB 존재x. 로그인 테스트")
     @Test
-    void 유저_데이터_없음_로그인_테스트() throws Exception {
+    void doLogin_userDataNotInDB() throws Exception {
         // given
         when(loginService.doLogin(any())).thenReturn(Optional.empty());
 

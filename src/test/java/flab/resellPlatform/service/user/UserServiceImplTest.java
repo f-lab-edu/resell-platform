@@ -22,8 +22,9 @@ class UserServiceImplTest {
     @InjectMocks
     UserServiceImpl userServiceImpl;
 
+    @DisplayName("중복된 아이디 존재할 때 실패 검증")
     @Test
-    void 아이디_중복_yes_검사() {
+    void checkIfUserNameDuplication_idExists() {
         // given
         UserEntity applicant = UserTestFactory.createUserEntityBuilder()
                 .username("sameUsername")
@@ -37,8 +38,9 @@ class UserServiceImplTest {
         assertThat(duplicatedNameExists).isTrue();
     }
 
+    @DisplayName("중복된 아이디 존재하지 않을 때 성공 검증")
     @Test
-    void 아이디_중복_no_검사() {
+    void checkIfUserNameDuplication_idDontExist() {
         // given
         UserEntity applicant = UserTestFactory.createUserEntityBuilder()
                 .username("michael")

@@ -1,6 +1,7 @@
 package flab.resellPlatform.domain.user;
 
 import lombok.*;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import static flab.resellPlatform.domain.user.UserDTO.errorMessage.EMAIL_FORM_ERROR;

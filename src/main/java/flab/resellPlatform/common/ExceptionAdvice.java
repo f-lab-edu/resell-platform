@@ -14,6 +14,10 @@ import java.util.Map;
 @ControllerAdvice
 public class ExceptionAdvice {
 
+    public static final class ErrorMessage {
+        public static final String INVALID_INPUT = "Input data is in invalid form";
+    }
+
     /*
     * 예시
         {
@@ -28,7 +32,7 @@ public class ExceptionAdvice {
             }
         }
      */
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler(BindException.class)
     public ResponseEntity<DefaultResponse> returnRestRequestError(BindingResult bindingResult) {
         // 에러 메세지 생성
         Map<String, String> errors = new HashMap<>();
@@ -38,6 +42,7 @@ public class ExceptionAdvice {
         Object requestBody = bindingResult.getTarget();
         // custom response 생성
         DefaultResponse defaultResponse = DefaultResponse.builder()
+                .messageSummary(ErrorMessage.INVALID_INPUT)
                 .requestDTO(requestBody)
                 .errorMessages(errors)
                 .build();

@@ -2,11 +2,13 @@ package flab.resellPlatform.controller.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import flab.resellPlatform.common.ExceptionAdvice;
 import flab.resellPlatform.controller.response.DefaultResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,8 +43,9 @@ class UserControllerTest {
     @InjectMocks
     UserController userController;
 
+    @DisplayName("아이디 생성 성공")
     @Test
-    void 아이디_생성_컨트롤러_성공() throws Exception {
+    void create_success() throws Exception {
         // given
         UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
         when(userService.join(any())).thenReturn(Optional.of(userDTO));
@@ -57,8 +60,9 @@ class UserControllerTest {
         resultActions.andExpect(status().isOk());
     }
 
+    @DisplayName("아이디 생성 실패 by 유효성 검사")
     @Test
-    void 아이디_생성_컨트롤러_유효성_검사_실패() throws Exception {
+    void create_failByValidation() throws Exception {
         // given
         UserDTO userDTO = UserTestFactory.createUserDTOBuilder()
                 .email("alstjrdl852naver.com")
@@ -71,13 +75,16 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userData));
         // then
-        DefaultResponse defaultResponse = getDefaultResponse(userDTO, "email", UserDTO.errorMessage.EMAIL_FORM_ERROR);
+        DefaultResponse defaultResponse = getDefaultResponse(
+                ExceptionAdvice.ErrorMessage.INVALID_INPUT,
+                userDTO, "email",
+                UserDTO.errorMessage.EMAIL_FORM_ERROR);
         expectDefaultResponse(mapper, defaultResponse, resultActions);
     }
 
-
+    @DisplayName("아이디 생성 실패 by 아이디 중복")
     @Test
-    void 아이디_생성_컨트롤러_아이디_중복() throws Exception {
+    void create_failByIdDuplication() throws Exception {
         /// given
         UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
         when(userService.join(any())).thenReturn(Optional.empty());
@@ -92,7 +99,10 @@ class UserControllerTest {
                 .content(userData));
 
         // then
-        DefaultResponse defaultResponse = getDefaultResponse(userDTO, "username", UserDTO.errorMessage.USERNAME_DUPLICATION);
+        DefaultResponse defaultResponse = getDefaultResponse(
+                UserController.ErrorMessage.NEED_UNIQUE_VALUE,
+                userDTO, "username",
+                UserDTO.errorMessage.USERNAME_DUPLICATION);
         expectDefaultResponse(mapper, defaultResponse, resultActions);
     }
 
@@ -103,8 +113,9 @@ class UserControllerTest {
                 .andExpect(content().string(defaultResponseJson));
     }
 
-    private DefaultResponse getDefaultResponse(UserDTO userDTO, String email, String emailFormError) {
+    private DefaultResponse getDefaultResponse(String errorMessageSummery, UserDTO userDTO, String email, String emailFormError) {
         DefaultResponse defaultResponse = DefaultResponse.builder()
+                .messageSummary(errorMessageSummery)
                 .requestDTO(userDTO)
                 .errorMessages(Map.of(email, emailFormError))
                 .build();

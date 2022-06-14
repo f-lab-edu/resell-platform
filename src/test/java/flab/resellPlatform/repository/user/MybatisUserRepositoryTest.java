@@ -24,15 +24,17 @@ class MybatisUserRepositoryTest {
     @InjectMocks
     MybatisUserRepository mybatisUserRepository;
 
+    @DisplayName("유저 정보 저장 성공")
     @Test
-    void 유저_정보_저장() {
+    void save_success() {
         UserEntity userEntity = UserTestFactory.createUserEntityBuilder().build();
         mybatisUserRepository.save(userEntity);
         verify(userMapper, times(1)).save(userEntity);
     }
 
+    @DisplayName("유저 정보 모두 조회 성공")
     @Test
-    void 유저_정보_전부_조회() {
+    void findAll_success() {
         // given
         UserEntity userEntity1 = UserTestFactory.createUserEntityBuilder()
                 .username("min")

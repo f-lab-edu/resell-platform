@@ -19,6 +19,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
+
+    public static final class ErrorMessage {
+        public static final String NEED_UNIQUE_VALUE = "Input value already exists";
+    }
+
+
     private final UserService userService;
 
     @PostMapping("/create")
@@ -26,7 +32,7 @@ public class UserController {
         webRequest.setAttribute("user", user, RequestAttributes.SCOPE_REQUEST);
         Optional<UserDTO> joinedInfo = userService.join(user);
         if (joinedInfo.isEmpty()) {
-            throw new IllegalArgumentException("http의 대표 메세지로 나옴");
+            throw new RuntimeException();
         }
 
         return new ResponseEntity(HttpStatus.OK);
@@ -46,8 +52,8 @@ public class UserController {
             }
         }
      */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<DefaultResponse> catchDuplicateId(IllegalArgumentException e, WebRequest webRequest) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<DefaultResponse> catchDuplicateId(RuntimeException e, WebRequest webRequest) {
         // 에러 메세지 생성
         HashMap<String, String> errors = new HashMap<>();
         errors.put("username", UserDTO.errorMessage.USERNAME_DUPLICATION);
@@ -57,6 +63,7 @@ public class UserController {
 
         // custom response 생성
         DefaultResponse response = DefaultResponse.builder()
+                .messageSummary(ErrorMessage.NEED_UNIQUE_VALUE)
                 .requestDTO(requestBody)
                 .errorMessages(errors)
                 .build();
