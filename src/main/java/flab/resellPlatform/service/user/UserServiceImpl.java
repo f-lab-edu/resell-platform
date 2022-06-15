@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService{
     private final ModelMapper modelMapper;
 
     @Override
-    public Optional<UserDTO> join(UserDTO userInfo) {
+    public Optional<UserDTO> createUser(UserDTO userInfo) {
         UserEntity userEntity = modelMapper.map(userInfo, UserEntity.class);
         if (checkIfUserNameDuplication(userEntity)) {
             return Optional.empty();

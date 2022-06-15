@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,11 +24,15 @@ import java.util.Optional;
 @RequestMapping("/login")
 public class LoginController {
 
-    final MessageSourceAccessor messageSourceAccessor;
-    final LoginService loginService;
+    private final MessageSourceAccessor messageSourceAccessor;
+    private final LoginService loginService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping
     public ResponseEntity doLogin(@Valid LoginInfo loginInfo, HttpServletRequest request) {
+
+        loginInfo.setPassword(passwordEncoder.encode(loginInfo.getPassword()));
+
         Optional<LoginInfo> loginAvailableInfo = loginService.doLogin(loginInfo);
         if (loginAvailableInfo.isEmpty()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -38,11 +43,13 @@ public class LoginController {
 
         Map<String, Object> returnObjects = Map.of("loginInfo", loginAvailableInfo.get());
         DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(messageSourceAccessor.getMessage("user.login.success"))
+                .messageSummary(messageSourceAccessor.getMessage("login.success"))
                 .data(returnObjects)
                 .build();
 
-        return ResponseEntity.ok(defaultResponse);
+        return ResponseEntity
+                .ok()
+                .body(defaultResponse);
     }
 
     @PostMapping
@@ -55,12 +62,12 @@ public class LoginController {
 
         Map<String, Object> returnObjects = Map.of();
         DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(messageSourceAccessor.getMessage("user.logout.success"))
+                .messageSummary(messageSourceAccessor.getMessage("login.logout.success"))
                 .data(returnObjects)
                 .build();
 
         return ResponseEntity
                 .ok()
-                .<DefaultResponse>body(defaultResponse);
+                .body(defaultResponse);
     }
 }

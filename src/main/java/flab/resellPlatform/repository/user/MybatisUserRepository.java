@@ -15,7 +15,6 @@ public class MybatisUserRepository implements UserRepository {
 
     @Override
     public UserEntity save(UserEntity userEntity) {
-//        System.out.println("MybatisUserRepository");
         userMapper.save(userEntity);
         return userEntity;
     }

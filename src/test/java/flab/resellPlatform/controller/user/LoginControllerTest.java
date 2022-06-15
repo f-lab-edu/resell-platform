@@ -10,18 +10,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LoginController.class)
+@WithMockUser
 class LoginControllerTest {
 
     @Autowired
@@ -42,11 +47,11 @@ class LoginControllerTest {
         ResultActions resultActions = mockMvc.perform(post("/login")
                 .content(loginData)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(csrf()));
         // then
         resultActions
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @DisplayName("유저 데이터 DB 존재x. 로그인 테스트")
@@ -54,16 +59,15 @@ class LoginControllerTest {
     void doLogin_userDataNotInDB() throws Exception {
         // given
         when(loginService.doLogin(any())).thenReturn(Optional.empty());
-
         // when
         String loginData = "username=minsuk&password=123";
         ResultActions resultActions = mockMvc.perform(post("/login")
                 .content(loginData)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(csrf()));
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andDo(print());
+                .andExpect(status().isBadRequest());
     }
 }

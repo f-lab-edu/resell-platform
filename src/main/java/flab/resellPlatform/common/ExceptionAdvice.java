@@ -51,7 +51,7 @@ public class ExceptionAdvice {
         Map<String, Object> returnObjects = Map.of();
 
         // custom response 생성
-        DefaultResponse response = getDefaultResponse("user.username.duplication", returnObjects);
+        DefaultResponse response = getDefaultResponse("createUser.username.duplication", returnObjects);
         return ResponseEntity
                 .badRequest()
                 .<DefaultResponse>body(response);

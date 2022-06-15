@@ -17,15 +17,12 @@ public class LoginService {
     final ModelMapper modelMapper;
 
     public Optional<LoginInfo> doLogin(LoginInfo loginInfo) {
-        System.out.println(loginInfo);
         Optional<UserEntity> storedUserInfo = userRepository.findByUsername(loginInfo.getUsername());
         if (storedUserInfo.isEmpty()) {
             return Optional.empty();
         }
         UserEntity storedUserEntityInfo = storedUserInfo.get();
         if (!storedUserEntityInfo.getPassword().strip().equals(loginInfo.getPassword().strip())) {
-            System.out.println("storedUserEntityInfo = " + storedUserEntityInfo.getPassword());
-            System.out.println("loginInfo = " + loginInfo.getPassword());
             return Optional.empty();
         }
 

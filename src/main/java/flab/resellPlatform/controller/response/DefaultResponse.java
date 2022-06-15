@@ -3,6 +3,7 @@ package flab.resellPlatform.controller.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
