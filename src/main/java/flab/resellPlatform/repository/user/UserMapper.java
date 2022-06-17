@@ -1,5 +1,6 @@
 package flab.resellPlatform.repository.user;
 
+import flab.resellPlatform.domain.user.PasswordInquiryForm;
 import flab.resellPlatform.domain.user.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 

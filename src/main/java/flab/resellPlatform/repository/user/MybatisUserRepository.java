@@ -1,5 +1,6 @@
 package flab.resellPlatform.repository.user;
 
+import flab.resellPlatform.domain.user.PasswordInquiryForm;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -20,18 +21,13 @@ public class MybatisUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findByUsername(String username) {
+    public Optional<UserEntity> findUser(String username) {
         return userMapper.findByUsername(username);
     }
 
     @Override
     public List<UserEntity> findAll() {
         return userMapper.findAll();
-    }
-
-    @Override
-    public int getUsernameCount(String username) {
-        return userMapper.getUsernameCount(username);
     }
 
 }

@@ -1,18 +1,14 @@
 package flab.resellPlatform.common;
 
-import flab.resellPlatform.controller.response.DefaultResponse;
-import flab.resellPlatform.exception.user.DuplicateUsernameException;
+import flab.resellPlatform.controller.response.StandardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.HashMap;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
 
 @ControllerAdvice
@@ -34,32 +30,20 @@ public class ExceptionAdvice {
         }
      */
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<DefaultResponse> returnRestRequestError() {
+    public ResponseEntity<StandardResponse> returnRestRequestError() {
 
         Map<String, Object> returnObjects = Map.of();
 
         // custom response 생성
-        DefaultResponse defaultResponse = getDefaultResponse("common.argument.invalid", returnObjects);
+        StandardResponse defaultResponse = getDefaultResponse("common.argument.invalid", returnObjects);
         return ResponseEntity
                 .badRequest()
-                .<DefaultResponse>body(defaultResponse);
+                .<StandardResponse>body(defaultResponse);
     }
 
-    @ExceptionHandler(DuplicateUsernameException.class)
-    public ResponseEntity<DefaultResponse> catchDuplicateId(RuntimeException e) {
-
-        Map<String, Object> returnObjects = Map.of();
-
-        // custom response 생성
-        DefaultResponse response = getDefaultResponse("createUser.username.duplication", returnObjects);
-        return ResponseEntity
-                .badRequest()
-                .<DefaultResponse>body(response);
-    }
-
-    private DefaultResponse getDefaultResponse(String code, Map<String, Object> returnObjects) {
-        DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(messageSourceAccessor.getMessage(code))
+    private StandardResponse getDefaultResponse(String code, Map<String, Object> returnObjects) {
+        StandardResponse defaultResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage(code))
                 .data(returnObjects)
                 .build();
         return defaultResponse;

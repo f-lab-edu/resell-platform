@@ -2,24 +2,24 @@ package flab.resellPlatform.controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.MessageConfig;
-import flab.resellPlatform.controller.response.DefaultResponse;
+import flab.resellPlatform.controller.response.StandardResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -78,8 +78,8 @@ class UserControllerTest {
                 .with(csrf()));
         // then
         Map<String, Object> returnObjects = Map.of();
-        DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(messageSourceAccessor.getMessage("common.argument.invalid"))
+        StandardResponse defaultResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.argument.invalid"))
                 .data(returnObjects)
                 .build();
 
@@ -88,10 +88,14 @@ class UserControllerTest {
 
     @DisplayName("아이디 생성 실패 by 아이디 중복")
     @Test
-    void create_failByIdDuplication() throws Exception {
+    void createUser_failByIdDuplication() throws Exception {
         // given
         UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
-        when(userService.createUser(any())).thenReturn(Optional.empty());
+        when(userService.createUser(any())).thenAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                throw new SQLIntegrityConstraintViolationException();
+            }
+        });
         ObjectMapper mapper = new ObjectMapper();
         String userData = mapper.writeValueAsString(userDTO);
 
@@ -103,15 +107,15 @@ class UserControllerTest {
 
         // then
         Map<String, Object> returnObjects = Map.of();
-        DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(messageSourceAccessor.getMessage("createUser.username.duplication"))
+        StandardResponse defaultResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("user.username.duplication"))
                 .data(returnObjects)
                 .build();
         expectDefaultResponse(mapper, defaultResponse, resultActions);
     }
 
-    private void expectDefaultResponse(ObjectMapper mapper, DefaultResponse defaultResponse, ResultActions resultActions) throws Exception {
-        String defaultResponseJson = mapper.writeValueAsString(defaultResponse);
+    private void expectDefaultResponse(ObjectMapper mapper, StandardResponse standardResponse, ResultActions resultActions) throws Exception {
+        String defaultResponseJson = mapper.writeValueAsString(standardResponse);
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(defaultResponseJson));

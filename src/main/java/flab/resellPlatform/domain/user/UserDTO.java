@@ -29,7 +29,7 @@ public final class UserDTO {
     private String nickname;
 
     @NotBlank
-    @Email(message = "{email.form}")
+    @Email
     private String email;
 
     @NotBlank

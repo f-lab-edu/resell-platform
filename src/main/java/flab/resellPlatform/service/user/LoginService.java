@@ -17,7 +17,7 @@ public class LoginService {
     final ModelMapper modelMapper;
 
     public Optional<LoginInfo> doLogin(LoginInfo loginInfo) {
-        Optional<UserEntity> storedUserInfo = userRepository.findByUsername(loginInfo.getUsername());
+        Optional<UserEntity> storedUserInfo = userRepository.findUser(loginInfo.getUsername());
         if (storedUserInfo.isEmpty()) {
             return Optional.empty();
         }

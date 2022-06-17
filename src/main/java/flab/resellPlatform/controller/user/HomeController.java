@@ -1,7 +1,7 @@
 package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.common.SessionConst;
-import flab.resellPlatform.controller.response.DefaultResponse;
+import flab.resellPlatform.controller.response.StandardResponse;
 import flab.resellPlatform.domain.user.LoginInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -26,24 +26,24 @@ public class HomeController {
     public ResponseEntity getHome(HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession(false);
 
-        DefaultResponse.DefaultResponseBuilder defaultResponseBuilder = DefaultResponse.builder()
+        StandardResponse.StandardResponseBuilder standardResponseBuilder = StandardResponse.builder()
                 .data(Map.of());
 
         if (session == null) {
-            return getDefaultResponseResponseEntity(defaultResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
+            return getStandardResponseEntity(standardResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
         }
 
         LoginInfo loginInfo = (LoginInfo) session.getAttribute(SessionConst.LOGIN_INFO);
         if (loginInfo == null) {
-            return getDefaultResponseResponseEntity(defaultResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
+            return getStandardResponseEntity(standardResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
         }
 
-        return getDefaultResponseResponseEntity(defaultResponseBuilder, "home.welcome", HttpStatus.OK);
+        return getStandardResponseEntity(standardResponseBuilder, "home.welcome", HttpStatus.OK);
     }
 
-    private ResponseEntity<DefaultResponse> getDefaultResponseResponseEntity(DefaultResponse.DefaultResponseBuilder defaultResponseBuilder, String messageCode, HttpStatus httpStatus) {
-        DefaultResponse defaultResponse = defaultResponseBuilder
-                .messageSummary(messageSourceAccessor.getMessage(messageCode))
+    private ResponseEntity<StandardResponse> getStandardResponseEntity(StandardResponse.StandardResponseBuilder standardResponseBuilder, String messageCode, HttpStatus httpStatus) {
+        StandardResponse defaultResponse = standardResponseBuilder
+                .message(messageSourceAccessor.getMessage(messageCode))
                 .build();
 
         return ResponseEntity

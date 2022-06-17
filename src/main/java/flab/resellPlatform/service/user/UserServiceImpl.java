@@ -1,5 +1,6 @@
 package flab.resellPlatform.service.user;
 
+import flab.resellPlatform.domain.user.PasswordInquiryForm;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
@@ -19,26 +20,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public Optional<UserDTO> createUser(UserDTO userInfo) {
         UserEntity userEntity = modelMapper.map(userInfo, UserEntity.class);
-        if (checkIfUserNameDuplication(userEntity)) {
-            return Optional.empty();
-        } else {
-            userRepository.save(userEntity);
-        }
+        userRepository.save(userEntity);
         return Optional.of(userInfo);
-    }
-
-    public boolean checkIfUserNameDuplication(UserEntity userEntity) {
-        int userNameCount = userRepository.getUsernameCount(userEntity.getUsername());
-        return userNameCount >= 1 ? true : false;
-    }
-
-    @Override
-    public String findId(UserDTO userInfo) {
-        return null;
-    }
-
-    @Override
-    public String findPassword(UserDTO userInfo) {
-        return null;
     }
 }

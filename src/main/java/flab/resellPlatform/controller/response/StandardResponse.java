@@ -3,12 +3,11 @@ package flab.resellPlatform.controller.response;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Getter
 @Builder
-public class DefaultResponse {
-    String messageSummary;
+public class StandardResponse {
+    String message;
     Map<String, Object> data;
 }

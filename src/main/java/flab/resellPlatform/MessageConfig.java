@@ -13,10 +13,7 @@ public class MessageConfig {
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames(
-                "classpath:flab/resellPlatform/properties/messages/common",
-                "classpath:flab/resellPlatform/properties/messages/createUser",
-                "classpath:flab/resellPlatform/properties/messages/home",
-                "classpath:flab/resellPlatform/properties/messages/login");
+                "classpath:flab/resellPlatform/properties/messages/en_US");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setCacheSeconds(60);
         messageSource.setUseCodeAsDefaultMessage(true);

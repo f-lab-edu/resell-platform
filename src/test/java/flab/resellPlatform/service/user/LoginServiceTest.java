@@ -37,7 +37,7 @@ class LoginServiceTest {
         // given
         LoginInfo loginInfo = UserTestFactory.createLoginInfoBuilder().build();
         UserEntity userEntity = UserTestFactory.createUserEntityBuilder().build();
-        when(userRepository.findByUsername(any())).thenReturn(Optional.of(userEntity));
+        when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
         Optional<LoginInfo> loginResult = loginService.doLogin(loginInfo);
@@ -52,7 +52,7 @@ class LoginServiceTest {
     void doLogin_noUsername() {
         // given
         LoginInfo loginInfo = UserTestFactory.createLoginInfoBuilder().build();
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        when(userRepository.findUser(any())).thenReturn(Optional.empty());
 
         // when
         Optional<LoginInfo> loginResult = loginService.doLogin(loginInfo);
@@ -67,7 +67,7 @@ class LoginServiceTest {
     void doLogin_passwordWrong() {
         // given
         LoginInfo loginInfo = UserTestFactory.createLoginInfoBuilder().build();
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        when(userRepository.findUser(any())).thenReturn(Optional.empty());
 
         // when
         Optional<LoginInfo> loginResult = loginService.doLogin(loginInfo);

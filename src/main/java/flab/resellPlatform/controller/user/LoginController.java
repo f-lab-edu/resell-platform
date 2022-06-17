@@ -1,7 +1,7 @@
 package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.common.SessionConst;
-import flab.resellPlatform.controller.response.DefaultResponse;
+import flab.resellPlatform.controller.response.StandardResponse;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.service.user.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +42,8 @@ public class LoginController {
         session.setAttribute(SessionConst.LOGIN_INFO, loginInfo);
 
         Map<String, Object> returnObjects = Map.of("loginInfo", loginAvailableInfo.get());
-        DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(messageSourceAccessor.getMessage("login.success"))
+        StandardResponse defaultResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("login.success"))
                 .data(returnObjects)
                 .build();
 
@@ -61,8 +61,8 @@ public class LoginController {
         }
 
         Map<String, Object> returnObjects = Map.of();
-        DefaultResponse defaultResponse = DefaultResponse.builder()
-                .messageSummary(messageSourceAccessor.getMessage("login.logout.success"))
+        StandardResponse defaultResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("login.logout.success"))
                 .data(returnObjects)
                 .build();
 
