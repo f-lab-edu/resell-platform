@@ -21,6 +21,16 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+	testImplementation "org.mockito:mockito-core:4.6.1"
+	testImplementation group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.62.0'
+//Thanks for using https://jar-download.com
+	testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-api', version: '3.14.0'
+//Thanks for using https://jar-download.com
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-test'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'

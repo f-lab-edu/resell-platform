@@ -1,18 +1,31 @@
-package flab.resellPlatform.user;
+package flab.resellPlatform.domain.user;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
-public class User {
+@Builder
+@AllArgsConstructor
+public final class UserEntity {
     private long id;
+
     private String username;
+
     private String password;
+
     private String phoneNumber;
+
     private String name;
+
     private String nickname;
+
     private String email;
+
     private String shoeSize;
 
     /**
@@ -24,7 +37,7 @@ public class User {
      * @param email
      * @param shoeSize
      */
-    public User(String username, String password, String phoneNumber, String name, String nickname, String email, String shoeSize) {
+    public UserEntity(String username, String password, String phoneNumber, String name, String nickname, String email, String shoeSize) {
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
