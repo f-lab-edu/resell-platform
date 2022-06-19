@@ -26,13 +26,6 @@ import java.util.Locale;
 public class UserController {
 
     private final UserService userService;
-    private final MessageSource messageSource;
-
-    @ExceptionHandler(BindException.class)
-    public StandardResponse<FieldErrors> handleBindException(BindException bindException, Locale locale) {
-        FieldErrors fieldErrors = FieldErrors.create(bindException, messageSource, locale);
-        return new StandardResponse<>(ResponseMessage.INVALID_INPUT, fieldErrors);
-    }
 
     @PostMapping("/users")
     public StandardResponse<CreateAccountSuccess> createAccount(@Validated @ModelAttribute User user, BindingResult bindingResult) throws BindException {
