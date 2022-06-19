@@ -108,7 +108,7 @@ class UserControllerTest {
         // then
         Map<String, Object> returnObjects = Map.of();
         StandardResponse defaultResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.username.duplication"))
+                .message(messageSourceAccessor.getMessage("user.username.duplicated"))
                 .data(returnObjects)
                 .build();
         expectDefaultResponse(mapper, defaultResponse, resultActions);
