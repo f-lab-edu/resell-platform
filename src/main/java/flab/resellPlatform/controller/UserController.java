@@ -1,24 +1,16 @@
 package flab.resellPlatform.controller;
 
-import flab.resellPlatform.common.SessionConst;
-import flab.resellPlatform.common.error.FieldErrors;
 import flab.resellPlatform.common.response.ResponseMessage;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.account.CreateAccountSuccess;
 import flab.resellPlatform.domain.User;
 import flab.resellPlatform.service.UserService;
-import flab.resellPlatform.common.form.LoginForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Locale;
 
 @Slf4j
 @RestController
@@ -55,25 +47,6 @@ public class UserController {
         User updatedUser = userService.updateAccount(userId, user);
 
         return new StandardResponse<>(ResponseMessage.UPDATE_USER_SUCCESS, updatedUser);
-    }
-
-    @PostMapping("/login")
-    public StandardResponse login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) throws BindException {
-        if (bindingResult.hasErrors()) {
-            log.info("errors={}", bindingResult);
-            throw new BindException(bindingResult);
-        }
-
-        User loginUser = userService.login(loginForm.getUsername(), loginForm.getPassword());
-
-        if (loginUser == null) {
-            return new StandardResponse<>(ResponseMessage.LOGIN_FAILURE);
-        }
-
-        HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_USER, loginUser);
-
-        return new StandardResponse<>(ResponseMessage.LOGIN_SUCCESS);
     }
 
 }
