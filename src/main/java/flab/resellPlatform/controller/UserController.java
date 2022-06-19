@@ -4,7 +4,6 @@ import flab.resellPlatform.common.SessionConst;
 import flab.resellPlatform.common.error.FieldErrors;
 import flab.resellPlatform.common.response.ResponseMessage;
 import flab.resellPlatform.common.response.StandardResponse;
-import flab.resellPlatform.common.response.StatusCode;
 import flab.resellPlatform.common.response.account.CreateAccountSuccess;
 import flab.resellPlatform.domain.User;
 import flab.resellPlatform.service.UserService;
@@ -32,7 +31,7 @@ public class UserController {
     @ExceptionHandler(BindException.class)
     public StandardResponse<FieldErrors> handleBindException(BindException bindException, Locale locale) {
         FieldErrors fieldErrors = FieldErrors.create(bindException, messageSource, locale);
-        return new StandardResponse<>(StatusCode.BAD_REQUEST, ResponseMessage.INVALID_INPUT, fieldErrors);
+        return new StandardResponse<>(ResponseMessage.INVALID_INPUT, fieldErrors);
     }
 
     @PostMapping("/users")
@@ -45,12 +44,12 @@ public class UserController {
         User createdUser = userService.createAccount(user);
         CreateAccountSuccess successData = new CreateAccountSuccess(createdUser.getUsername(), createdUser.getName());
 
-        return new StandardResponse<>(StatusCode.CREATED, ResponseMessage.CREATE_USER_SUCCESS, successData);
+        return new StandardResponse<>(ResponseMessage.CREATE_USER_SUCCESS, successData);
     }
 
     @GetMapping("/users/{userId}")
     public StandardResponse<User> viewAccount(@PathVariable Long userId) {
-        return new StandardResponse<>(StatusCode.OK, ResponseMessage.READ_USER_SUCCESS, userService.viewAccount(userId));
+        return new StandardResponse<>(ResponseMessage.READ_USER_SUCCESS, userService.viewAccount(userId));
     }
 
     @PostMapping("/users/{userId}")
@@ -62,7 +61,7 @@ public class UserController {
 
         User updatedUser = userService.updateAccount(userId, user);
 
-        return new StandardResponse<>(StatusCode.OK, ResponseMessage.UPDATE_USER_SUCCESS, updatedUser);
+        return new StandardResponse<>(ResponseMessage.UPDATE_USER_SUCCESS, updatedUser);
     }
 
     @PostMapping("/login")
@@ -75,13 +74,13 @@ public class UserController {
         User loginUser = userService.login(loginForm.getUsername(), loginForm.getPassword());
 
         if (loginUser == null) {
-            return new StandardResponse<>(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAILURE);
+            return new StandardResponse<>(ResponseMessage.LOGIN_FAILURE);
         }
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_USER, loginUser);
 
-        return new StandardResponse<>(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS);
+        return new StandardResponse<>(ResponseMessage.LOGIN_SUCCESS);
     }
 
 }
