@@ -1,5 +1,6 @@
 package flab.resellPlatform.common.interceptor;
 
+import flab.resellPlatform.common.SessionConst;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -15,8 +16,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
         HttpSession session = request.getSession();
 
-        if (session == null || session.getAttribute("loginUser") == null) {
-            log.info("Unauthorized user access to {}", requestURI);
+        if (session == null || session.getAttribute(SessionConst.LOGIN_USER) == null) {
+            log.info("Login required for the following path: {}", requestURI);
             response.sendRedirect("/login");
             return false;
         }

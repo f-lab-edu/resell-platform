@@ -1,6 +1,6 @@
 package flab.resellPlatform.common.response;
 
-public class ResponseMessage {
+public final class ResponseMessage {
 
     public static final String CREATE_USER_SUCCESS = "회원 가입 성공";
     public static final String INVALID_INPUT = "입력값이 올바르지 않습니다";
