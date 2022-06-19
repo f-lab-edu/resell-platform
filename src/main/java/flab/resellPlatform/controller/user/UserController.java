@@ -37,11 +37,9 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Optional<UserDTO> joinedInfo = userService.createUser(user);
 
-        Map<String, Object> returnObjects = Map.of("user", joinedInfo.get());
-
         StandardResponse defaultResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.join.succeeded"))
-                .data(returnObjects)
+                .data(Map.of())
                 .build();
 
         return ResponseEntity
