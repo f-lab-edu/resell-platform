@@ -31,12 +31,6 @@
         where phoneNumber = #{phoneNumber}
     </select>
 
-    <select id="findRequiredInfoForLogin" resultType="LoginInfo">
-        select username, password
-        from user
-        where phoneNumber = #{phoneNumber} and email = #{email}
-    </select>
-
     <update id="updatePassword">
         update user
         set password = #{password}

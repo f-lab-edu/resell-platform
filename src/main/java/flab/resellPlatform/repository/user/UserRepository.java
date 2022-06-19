@@ -12,7 +12,6 @@ public interface UserRepository {
     UserEntity save(UserEntity userEntity);
     Optional<UserEntity> findUser(String username);
     Optional<String> findUsername(String phoneNumber);
-    Optional<LoginInfo> findRequiredInfoForLogin(PasswordInquiryForm inquiryData);
     List<UserEntity> findAll();
     int updatePassword(LoginInfo loginInfo);
 

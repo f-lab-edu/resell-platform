@@ -33,11 +33,6 @@ public class MybatisUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<LoginInfo> findRequiredInfoForLogin(PasswordInquiryForm inquiryData) {
-        return userMapper.findRequiredInfoForLogin(inquiryData);
-    }
-
-    @Override
     public List<UserEntity> findAll() {
         return userMapper.findAll();
     }
