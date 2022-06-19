@@ -6,33 +6,29 @@ import org.springframework.stereotype.Repository;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class MemoryUserRepository implements UserRepository {
 
     private static Map<Long, User> storage = new ConcurrentHashMap<>();
-    private static long identifier = 0L;
+    private static AtomicLong identifier = new AtomicLong();
 
     @Override
     public User save(User user) {
-        user.setId(++identifier);
+        user.setId(identifier.incrementAndGet());
         storage.put(user.getId(), user);
         return user;
     }
 
     @Override
     public User update(Long id, User updatedUser) {
-        User user = findById(id).orElse(null);
-        if (user == null) return null;
+        Optional<User> user = findById(id);
+        if (user.isEmpty()) return null;
 
-        user.setUsername(updatedUser.getUsername());
-        user.setPassword(updatedUser.getPassword());
-        user.setPhoneNumber(updatedUser.getPhoneNumber());
-        user.setName(updatedUser.getName());
-        user.setNickname(updatedUser.getNickname());
-        user.setEmail(updatedUser.getEmail());
-        user.setShoeSize(updatedUser.getShoeSize());
-        return user;
+        updatedUser.setId(id);
+        storage.replace(id, updatedUser);
+        return updatedUser;
     }
 
     @Override

@@ -4,6 +4,7 @@ import flab.resellPlatform.common.response.ResponseMessage;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.account.CreateAccountSuccess;
 import flab.resellPlatform.domain.User;
+import flab.resellPlatform.domain.UserDTO;
 import flab.resellPlatform.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public StandardResponse<CreateAccountSuccess> createAccount(@Validated @ModelAttribute User user, BindingResult bindingResult) throws BindException {
+    public StandardResponse<CreateAccountSuccess> createAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult) throws BindException {
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             throw new BindException(bindingResult);
@@ -37,8 +38,8 @@ public class UserController {
         return new StandardResponse<>(ResponseMessage.READ_USER_SUCCESS, userService.viewAccount(userId));
     }
 
-    @PostMapping("/users/{userId}")
-    public StandardResponse<User> updateAccount(@Validated @ModelAttribute User user, BindingResult bindingResult, @PathVariable Long userId) throws BindException {
+    @PutMapping("/users/{userId}")
+    public StandardResponse<User> updateAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult, @PathVariable Long userId) throws BindException {
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             throw new BindException(bindingResult);
