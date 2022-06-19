@@ -1,6 +1,8 @@
 package flab.resellPlatform.repository.user;
 
+import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.PasswordInquiryForm;
+import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -26,8 +28,28 @@ public class MybatisUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<String> findUsername(String phoneNumber) {
+        return userMapper.findUsername(phoneNumber);
+    }
+
+    @Override
+    public Optional<LoginInfo> findRequiredInfoForLogin(PasswordInquiryForm inquiryData) {
+        return userMapper.findRequiredInfoForLogin(inquiryData);
+    }
+
+    @Override
     public List<UserEntity> findAll() {
         return userMapper.findAll();
+    }
+
+    @Override
+    public int updatePassword(LoginInfo loginInfo) {
+        return userMapper.updatePassword(loginInfo);
+    }
+
+    @Override
+    public int updatePassword(StrictLoginInfo strictLoginInfo) {
+        return userMapper.updatePasswordSecurely(strictLoginInfo);
     }
 
 }
