@@ -11,7 +11,9 @@ import org.apache.catalina.User;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -32,14 +34,13 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity createUser(@Valid @RequestBody UserDTO user) {
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Optional<UserDTO> joinedInfo = userService.createUser(user);
 
         Map<String, Object> returnObjects = Map.of("user", joinedInfo.get());
 
         StandardResponse defaultResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.join.success"))
+                .message(messageSourceAccessor.getMessage("user.join.succeeded"))
                 .data(returnObjects)
                 .build();
 
@@ -53,7 +54,7 @@ public class UserController {
 
         // custom response 생성
         StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.username.duplication"))
+                .message(messageSourceAccessor.getMessage("user.username.duplicated"))
                 .data(Map.of())
                 .build();
         return ResponseEntity

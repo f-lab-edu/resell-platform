@@ -41,10 +41,9 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_INFO, loginInfo);
 
-        Map<String, Object> returnObjects = Map.of("loginInfo", loginAvailableInfo.get());
         StandardResponse defaultResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("login.success"))
-                .data(returnObjects)
+                .message(messageSourceAccessor.getMessage("login.succeeded"))
+                .data(Map.of())
                 .build();
 
         return ResponseEntity
@@ -60,10 +59,9 @@ public class LoginController {
             session.invalidate();
         }
 
-        Map<String, Object> returnObjects = Map.of();
         StandardResponse defaultResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("login.logout.success"))
-                .data(returnObjects)
+                .message(messageSourceAccessor.getMessage("login.logout.succeeded"))
+                .data(Map.of())
                 .build();
 
         return ResponseEntity
