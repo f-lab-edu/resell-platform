@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -33,9 +34,9 @@ public class LoginController {
             throw new BindException(bindingResult);
         }
 
-        User loginUser = userService.login(loginForm.getUsername(), loginForm.getPassword());
+        Optional<User> loginUser = userService.login(loginForm.getUsername(), loginForm.getPassword());
 
-        if (loginUser == null) {
+        if (loginUser.isEmpty()) {
             return new StandardResponse<>(messageUtil.getMessage("login.failure"));
         }
 

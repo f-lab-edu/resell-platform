@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -21,8 +22,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User viewAccount(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public Optional<User> viewAccount(Long id) {
+        return userRepository.findById(id);
     }
 
     public User updateAccount(Long id, UserDTO userDTO) {
@@ -30,10 +31,9 @@ public class UserService {
         return userRepository.update(id, user);
     }
 
-    public User login(String username, String password) {
+    public Optional<User> login(String username, String password) {
         return userRepository.findByUsername(username)
-                .filter(user -> user.getPassword().equals(password))
-                .orElse(null);
+                .filter(user -> user.getPassword().equals(password));
     }
 
 }

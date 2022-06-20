@@ -1,5 +1,6 @@
 package flab.resellPlatform.controller;
 
+import flab.resellPlatform.common.exception.UserNotFoundException;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.account.CreateAccountSuccess;
 import flab.resellPlatform.common.util.MessageUtil;
@@ -12,6 +13,8 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -36,7 +39,8 @@ public class UserController {
 
     @GetMapping("/users/{userId}")
     public StandardResponse<User> viewAccount(@PathVariable Long userId) {
-        return new StandardResponse<>(messageUtil.getMessage("user.view.success"), userService.viewAccount(userId));
+        Optional<User> user = userService.viewAccount(userId);
+        return new StandardResponse<>(messageUtil.getMessage("user.view.success"), user.orElseThrow(() -> new UserNotFoundException()));
     }
 
     @PutMapping("/users/{userId}")
