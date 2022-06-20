@@ -1,8 +1,8 @@
 package flab.resellPlatform.controller;
 
-import flab.resellPlatform.common.response.ResponseMessage;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.account.CreateAccountSuccess;
+import flab.resellPlatform.common.util.MessageUtil;
 import flab.resellPlatform.domain.User;
 import flab.resellPlatform.domain.UserDTO;
 import flab.resellPlatform.service.UserService;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final MessageUtil messageUtil;
 
     @PostMapping("/users")
     public StandardResponse<CreateAccountSuccess> createAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult) throws BindException {
@@ -30,12 +31,12 @@ public class UserController {
         User createdUser = userService.createAccount(user);
         CreateAccountSuccess successData = new CreateAccountSuccess(createdUser.getUsername(), createdUser.getName());
 
-        return new StandardResponse<>(ResponseMessage.CREATE_USER_SUCCESS, successData);
+        return new StandardResponse<>(messageUtil.getMessage("user.signup.success"), successData);
     }
 
     @GetMapping("/users/{userId}")
     public StandardResponse<User> viewAccount(@PathVariable Long userId) {
-        return new StandardResponse<>(ResponseMessage.READ_USER_SUCCESS, userService.viewAccount(userId));
+        return new StandardResponse<>(messageUtil.getMessage("user.view.success"), userService.viewAccount(userId));
     }
 
     @PutMapping("/users/{userId}")
@@ -47,7 +48,7 @@ public class UserController {
 
         User updatedUser = userService.updateAccount(userId, user);
 
-        return new StandardResponse<>(ResponseMessage.UPDATE_USER_SUCCESS, updatedUser);
+        return new StandardResponse<>(messageUtil.getMessage("user.update.success"), updatedUser);
     }
 
 }

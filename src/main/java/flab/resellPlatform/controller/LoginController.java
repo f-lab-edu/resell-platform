@@ -2,7 +2,7 @@ package flab.resellPlatform.controller;
 
 import flab.resellPlatform.common.SessionConst;
 import flab.resellPlatform.common.form.LoginForm;
-import flab.resellPlatform.common.response.ResponseMessage;
+import flab.resellPlatform.common.util.MessageUtil;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.User;
 import flab.resellPlatform.service.UserService;
@@ -24,9 +24,10 @@ import javax.servlet.http.HttpSession;
 public class LoginController {
 
     private final UserService userService;
+    private final MessageUtil messageUtil;
 
     @PostMapping("/login")
-    public StandardResponse login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) throws BindException {
+    public StandardResponse<Object> login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) throws BindException {
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             throw new BindException(bindingResult);
@@ -35,13 +36,13 @@ public class LoginController {
         User loginUser = userService.login(loginForm.getUsername(), loginForm.getPassword());
 
         if (loginUser == null) {
-            return new StandardResponse<>(ResponseMessage.LOGIN_FAILURE);
+            return new StandardResponse<>(messageUtil.getMessage("login.failure"));
         }
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_USER, loginUser);
 
-        return new StandardResponse<>(ResponseMessage.LOGIN_SUCCESS);
+        return new StandardResponse<>(messageUtil.getMessage("login.success"));
     }
 
 }
