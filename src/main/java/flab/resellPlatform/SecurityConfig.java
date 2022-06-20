@@ -1,12 +1,10 @@
 package flab.resellPlatform;
 
-import flab.resellPlatform.common.JwtAuthenticationFilter;
-import flab.resellPlatform.common.JwtAuthorizationFilter;
+import flab.resellPlatform.common.jwt.JwtAuthenticationFilter;
+import flab.resellPlatform.common.jwt.JwtAuthorizationFilter;
 import flab.resellPlatform.repository.user.UserRepository;
-import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;

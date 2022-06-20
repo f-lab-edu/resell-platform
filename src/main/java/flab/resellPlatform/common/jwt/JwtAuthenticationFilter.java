@@ -1,11 +1,11 @@
-package flab.resellPlatform.common;
+package flab.resellPlatform.common.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import flab.resellPlatform.common.util.PropertyUtil;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
-import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,14 +51,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
         PrincipleDetails principleDetails = (PrincipleDetails) authResult.getPrincipal();
+
+        long jwtExpirationTime = Long.parseLong(PropertyUtil.getProperty("jwt.expiration.time"));
+        String jwtSecretKey = PropertyUtil.getProperty("jwt.secret.key");
+        String jwtHeaderName = PropertyUtil.getProperty("jwt.header.name");
+        String jwtPrefix = PropertyUtil.getProperty("jwt.prefix");
+
         String jwtToken = JWT.create()
                 .withSubject("jwtToken")
-                .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 10)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationTime))
                 .withClaim("id", principleDetails.getUser().getId())
                 .withClaim("username", principleDetails.getUser().getUsername())
-                .sign(Algorithm.HMAC512("mySecretKey"));
+                .sign(Algorithm.HMAC512(jwtSecretKey));
 
-        response.addHeader("Authorization", "Bearer " + jwtToken);
+        response.addHeader(jwtHeaderName, jwtPrefix + " " + jwtToken);
     }
 }

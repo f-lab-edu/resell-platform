@@ -1,7 +1,8 @@
-package flab.resellPlatform.common;
+package flab.resellPlatform.common.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import flab.resellPlatform.common.util.PropertyUtil;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
@@ -22,9 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-// Security가 가지고 있는 필터 중에 BasicAuthenticationFilter가 존재함.
-// 권한이나 인증이 필요한 특정 주소를 요청했을 때, 위 필터를 무조건 타게 돼있음.
-// 만약에 권한이 인증이 필요한 주소가 아니면, 해당 필터를 안탐.
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     // UserRepository는 service layer에서만 접근해야하지만, 이 필터가 요구하는 기능이 #27 브랜치에 있음.
     // 해당 브랜치가 머지되면 UserService로 교체 예정.
@@ -37,18 +35,22 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-//        super.doFilterInternal(request, response, chain);
+
+        // jwt 설정 정보 불러오기
+        String jwtSecretKey = PropertyUtil.getProperty("jwt.secret.key");
+        String jwtHeaderName = PropertyUtil.getProperty("jwt.header.name");
+        String jwtPrefix = PropertyUtil.getProperty("jwt.prefix");
 
         // jwt 토큰 방식으로 로그인 시도하는지 확인
-        String jwtHeader = request.getHeader("Authorization");
-        if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
+        String jwtHeader = request.getHeader(jwtHeaderName);
+        if (jwtHeader == null || !jwtHeader.startsWith(jwtPrefix)) {
             chain.doFilter(request, response);
             return;
         }
 
         // JWT 토큰을 이용해서 정상적인 사용자인지 확인
-        String jwtToken = jwtHeader.replace("Bearer ", "");
-        String username = JWT.require(Algorithm.HMAC512("mySecretKey")).build().verify(jwtToken).getClaim("username").asString();
+        String jwtToken = jwtHeader.replace(jwtPrefix + " ", "");
+        String username = JWT.require(Algorithm.HMAC512(jwtSecretKey)).build().verify(jwtToken).getClaim("username").asString();
 
         // 서명이 정상적으로 됨
         if (username != null) {
