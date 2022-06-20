@@ -41,11 +41,4 @@ public class UserService {
         return userRepository.update(id, user);
     }
 
-    public boolean login(String username, String password) throws UserNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isEmpty()) throw new UserNotFoundException();
-
-        return passwordEncoder.matches(password, user.get().getPassword());
-    }
-
 }
