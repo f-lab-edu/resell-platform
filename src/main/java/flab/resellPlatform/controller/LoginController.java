@@ -34,14 +34,14 @@ public class LoginController {
             throw new BindException(bindingResult);
         }
 
-        Optional<User> loginUser = userService.login(loginForm.getUsername(), loginForm.getPassword());
+        boolean login = userService.login(loginForm.getUsername(), loginForm.getPassword());
 
-        if (loginUser.isEmpty()) {
+        if (!login) {
             return new StandardResponse<>(messageUtil.getMessage("login.failure"));
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_USER, loginUser);
+        session.setAttribute(SessionConst.LOGIN_USER, loginForm.getUsername());
 
         return new StandardResponse<>(messageUtil.getMessage("login.success"));
     }

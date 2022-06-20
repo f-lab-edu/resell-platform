@@ -1,10 +1,13 @@
 package flab.resellPlatform.service;
 
+import flab.resellPlatform.common.exception.DuplicateUsernameException;
+import flab.resellPlatform.common.exception.UserNotFoundException;
 import flab.resellPlatform.domain.User;
 import flab.resellPlatform.domain.UserDTO;
 import flab.resellPlatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -16,10 +19,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public User createAccount(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        return userRepository.save(user);
+    public User createAccount(UserDTO userDTO) throws DuplicateUsernameException {
+        Optional<User> user = userRepository.findByUsername(userDTO.getUsername());
+        if (user.isPresent()) throw new DuplicateUsernameException();
+
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        userDTO.setPassword(encodedPassword);
+
+        User userEntity = modelMapper.map(userDTO, User.class);
+        return userRepository.save(userEntity);
     }
 
     public Optional<User> viewAccount(Long id) {
@@ -31,9 +41,11 @@ public class UserService {
         return userRepository.update(id, user);
     }
 
-    public Optional<User> login(String username, String password) {
-        return userRepository.findByUsername(username)
-                .filter(user -> user.getPassword().equals(password));
+    public boolean login(String username, String password) throws UserNotFoundException {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) throw new UserNotFoundException();
+
+        return passwordEncoder.matches(password, user.get().getPassword());
     }
 
 }

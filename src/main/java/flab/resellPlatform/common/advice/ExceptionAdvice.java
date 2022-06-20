@@ -1,6 +1,7 @@
 package flab.resellPlatform.common.advice;
 
 import flab.resellPlatform.common.error.FieldErrors;
+import flab.resellPlatform.common.exception.DuplicateUsernameException;
 import flab.resellPlatform.common.exception.UserNotFoundException;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.util.MessageUtil;
@@ -28,5 +29,10 @@ public class ExceptionAdvice {
     @ExceptionHandler(UserNotFoundException.class)
     public StandardResponse handleUserNotFoundException() {
         return new StandardResponse(messageUtil.getMessage("user.not.found"));
+    }
+
+    @ExceptionHandler(DuplicateUsernameException.class)
+    public StandardResponse handleDuplicateUsernameException() {
+        return new StandardResponse(messageUtil.getMessage("user.duplicate.username"));
     }
 }
