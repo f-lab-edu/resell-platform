@@ -1,22 +1,13 @@
 package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.controller.response.StandardResponse;
-import flab.resellPlatform.domain.user.PasswordInquiryForm;
 import flab.resellPlatform.domain.user.UserDTO;
-import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
-import flab.resellPlatform.exception.user.UserInfoNotFoundException;
 import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.sql.SQLIntegrityConstraintViolationException;

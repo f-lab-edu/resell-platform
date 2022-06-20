@@ -8,6 +8,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +40,18 @@ public class HomeController {
         }
 
         return getStandardResponseEntity(standardResponseBuilder, "home.welcome", HttpStatus.OK);
+    }
+
+    @PostMapping("/api/user")
+    public String testUserAuthority() {
+        System.out.println("im in /api/user");
+        return "user";
+    }
+
+    @PostMapping("/api/admin")
+    public String testAdminAuthority() {
+        System.out.println("im in /api/admin");
+        return "admin";
     }
 
     private ResponseEntity<StandardResponse> getStandardResponseEntity(StandardResponse.StandardResponseBuilder standardResponseBuilder, String messageCode, HttpStatus httpStatus) {

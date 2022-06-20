@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/login")
+@RequestMapping("/loginn")
 public class LoginController {
 
     private final MessageSourceAccessor messageSourceAccessor;
