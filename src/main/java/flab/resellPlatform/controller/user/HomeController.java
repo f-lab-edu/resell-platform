@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +24,14 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
+    @Secured("ROLE_USER")
     @PostMapping("/api/user")
     public String testUserAuthority() {
         System.out.println("im in /api/user");
         return "user";
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/api/admin")
     public String testAdminAuthority() {
         System.out.println("im in /api/admin");
