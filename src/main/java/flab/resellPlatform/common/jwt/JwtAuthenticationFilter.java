@@ -3,10 +3,10 @@ package flab.resellPlatform.common.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import flab.resellPlatform.common.util.PropertyUtil;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +24,7 @@ import java.util.Date;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final Environment environment;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -54,10 +55,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         PrincipleDetails principleDetails = (PrincipleDetails) authResult.getPrincipal();
 
-        long jwtExpirationTime = Long.parseLong(PropertyUtil.getProperty("jwt.expiration.time"));
-        String jwtSecretKey = PropertyUtil.getProperty("jwt.secret.key");
-        String jwtHeaderName = PropertyUtil.getProperty("jwt.header.name");
-        String jwtPrefix = PropertyUtil.getProperty("jwt.prefix");
+        long jwtExpirationTime = Long.parseLong(environment.getProperty("jwt.expiration.time"));
+        String jwtSecretKey = environment.getProperty("jwt.secret.key");
+        String jwtHeaderName = environment.getProperty("jwt.header.name");
+        String jwtPrefix = environment.getProperty("jwt.prefix");
 
         String jwtToken = JWT.create()
                 .withSubject("jwtToken")

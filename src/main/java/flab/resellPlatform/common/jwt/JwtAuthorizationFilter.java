@@ -2,18 +2,14 @@ package flab.resellPlatform.common.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import flab.resellPlatform.common.util.PropertyUtil;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
-import flab.resellPlatform.service.user.UserService;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -27,19 +23,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     // UserRepository는 service layer에서만 접근해야하지만, 이 필터가 요구하는 기능이 #27 브랜치에 있음.
     // 해당 브랜치가 머지되면 UserService로 교체 예정.
     private final UserRepository userRepository;
+    private final Environment environment;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, Environment environment) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.environment = environment;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         // jwt 설정 정보 불러오기
-        String jwtSecretKey = PropertyUtil.getProperty("jwt.secret.key");
-        String jwtHeaderName = PropertyUtil.getProperty("jwt.header.name");
-        String jwtPrefix = PropertyUtil.getProperty("jwt.prefix");
+        String jwtSecretKey = environment.getProperty("jwt.secret.key");
+        String jwtHeaderName = environment.getProperty("jwt.header.name");
+        String jwtPrefix = environment.getProperty("jwt.prefix");
 
         // jwt 토큰 방식으로 로그인 시도하는지 확인
         String jwtHeader = request.getHeader(jwtHeaderName);
