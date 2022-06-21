@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final MessageSourceAccessor messageSourceAccessor;

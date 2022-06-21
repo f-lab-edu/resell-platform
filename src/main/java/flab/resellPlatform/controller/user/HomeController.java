@@ -23,25 +23,6 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    @GetMapping
-    public ResponseEntity getHome(HttpServletRequest httpServletRequest) {
-        HttpSession session = httpServletRequest.getSession(false);
-
-        StandardResponse.StandardResponseBuilder standardResponseBuilder = StandardResponse.builder()
-                .data(Map.of());
-
-        if (session == null) {
-            return getStandardResponseEntity(standardResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
-        }
-
-        LoginInfo loginInfo = (LoginInfo) session.getAttribute(SessionConst.LOGIN_INFO);
-        if (loginInfo == null) {
-            return getStandardResponseEntity(standardResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
-        }
-
-        return getStandardResponseEntity(standardResponseBuilder, "home.welcome", HttpStatus.OK);
-    }
-
     @PostMapping("/api/user")
     public String testUserAuthority() {
         System.out.println("im in /api/user");

@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .formLogin().disable()  // Spring security에서 기본적으로 제공하는 폼 로그인 사용x
                     .httpBasic().disable()  // username과 pw 들고 가는 basic 방식 사용x, bearer 방식 사용할 예정.
 
-                    .addFilter(jwtAuthenticationFilter())
+                    .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), environment))
                     .addFilter(jwtAuthorizationFilter())
                     .authorizeRequests()
                     .antMatchers("/api/user/**")
@@ -51,11 +51,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
-    }
-
-//    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        return new JwtAuthenticationFilter(authenticationManagerBean(), environment);
     }
 
     @Bean
