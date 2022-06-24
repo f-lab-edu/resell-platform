@@ -30,12 +30,12 @@ public class HomeController {
                 .data(Map.of());
 
         if (session == null) {
-            return getStandardResponseEntity(standardResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
+            return getStandardResponseEntity(standardResponseBuilder, "common.login.needed", HttpStatus.UNAUTHORIZED);
         }
 
         LoginInfo loginInfo = (LoginInfo) session.getAttribute(SessionConst.LOGIN_INFO);
         if (loginInfo == null) {
-            return getStandardResponseEntity(standardResponseBuilder, "common.login.need", HttpStatus.UNAUTHORIZED);
+            return getStandardResponseEntity(standardResponseBuilder, "common.login.needed", HttpStatus.UNAUTHORIZED);
         }
 
         return getStandardResponseEntity(standardResponseBuilder, "home.welcome", HttpStatus.OK);
