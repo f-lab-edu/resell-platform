@@ -1,5 +1,6 @@
 package flab.resellPlatform.controller.user;
 
+import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.controller.response.StandardResponse;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.PasswordInquiryForm;
@@ -33,6 +34,7 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity createUser(@Valid @RequestBody UserDTO user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPhoneNumber(UserUtils.normalizePhoneNumber(user.getPhoneNumber()));
         Optional<UserDTO> joinedInfo = userService.createUser(user);
 
         StandardResponse defaultResponse = StandardResponse.builder()
@@ -47,7 +49,8 @@ public class UserController {
 
     @GetMapping("/usernameInquiry")
     public ResponseEntity findUsername(String phoneNumber) {
-        Optional<String> result = userService.findUsername(phoneNumber);
+        String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(phoneNumber);
+        Optional<String> result = userService.findUsername(normalizedPhoneNumber);
         if (result.isEmpty()) {
             throw new PhoneNumberNotFoundException();
         }
@@ -63,7 +66,8 @@ public class UserController {
     }
 
     @PostMapping("/password/inquiry")
-    public ResponseEntity findPassword(StrictLoginInfo strictLoginInfo) {
+    public ResponseEntity findPassword(@Valid @RequestBody StrictLoginInfo strictLoginInfo) {
+        strictLoginInfo.setPhoneNumber(UserUtils.normalizePhoneNumber(strictLoginInfo.getPhoneNumber()));
 
         // 임시 비밀번호 생성 
         String randomGeneratedPassword = randomValueStringGenerator.generate();
@@ -107,7 +111,6 @@ public class UserController {
                 .ok()
                 .body(response);
     }
-
 
     @ExceptionHandler(PhoneNumberNotFoundException.class)
     public ResponseEntity<StandardResponse> catchDuplicateId(PhoneNumberNotFoundException e) {

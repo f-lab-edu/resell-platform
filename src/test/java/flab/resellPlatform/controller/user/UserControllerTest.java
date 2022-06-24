@@ -3,6 +3,7 @@ package flab.resellPlatform.controller.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.MessageConfig;
+import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.controller.response.StandardResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
@@ -133,8 +134,9 @@ class UserControllerTest {
         // given
         String targetUsername = "michael";
         String requiredPhoneNumber = "010-4589-0000";
+        String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(requiredPhoneNumber);
         String query = "phoneNumber=" + requiredPhoneNumber;
-        when(userService.findUsername(requiredPhoneNumber)).thenReturn(Optional.of(targetUsername));
+        when(userService.findUsername(normalizedPhoneNumber)).thenReturn(Optional.of(targetUsername));
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/users/usernameInquiry" + "?" + query)

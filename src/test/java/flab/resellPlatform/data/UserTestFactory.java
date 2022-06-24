@@ -14,7 +14,7 @@ public class UserTestFactory {
     public static final String DEFAULT_NICKNAME = "uj";
     public static final String DEFAULT_EMAIL = "a@a.com";
     public static final String DEFAULT_NAME = "ms";
-    public static final String DEFAULT_PHONE_NUMBER = "010-3333-1250";
+    public static final String DEFAULT_PHONE_NUMBER = "01033331250";
     public static final String DEFAULT_SHOE_SIZE = "275";
 
     public static UserDTO.UserDTOBuilder createUserDTOBuilder () {
