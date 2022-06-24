@@ -25,4 +25,21 @@
         where username = #{username}
     </select>
 
+    <select id="findUsername" resultType="String">
+        select username
+        from user
+        where phoneNumber = #{phoneNumber}
+    </select>
+
+    <update id="updatePassword">
+        update user
+        set password = #{password}
+        where username = #{username}
+    </update>
+
+    <update id="updatePasswordSecurely">
+        update user
+        set password = #{password}
+        where username = #{username} and phoneNumber = #{phoneNumber} and email = #{email}
+    </update>
 </mapper>
