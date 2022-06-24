@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/usernameInquiry")
-    public ResponseEntity inquireUsername(String phoneNumber) {
+    public ResponseEntity findUsername(String phoneNumber) {
         Optional<String> result = userService.findUsername(phoneNumber);
         if (result.isEmpty()) {
             throw new PhoneNumberNotFoundException();
@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/password/inquiry")
-    public ResponseEntity inquirePassword(StrictLoginInfo strictLoginInfo) {
+    public ResponseEntity findPassword(StrictLoginInfo strictLoginInfo) {
 
         // 임시 비밀번호 생성 
         String randomGeneratedPassword = randomValueStringGenerator.generate();
@@ -93,7 +93,10 @@ public class UserController {
         String encodedPassword = passwordEncoder.encode(newLoginInfo.getPassword());
         newLoginInfo.setPassword(encodedPassword);
 
-        userService.updatePassword(newLoginInfo);
+        int result = userService.updatePassword(newLoginInfo);
+        if (result == 0) {
+            throw new UserInfoNotFoundException();
+        }
 
         StandardResponse response = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.password.updated.succeeded"))
