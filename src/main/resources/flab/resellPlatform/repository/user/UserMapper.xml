@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="flab.resellPlatform.repository.user.UserMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into user (username, password, phoneNumber, name, nickname, email, shoeSize)
+        values (#{username}, #{password}, #{phoneNumber}, #{name}, #{nickname}, #{email}, #{shoeSize})
+    </insert>
+
+    <select id="findByUsername" resultType="UserEntity">
+        select *
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="findAll" resultType="UserEntity">
+        select *
+        from user
+    </select>
+
+    <select id="getUsernameCount" resultType="int">
+        select COUNT(username)
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="findUsername" resultType="String">
+        select username
+        from user
+        where phoneNumber = #{phoneNumber}
+    </select>
+
+    <update id="updatePassword">
+        update user
+        set password = #{password}
+        where username = #{username}
+    </update>
+
+    <update id="updatePasswordSecurely">
+        update user
+        set password = #{password}
+        where username = #{username} and phoneNumber = #{phoneNumber} and email = #{email}
+    </update>
+</mapper>
