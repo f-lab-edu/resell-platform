@@ -35,17 +35,12 @@ public class ExceptionAdvice {
         Map<String, Object> returnObjects = Map.of();
 
         // custom response 생성
-        StandardResponse defaultResponse = getDefaultResponse("common.argument.invalid", returnObjects);
+        StandardResponse defaultResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.argument.invalid"))
+                .data(returnObjects)
+                .build();
         return ResponseEntity
                 .badRequest()
                 .<StandardResponse>body(defaultResponse);
-    }
-
-    private StandardResponse getDefaultResponse(String code, Map<String, Object> returnObjects) {
-        StandardResponse defaultResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage(code))
-                .data(returnObjects)
-                .build();
-        return defaultResponse;
     }
 }

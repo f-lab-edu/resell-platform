@@ -50,14 +50,12 @@ public class UserController {
     @GetMapping("/usernameInquiry")
     public ResponseEntity findUsername(String phoneNumber) {
         String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(phoneNumber);
-        Optional<String> result = userService.findUsername(normalizedPhoneNumber);
-        if (result.isEmpty()) {
-            throw new PhoneNumberNotFoundException();
-        }
+        String result = userService.findUsername(normalizedPhoneNumber)
+                .orElseThrow(() -> new PhoneNumberNotFoundException());
 
         StandardResponse response = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.username.found"))
-                .data(Map.of("username", result.get()))
+                .data(Map.of("username", result))
                 .build();
 
         return ResponseEntity
@@ -76,7 +74,6 @@ public class UserController {
         
         // 비밀번호 업데이트
         int result = userService.updatePassword(strictLoginInfo);
-
         if (result == 0) {
             throw new UserInfoNotFoundException();
         }
@@ -103,7 +100,7 @@ public class UserController {
         }
 
         StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.password.updated.succeeded"))
+                .message(messageSourceAccessor.getMessage("user.password.update.succeeded"))
                 .data(Map.of())
                 .build();
 
@@ -113,7 +110,7 @@ public class UserController {
     }
 
     @ExceptionHandler(PhoneNumberNotFoundException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateId(PhoneNumberNotFoundException e) {
+    public ResponseEntity<StandardResponse> catchPhoneNumberNotFound(PhoneNumberNotFoundException e) {
 
         // custom response 생성
         StandardResponse response = StandardResponse.builder()
@@ -126,7 +123,7 @@ public class UserController {
     }
 
     @ExceptionHandler(UserInfoNotFoundException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateId(UserInfoNotFoundException e) {
+    public ResponseEntity<StandardResponse> catchUserInfoNotFound(UserInfoNotFoundException e) {
 
         // custom response 생성
         StandardResponse response = StandardResponse.builder()
@@ -139,7 +136,7 @@ public class UserController {
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateId(SQLIntegrityConstraintViolationException e) {
+    public ResponseEntity<StandardResponse> catchDuplicateUsername(SQLIntegrityConstraintViolationException e) {
 
         // custom response 생성
         StandardResponse response = StandardResponse.builder()

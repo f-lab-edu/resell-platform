@@ -2,6 +2,8 @@ package flab.resellPlatform.controller.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
