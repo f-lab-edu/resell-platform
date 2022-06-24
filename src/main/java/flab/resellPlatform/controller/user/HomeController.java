@@ -1,21 +1,16 @@
 package flab.resellPlatform.controller.user;
 
-import flab.resellPlatform.common.SessionConst;
 import flab.resellPlatform.controller.response.StandardResponse;
-import flab.resellPlatform.domain.user.LoginInfo;
+import flab.resellPlatform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/")
@@ -24,17 +19,15 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    @Secured("ROLE_USER")
+    @PreAuthorize(Role.USER)
     @PostMapping("/api/user")
     public String testUserAuthority() {
-        System.out.println("im in /api/user");
         return "user";
     }
 
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize(Role.ADMIN)
     @PostMapping("/api/admin")
     public String testAdminAuthority() {
-        System.out.println("im in /api/admin");
         return "admin";
     }
 

@@ -3,20 +3,28 @@ package flab.resellPlatform.controller.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.MessageConfig;
+import flab.resellPlatform.SecurityConfig;
+import flab.resellPlatform.common.TestUtil;
 import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.controller.response.StandardResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserDTO;
+import flab.resellPlatform.repository.user.MybatisUserRepository;
 import flab.resellPlatform.service.user.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +47,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest({UserController.class, MessageConfig.class})
+@WebMvcTest(controllers = {UserController.class, MessageConfig.class},
+            excludeAutoConfiguration = SecurityAutoConfiguration.class,
+            excludeFilters = {
+                @ComponentScan.Filter(type= FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)})
 @WithMockUser
 class UserControllerTest {
 
@@ -98,7 +109,7 @@ class UserControllerTest {
                 .data(returnObjects)
                 .build();
 
-        expectDefaultResponse(defaultResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, defaultResponse, status().isBadRequest(), resultActions);
     }
 
     @DisplayName("아이디 생성 실패 by 아이디 중복")
@@ -125,7 +136,7 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.username.duplicated"))
                 .data(returnObjects)
                 .build();
-        expectDefaultResponse(defaultResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, defaultResponse, status().isBadRequest(), resultActions);
     }
 
     @DisplayName("아이디 찾기 성공")
@@ -148,7 +159,7 @@ class UserControllerTest {
                 .data(Map.of("username", targetUsername))
                 .build();
 
-        expectDefaultResponse(standardResponse, status().isOk(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
     }
 
     @DisplayName("아이디 찾기 실패")
@@ -171,7 +182,7 @@ class UserControllerTest {
                 .data(Map.of())
                 .build();
 
-        expectDefaultResponse(standardResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
 
     @DisplayName("비밀번호 찾기 성공 by 임시 비밀번호 발급")
@@ -195,7 +206,7 @@ class UserControllerTest {
                 .data(Map.of("password", temporaryPassword))
                 .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
                 .build();
-        expectDefaultResponse(standardResponse, status().isOk(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
 
     }
 
@@ -220,7 +231,7 @@ class UserControllerTest {
                 .data(Map.of())
                 .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
                 .build();
-        expectDefaultResponse(standardResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
 
     }
 
@@ -245,7 +256,7 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.password.updated.succeeded"))
                 .data(Map.of())
                 .build();
-        expectDefaultResponse(standardResponse, status().isOk(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
     }
 
     @DisplayName("패스워드 업데이트 실패")
@@ -269,13 +280,13 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
                 .data(Map.of())
                 .build();
-        expectDefaultResponse(standardResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
     
-    private void expectDefaultResponse(StandardResponse standardResponse, ResultMatcher status, ResultActions resultActions) throws Exception {
-        String defaultResponseJson = mapper.writeValueAsString(standardResponse);
-        resultActions
-                .andExpect(status)
-                .andExpect(content().string(defaultResponseJson));
-    }
+//    private void expectDefaultResponse(StandardResponse standardResponse, ResultMatcher status, ResultActions resultActions) throws Exception {
+//        String defaultResponseJson = mapper.writeValueAsString(standardResponse);
+//        resultActions
+//                .andExpect(status)
+//                .andExpect(content().string(defaultResponseJson));
+//    }
 }

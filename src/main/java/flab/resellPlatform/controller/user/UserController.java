@@ -2,16 +2,14 @@ package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.controller.response.StandardResponse;
-import flab.resellPlatform.domain.user.LoginInfo;
-import flab.resellPlatform.domain.user.PasswordInquiryForm;
-import flab.resellPlatform.domain.user.StrictLoginInfo;
-import flab.resellPlatform.domain.user.UserDTO;
+import flab.resellPlatform.domain.user.*;
 import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
 import flab.resellPlatform.exception.user.UserInfoNotFoundException;
 import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.web.bind.annotation.*;
@@ -91,6 +89,7 @@ public class UserController {
                 .body(response);
     }
 
+    @PreAuthorize(Role.USER)
     @PostMapping("/password/update")
     public ResponseEntity updatePassword(LoginInfo newLoginInfo) {
 
