@@ -9,10 +9,11 @@ import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.controller.response.StandardResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
+import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserDTO;
-import flab.resellPlatform.repository.user.MybatisUserRepository;
 import flab.resellPlatform.service.user.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -70,12 +72,25 @@ class UserControllerTest {
     UserService userService;
 
     ObjectMapper mapper = new ObjectMapper();
+    LoginInfo loginInfo;
+    PrincipleDetails principleDetails;
+    Authentication authentication;
+    UserDTO userDTO;
+    StrictLoginInfo strictLoginInfo;
+
+    @BeforeEach
+    void setup() {
+        strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder().build();
+        userDTO = UserTestFactory.createUserDTOBuilder().build();
+        loginInfo = UserTestFactory.createLoginInfoBuilder().build();
+        principleDetails = UserTestFactory.createPrincipleDetailBuilder().build();
+        authentication = UserTestFactory.createAuthentication(principleDetails);
+    }
 
     @DisplayName("아이디 생성 성공")
     @Test
     void createUser_success() throws Exception {
         // given
-        UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
         when(userService.createUser(any())).thenReturn(Optional.of(userDTO));
         String userData = mapper.writeValueAsString(userDTO);
 
@@ -92,9 +107,7 @@ class UserControllerTest {
     @Test
     void createUser_failByValidation() throws Exception {
         // given
-        UserDTO userDTO = UserTestFactory.createUserDTOBuilder()
-                .email("alstjrdl852naver.com")
-                .build();
+        userDTO.setEmail("alstjrdl852naver.com");
         String userData = mapper.writeValueAsString(userDTO);
 
         // when
@@ -116,7 +129,6 @@ class UserControllerTest {
     @Test
     void createUser_failByIdDuplication() throws Exception {
         // given
-        UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
         when(userService.createUser(any())).thenAnswer(new Answer<Object>() {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 throw new SQLIntegrityConstraintViolationException();
@@ -189,7 +201,6 @@ class UserControllerTest {
     @Test
     void findPassword_success() throws Exception {
         // given
-        StrictLoginInfo strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(strictLoginInfo);
         String temporaryPassword = "fslkkjlk12";
         when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
@@ -214,7 +225,6 @@ class UserControllerTest {
     @Test
     void findPassword_failure() throws Exception {
         // given
-        StrictLoginInfo strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(strictLoginInfo);
         String temporaryPassword = "fslkkjlk12";
         when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
@@ -239,7 +249,6 @@ class UserControllerTest {
     @Test
     void updatePassword_success() throws Exception {
         // given
-        LoginInfo loginInfo = UserTestFactory.createLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(loginInfo);
         when(passwordEncoder.encode(any())).thenReturn("encodedPW");
         when(userService.updatePassword((LoginInfo) any())).thenReturn(1);
@@ -263,7 +272,6 @@ class UserControllerTest {
     @Test
     void updatePassword_failure() throws Exception {
         // given
-        LoginInfo loginInfo = UserTestFactory.createLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(loginInfo);
         when(passwordEncoder.encode(any())).thenReturn("encodedPW");
         when(userService.updatePassword((LoginInfo) any())).thenReturn(0);
@@ -282,11 +290,4 @@ class UserControllerTest {
                 .build();
         TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
-    
-//    private void expectDefaultResponse(StandardResponse standardResponse, ResultMatcher status, ResultActions resultActions) throws Exception {
-//        String defaultResponseJson = mapper.writeValueAsString(standardResponse);
-//        resultActions
-//                .andExpect(status)
-//                .andExpect(content().string(defaultResponseJson));
-//    }
 }

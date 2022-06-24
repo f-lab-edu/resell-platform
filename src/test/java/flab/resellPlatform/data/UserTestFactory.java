@@ -1,14 +1,16 @@
 package flab.resellPlatform.data;
 
-import flab.resellPlatform.domain.user.LoginInfo;
-import flab.resellPlatform.domain.user.StrictLoginInfo;
-import flab.resellPlatform.domain.user.UserDTO;
-import flab.resellPlatform.domain.user.UserEntity;
+import flab.resellPlatform.domain.user.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 public class UserTestFactory {
 
     private UserTestFactory() {}
 
+    public static final long DEFAULT_ID = 1l;
     public static final String DEFAULT_USERNAME = "minsuk";
     public static final String DEFAULT_PW = "123";
     public static final String DEFAULT_NICKNAME = "uj";
@@ -30,6 +32,7 @@ public class UserTestFactory {
 
     static public UserEntity.UserEntityBuilder createUserEntityBuilder () {
         return UserEntity.builder()
+                .id(DEFAULT_ID)
                 .username(DEFAULT_USERNAME)
                 .password(DEFAULT_PW)
                 .nickname(DEFAULT_NICKNAME)
@@ -51,5 +54,49 @@ public class UserTestFactory {
                 .password(DEFAULT_PW)
                 .phoneNumber(DEFAULT_PHONE_NUMBER)
                 .email(DEFAULT_EMAIL);
+    }
+
+    static public PrincipleDetails.PrincipleDetailsBuilder createPrincipleDetailBuilder() {
+        return PrincipleDetails.builder()
+                .user(createUserEntityBuilder().build());
+    }
+
+    public static Authentication createAuthentication(PrincipleDetails principleDetails) {
+        return new Authentication() {
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                return principleDetails.getAuthorities();
+            }
+
+            @Override
+            public Object getCredentials() {
+                return principleDetails.getPassword();
+            }
+
+            @Override
+            public Object getDetails() {
+                return null;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return principleDetails;
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return true;
+            }
+
+            @Override
+            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+            }
+
+            @Override
+            public String getName() {
+                return principleDetails.getUsername();
+            }
+        };
     }
 }

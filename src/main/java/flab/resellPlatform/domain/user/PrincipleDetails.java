@@ -1,5 +1,6 @@
 package flab.resellPlatform.domain.user;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
+@Builder
 public class PrincipleDetails implements UserDetails {
 
     private UserEntity user;
