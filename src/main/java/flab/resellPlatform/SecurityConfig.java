@@ -5,6 +5,7 @@ import flab.resellPlatform.common.jwt.JwtAuthorizationFilter;
 import flab.resellPlatform.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -25,6 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 해당 브랜치가 머지되면 UserService로 교체 예정.
     private final UserRepository userRepository;
     private final Environment environment;
+    private final MessageSourceAccessor messageSourceAccessor;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -54,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
-        return new JwtAuthorizationFilter(authenticationManagerBean(), userRepository, environment);
+        return new JwtAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor);
     }
 
     @Bean
