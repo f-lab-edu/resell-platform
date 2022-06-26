@@ -1,13 +1,15 @@
 package flab.resellPlatform.controller.user;
 
 import flab.resellPlatform.common.utils.UserUtils;
-import flab.resellPlatform.controller.response.StandardResponse;
+import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.*;
 import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
 import flab.resellPlatform.exception.user.UserInfoNotFoundException;
 import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +17,6 @@ import org.springframework.security.oauth2.common.util.RandomValueStringGenerato
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,14 +36,14 @@ public class UserController {
         user.setPhoneNumber(UserUtils.normalizePhoneNumber(user.getPhoneNumber()));
         Optional<UserDTO> joinedInfo = userService.createUser(user);
 
-        StandardResponse defaultResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.join.succeeded"))
-                .data(Map.of())
-                .build();
-
         return ResponseEntity
-                .ok()
-                .body(defaultResponse);
+                .status(HttpStatus.OK)
+                .body(
+                        StandardResponse.builder()
+                                .message(messageSourceAccessor.getMessage("user.join.succeeded"))
+                                .data(Map.of())
+                                .build()
+                );
     }
 
     @GetMapping("/usernameInquiry")
@@ -137,8 +138,8 @@ public class UserController {
                 .<StandardResponse>body(response);
     }
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateId(SQLIntegrityConstraintViolationException e) {
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<StandardResponse> catchDuplicateId(DuplicateKeyException e) {
 
         // custom response 생성
         StandardResponse response = StandardResponse.builder()
