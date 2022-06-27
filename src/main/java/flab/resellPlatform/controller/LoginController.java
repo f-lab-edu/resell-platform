@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -26,7 +27,7 @@ public class LoginController {
     private final MessageUtil messageUtil;
 
     @PostMapping("/login")
-    public StandardResponse<Object> login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) throws BindException {
+    public StandardResponse<Object> login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) throws BindException, LoginException {
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             throw new BindException(bindingResult);
@@ -34,9 +35,7 @@ public class LoginController {
 
         boolean login = loginService.login(loginForm.getUsername(), loginForm.getPassword());
 
-        if (!login) {
-            return new StandardResponse<>(messageUtil.getMessage("login.failure"));
-        }
+        if (!login) throw new LoginException();
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_USER, loginForm.getUsername());

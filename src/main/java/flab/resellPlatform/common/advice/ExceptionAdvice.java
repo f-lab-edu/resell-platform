@@ -12,6 +12,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 
@@ -40,4 +41,11 @@ public class ExceptionAdvice {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return new StandardResponse(messageUtil.getMessage("user.duplicate.username"));
     }
+
+    @ExceptionHandler(LoginException.class)
+    public StandardResponse handleLoginException(HttpServletResponse response) {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return new StandardResponse(messageUtil.getMessage("login.failure"));
+    }
+
 }
