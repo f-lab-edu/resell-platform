@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+//@Repository
 public class MemoryUserRepository implements UserRepository {
 
     private static Map<Long, User> storage = new ConcurrentHashMap<>();
