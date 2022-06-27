@@ -22,9 +22,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User createAccount(UserDTO userDTO) throws DuplicateUsernameException {
-        Optional<User> user = userRepository.findByUsername(userDTO.getUsername());
-        if (user.isPresent()) throw new DuplicateUsernameException();
-
         String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         userDTO.setPassword(encodedPassword);
 

@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
-    public StandardResponse<User> viewAccount(@PathVariable Long userId) {
+    public StandardResponse<User> viewAccount(@PathVariable Long userId) throws UserNotFoundException {
         Optional<User> user = userService.viewAccount(userId);
         return new StandardResponse<>(messageUtil.getMessage("user.view.success"), user.orElseThrow(() -> new UserNotFoundException()));
     }
