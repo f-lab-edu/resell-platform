@@ -34,6 +34,9 @@ public class UserService {
     }
 
     public User updateAccount(Long id, UserDTO userDTO) {
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        userDTO.setPassword(encodedPassword);
+
         User user = modelMapper.map(userDTO, User.class);
         return userRepository.update(id, user);
     }
