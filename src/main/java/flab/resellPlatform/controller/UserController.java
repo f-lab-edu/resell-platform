@@ -1,5 +1,6 @@
 package flab.resellPlatform.controller;
 
+import flab.resellPlatform.common.exception.DuplicateUsernameException;
 import flab.resellPlatform.common.exception.UserNotFoundException;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.account.CreateAccountSuccess;
@@ -25,7 +26,7 @@ public class UserController {
     private final MessageUtil messageUtil;
 
     @PostMapping("/users")
-    public StandardResponse<CreateAccountSuccess> createAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult) throws BindException {
+    public StandardResponse<CreateAccountSuccess> createAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult) throws BindException, DuplicateUsernameException {
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             throw new BindException(bindingResult);

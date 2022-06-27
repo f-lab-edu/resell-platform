@@ -1,8 +1,10 @@
 package flab.resellPlatform.repository;
 
+import flab.resellPlatform.common.exception.DuplicateUsernameException;
 import flab.resellPlatform.common.mapper.UserMapper;
 import flab.resellPlatform.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,8 +16,12 @@ public class MySqlUserRepository implements UserRepository {
     private final UserMapper userMapper;
 
     @Override
-    public User save(User user) {
-        userMapper.save(user);
+    public User save(User user) throws DuplicateUsernameException {
+        try {
+            userMapper.save(user);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateUsernameException();
+        }
         return user;
     }
 
