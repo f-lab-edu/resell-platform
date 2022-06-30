@@ -1,12 +1,11 @@
 package flab.resellPlatform.controller.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.MessageConfig;
 import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.TestUtil;
 import flab.resellPlatform.common.utils.UserUtils;
-import flab.resellPlatform.controller.response.StandardResponse;
+import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.PrincipleDetails;
@@ -20,14 +19,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +32,6 @@ import org.springframework.security.oauth2.common.util.RandomValueStringGenerato
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
@@ -46,7 +42,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {UserController.class, MessageConfig.class},
@@ -129,11 +124,7 @@ class UserControllerTest {
     @Test
     void createUser_failByIdDuplication() throws Exception {
         // given
-        when(userService.createUser(any())).thenAnswer(new Answer<Object>() {
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                throw new SQLIntegrityConstraintViolationException();
-            }
-        });
+        when(userService.createUser(any())).thenThrow(DuplicateKeyException.class);
         String userData = mapper.writeValueAsString(userDTO);
 
         // when

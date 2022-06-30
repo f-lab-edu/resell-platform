@@ -18,6 +18,8 @@ public class UserTestFactory {
     public static final String DEFAULT_NAME = "ms";
     public static final String DEFAULT_PHONE_NUMBER = "01033331250";
     public static final String DEFAULT_SHOE_SIZE = "275";
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     public static UserDTO.UserDTOBuilder createUserDTOBuilder () {
         return UserDTO.builder()
@@ -27,7 +29,8 @@ public class UserTestFactory {
                 .email(DEFAULT_EMAIL)
                 .shoeSize(DEFAULT_SHOE_SIZE)
                 .name(DEFAULT_NAME)
-                .phoneNumber(DEFAULT_PHONE_NUMBER);
+                .phoneNumber(DEFAULT_PHONE_NUMBER)
+                .role(ROLE_USER);
     }
 
     static public UserEntity.UserEntityBuilder createUserEntityBuilder () {
@@ -39,7 +42,8 @@ public class UserTestFactory {
                 .email(DEFAULT_EMAIL)
                 .shoeSize(DEFAULT_SHOE_SIZE)
                 .name(DEFAULT_NAME)
-                .phoneNumber(DEFAULT_PHONE_NUMBER);
+                .phoneNumber(DEFAULT_PHONE_NUMBER)
+                .role(ROLE_USER);
     }
 
     static public LoginInfo.LoginInfoBuilder createLoginInfoBuilder() {

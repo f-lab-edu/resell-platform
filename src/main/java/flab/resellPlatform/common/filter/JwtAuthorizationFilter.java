@@ -1,10 +1,11 @@
-package flab.resellPlatform.common.jwt;
+package flab.resellPlatform.common.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import flab.resellPlatform.controller.response.StandardResponse;
+import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
+import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
@@ -15,14 +16,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -48,49 +48,56 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtSecretKey = environment.getProperty("jwt.secret.key");
         String jwtHeaderName = environment.getProperty("jwt.header.name");
         String jwtPrefix = environment.getProperty("jwt.prefix");
-        String token_type_key = environment.getProperty("jwt.type.key");
         String refreshTokenKey = environment.getProperty("jwt.refresh.key");
 
         // jwt 토큰 방식으로 로그인 시도하는지 확인
-        String jwtHeader = request.getHeader(jwtHeaderName);
-        if (jwtHeader == null || !jwtHeader.startsWith(jwtPrefix)) {
+        String jwtRawData = request.getHeader(jwtHeaderName);
+        if (jwtRawData == null) {
+            chain.doFilter(request, response);
+            return;
+        }
+        String[] jwtContents = jwtRawData.split(" ");
+        String token_type = null;
+        String token_data = null;
+        try {
+            token_type = jwtContents[1];
+            token_data = jwtContents[2];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // 예외 처리 예정
             chain.doFilter(request, response);
             return;
         }
 
-        // JWT 토큰을 이용해서 정상적인 사용자인지 확인
-        String jwtToken = jwtHeader.replace(jwtPrefix + " ", "");
-        String username = null;
-        try {
-            username = JWT.require(Algorithm.HMAC512(jwtSecretKey)).build().verify(jwtToken).getClaim("username").asString();
+        if (token_type.equals(environment.getProperty("jwt.token_type.access"))) {
+            String username = null;
+            try {
+                username = JWT.require(Algorithm.HMAC512(jwtSecretKey)).build().verify(token_data).getClaim("username").asString();
 
-        } catch (TokenExpiredException e) {
-            // 응답 body 작성
-            StandardResponse standardResponse = StandardResponse.builder()
-                    .message(messageSourceAccessor.getMessage("jwt.access.token.expired"))
-                    .data(Map.of())
-                    .build();
-            
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write(new ObjectMapper().writeValueAsString(standardResponse));
-            response.getWriter().flush();
-            return;
-        }
+            } catch (TokenExpiredException e) {
+                ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                        .setMessage(messageSourceAccessor.getMessage("jwt.access.token.expired"));
+                return;
+            }
 
-        // 서명이 정상적으로 됨
-        if (username != null) {
-            Optional<UserEntity> userEntity = userRepository.findUser(username);
-            PrincipleDetails principleDetails = new PrincipleDetails(userEntity.get());
-            
-            // 인증 객체 생성
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    principleDetails,
-                    null,
-                    principleDetails.getAuthorities());
+            // 서명이 정상적으로 됨
+            if (checkTokenIfVerified(username)) {
+                Optional<UserEntity> userEntity = userRepository.findUser(username);
+                PrincipleDetails principleDetails = new PrincipleDetails(userEntity.get());
 
-            // Spring security의 권한 관리 기능을 사용하기 위해 security의 세션에 접근하여 Authentication 객체 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                // 인증 객체 생성
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        principleDetails,
+                        null,
+                        principleDetails.getAuthorities());
+
+                // Spring security의 권한 관리 기능을 사용하기 위해 security의 세션에 접근하여 Authentication 객체 저장
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
         chain.doFilter(request, response);
+    }
+
+    private boolean checkTokenIfVerified(String username) {
+        return username != null;
     }
 }

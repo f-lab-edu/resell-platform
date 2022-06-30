@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import static org.assertj.core.api.Assertions.*;
@@ -26,7 +27,7 @@ class MybatisUserRepositoryTest {
 
     @DisplayName("유저 정보 저장 성공")
     @Test
-    void save_success() {
+    void save_success() throws SQLException {
         UserEntity userEntity = UserTestFactory.createUserEntityBuilder().build();
         mybatisUserRepository.save(userEntity);
         verify(userMapper, times(1)).save(userEntity);

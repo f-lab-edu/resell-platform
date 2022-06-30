@@ -35,4 +35,6 @@ public final class UserDTO {
     @NotBlank
     private String shoeSize;
 
+    @NotBlank
+    private String role;
 }

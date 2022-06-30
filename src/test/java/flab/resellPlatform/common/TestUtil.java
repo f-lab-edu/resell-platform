@@ -1,7 +1,7 @@
 package flab.resellPlatform.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import flab.resellPlatform.controller.response.StandardResponse;
+import flab.resellPlatform.common.response.StandardResponse;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 

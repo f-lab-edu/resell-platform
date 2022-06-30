@@ -1,14 +1,14 @@
 package flab.resellPlatform.common;
 
-import flab.resellPlatform.controller.response.StandardResponse;
+import flab.resellPlatform.common.response.StandardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
 
 @ControllerAdvice
@@ -30,22 +30,10 @@ public class ExceptionAdvice {
         }
      */
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<StandardResponse> returnRestRequestError() {
-
-        Map<String, Object> returnObjects = Map.of();
-
-        // custom response 생성
-        StandardResponse defaultResponse = getDefaultResponse("common.argument.invalid", returnObjects);
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(defaultResponse);
-    }
-
-    private StandardResponse getDefaultResponse(String code, Map<String, Object> returnObjects) {
-        StandardResponse defaultResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage(code))
-                .data(returnObjects)
-                .build();
-        return defaultResponse;
+    public void returnRestRequestError() {
+        ThreadLocalStandardResponseBucketHolder.getResponse()
+                .setHttpStatus(HttpStatus.BAD_REQUEST);
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("common.argument.invalid"));
     }
 }

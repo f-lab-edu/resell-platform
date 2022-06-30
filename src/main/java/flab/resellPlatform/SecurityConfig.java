@@ -1,7 +1,8 @@
 package flab.resellPlatform;
 
-import flab.resellPlatform.common.jwt.JwtAuthenticationFilter;
-import flab.resellPlatform.common.jwt.JwtAuthorizationFilter;
+import flab.resellPlatform.common.filter.JwtAuthenticationFilter;
+import flab.resellPlatform.common.filter.JwtAuthorizationFilter;
+import flab.resellPlatform.common.filter.StandardResponseConvertFilter;
 import flab.resellPlatform.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .formLogin().disable()  // Spring security에서 기본적으로 제공하는 폼 로그인 사용x
                     .httpBasic().disable()  // username과 pw 들고 가는 basic 방식 사용x, bearer 방식 사용할 예정.
 
-                    .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), environment))
+                    .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor))
                     .addFilter(jwtAuthorizationFilter())
                     .authorizeRequests()
                     .anyRequest().permitAll();

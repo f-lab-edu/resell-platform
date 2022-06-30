@@ -1,5 +1,6 @@
 package flab.resellPlatform.controller.user;
 
+import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
 import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.*;
@@ -31,41 +32,31 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/create")
-    public ResponseEntity createUser(@Valid @RequestBody UserDTO user) {
+    public void createUser(@Valid @RequestBody UserDTO user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setPhoneNumber(UserUtils.normalizePhoneNumber(user.getPhoneNumber()));
         Optional<UserDTO> joinedInfo = userService.createUser(user);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(
-                        StandardResponse.builder()
-                                .message(messageSourceAccessor.getMessage("user.join.succeeded"))
-                                .data(Map.of())
-                                .build()
-                );
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("user.join.succeeded"));
     }
 
     @GetMapping("/usernameInquiry")
-    public ResponseEntity findUsername(String phoneNumber) {
+    public void findUsername(String phoneNumber) {
         String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(phoneNumber);
         Optional<String> result = userService.findUsername(normalizedPhoneNumber);
         if (result.isEmpty()) {
             throw new PhoneNumberNotFoundException();
         }
 
-        StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.username.found"))
-                .data(Map.of("username", result.get()))
-                .build();
 
-        return ResponseEntity
-                .ok()
-                .body(response);
+        ThreadLocalStandardResponseBucketHolder.setResponseData("username", result.get());
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("user.username.found"));
     }
 
     @PostMapping("/password/inquiry")
-    public ResponseEntity findPassword(@Valid @RequestBody StrictLoginInfo strictLoginInfo) {
+    public void findPassword(@Valid @RequestBody StrictLoginInfo strictLoginInfo) {
         strictLoginInfo.setPhoneNumber(UserUtils.normalizePhoneNumber(strictLoginInfo.getPhoneNumber()));
 
         // 임시 비밀번호 생성 
@@ -80,19 +71,14 @@ public class UserController {
             throw new UserInfoNotFoundException();
         }
 
-        StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
-                .data(Map.of("password", randomGeneratedPassword))
-                .build();
-
-        return ResponseEntity
-                .ok()
-                .body(response);
+        ThreadLocalStandardResponseBucketHolder.setResponseData("password", randomGeneratedPassword);
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("user.temporary.password.returned"));
     }
 
     @PreAuthorize(Role.USER)
     @PostMapping("/password/update")
-    public ResponseEntity updatePassword(LoginInfo newLoginInfo) {
+    public void updatePassword(LoginInfo newLoginInfo) {
 
         String encodedPassword = passwordEncoder.encode(newLoginInfo.getPassword());
         newLoginInfo.setPassword(encodedPassword);
@@ -102,52 +88,43 @@ public class UserController {
             throw new UserInfoNotFoundException();
         }
 
-        StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.password.updated.succeeded"))
-                .data(Map.of())
-                .build();
-
-        return ResponseEntity
-                .ok()
-                .body(response);
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("user.password.updated.succeeded"));
     }
 
     @ExceptionHandler(PhoneNumberNotFoundException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateId(PhoneNumberNotFoundException e) {
+    public void catchDuplicateId(PhoneNumberNotFoundException e) {
 
-        // custom response 생성
-        StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.phoneNumber.notFound"))
-                .data(Map.of())
-                .build();
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(response);
+        ThreadLocalStandardResponseBucketHolder.getResponse()
+                        .setHttpStatus(HttpStatus.BAD_REQUEST);
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("user.phoneNumber.notFound"));
     }
 
-    @ExceptionHandler(UserInfoNotFoundException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateId(UserInfoNotFoundException e) {
+    /*
+    *
+    * message: "회원가입 실패"
+    * data : {
+    *   object1:
+    *   object2:
+    * }
+     */
 
-        // custom response 생성
-        StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
-                .data(Map.of())
-                .build();
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(response);
+    @ExceptionHandler(UserInfoNotFoundException.class)
+    public void catchDuplicateId(UserInfoNotFoundException e) {
+
+        ThreadLocalStandardResponseBucketHolder.getResponse()
+                .setHttpStatus(HttpStatus.BAD_REQUEST);
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("user.userInfo.notFound"));
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateId(DuplicateKeyException e) {
+    public void catchDuplicateId(DuplicateKeyException e) {
 
-        // custom response 생성
-        StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.username.duplicated"))
-                .data(Map.of())
-                .build();
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(response);
+        ThreadLocalStandardResponseBucketHolder.getResponse()
+                .setHttpStatus(HttpStatus.BAD_REQUEST);
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage(messageSourceAccessor.getMessage("user.username.duplicated"));
     }
 }

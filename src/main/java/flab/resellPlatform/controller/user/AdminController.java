@@ -1,5 +1,6 @@
 package flab.resellPlatform.controller.user;
 
+import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
 import flab.resellPlatform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
 
     @GetMapping
-    public ResponseEntity testAuthority() {
-        return ResponseEntity.ok().build();
+    public void testAuthority()
+    {
+        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
+                .setMessage("Admin Controller test successed");
     }
 }
