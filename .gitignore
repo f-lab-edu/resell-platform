@@ -25,6 +25,7 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+application-datasource.properties
 
 ### NetBeans ###
 /nbproject/private/
