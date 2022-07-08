@@ -85,12 +85,6 @@ class JwtAuthenticationFilterTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(csrf()));
 
-        // then
-        StandardResponse standardResponse = StandardResponse.builder()
-                .data(Map.of())
-                .message(messageSourceAccessor.getMessage("common.login.succeeded"))
-                .build();
-
         resultActions.andExpect(status().isOk());
     }
 
@@ -111,12 +105,6 @@ class JwtAuthenticationFilterTest {
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(csrf()));
-
-        // then
-        StandardResponse standardResponse = StandardResponse.builder()
-                .data(Map.of())
-                .message(messageSourceAccessor.getMessage("common.login.needed"))
-                .build();
 
         resultActions.andExpect(status().isUnauthorized());
     }
