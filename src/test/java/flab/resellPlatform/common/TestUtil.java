@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 public class TestUtil {
+    private TestUtil() {}
     public static void expectDefaultResponse(ObjectMapper mapper, StandardResponse standardResponse, ResultMatcher status, ResultActions resultActions) throws Exception {
         String defaultResponseJson = mapper.writeValueAsString(standardResponse);
         resultActions

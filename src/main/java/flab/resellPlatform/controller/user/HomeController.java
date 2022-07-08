@@ -8,6 +8,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,11 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
+    @GetMapping("/")
+    public void getHomePage() {
+        ThreadLocalStandardResponseBucketHolder.setResponseData("hello", "world");
+    }
+
     @PreAuthorize(Role.USER)
     @PostMapping("/api/user")
     public void testUserAuthority() {
@@ -28,6 +34,7 @@ public class HomeController {
     @PreAuthorize(Role.ADMIN)
     @PostMapping("/api/admin")
     public void testAdminAuthority() {
+
         ThreadLocalStandardResponseBucketHolder.setResponseData("role", "admin");
     }
 

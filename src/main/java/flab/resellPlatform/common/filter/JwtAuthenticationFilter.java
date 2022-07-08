@@ -3,12 +3,16 @@ package flab.resellPlatform.common.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import flab.resellPlatform.common.CustomJWT;
 import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
+import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -28,6 +32,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
     private final Environment environment;
     private final MessageSourceAccessor messageSourceAccessor;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -43,7 +48,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // JWT 토큰을 사용하면 세션을 사용할 이유가 없지만, 단지 권한 관리를 위해 session을 사용함.
             // Spring security는 session을 사용하여 권한 관리를 하기 때문
             return authentication;
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,26 +59,33 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         PrincipleDetails principleDetails = (PrincipleDetails) authResult.getPrincipal();
 
-        String accessToken = createJwtToken(principleDetails, "accessToken", Long.parseLong(environment.getProperty("jwt.access.expiration.time")));
-        String refreshToken = createJwtToken(principleDetails, "refreshToken", Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")));
+        String accessToken = JWTUtils.createJwtToken(
+                principleDetails.getUser().getId(),
+                principleDetails.getUser().getUsername(),
+                environment.getProperty("jwt.token.type.access"),
+                Long.parseLong(environment.getProperty("jwt.access.expiration.time")),
+                Algorithm.HMAC512(environment.getProperty(("jwt.secret.key"))));
+        String refreshToken = JWTUtils.createJwtToken(
+                principleDetails.getUser().getId(),
+                principleDetails.getUser().getUsername(),
+                environment.getProperty("jwt.token.type.access"),
+                Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")),
+                Algorithm.HMAC512(environment.getProperty(("jwt.secret.key"))));
+
+        // redis 내 refresh token을 새 refresh token으로 대체
+        // 새로운 Access token과 refresh token을 body에 삽입
+        redisTemplate.opsForValue().set(
+                environment.getProperty("jwt.token.type.refresh") + String.valueOf(principleDetails.getUser().getId()),
+                refreshToken,
+                Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")),
+                TimeUnit.MILLISECONDS);
 
         ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
                         .setMessage(messageSourceAccessor.getMessage("common.login.succeeded"));
 
-        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token_type.access"), accessToken);
-        ThreadLocalStandardResponseBucketHolder.setResponseData("token_type", environment.getProperty("jwt.prefix"));
-        ThreadLocalStandardResponseBucketHolder.setResponseData("expires_in", environment.getProperty("jwt.access.expiration.time"));
-        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token_type.refresh"), refreshToken);
-        // refresh token을 StandardResponse의 data 영역에 저장해야함.
-    }
-
-    private String createJwtToken(PrincipleDetails principleDetails, String subject, long expirationTime) {
-        String jwtToken = JWT.create()
-                .withSubject(subject)
-                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-                .withClaim("id", principleDetails.getUser().getId())
-                .withClaim("username", principleDetails.getUser().getUsername())
-                .sign(Algorithm.HMAC512(environment.getProperty("jwt.secret.key")));
-        return jwtToken;
+        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token.type.access"), accessToken);
+        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token.type.key"), environment.getProperty("jwt.prefix"));
+        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.expiration.time.key"), environment.getProperty("jwt.access.expiration.time"));
+        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token.type.refresh"), refreshToken);
     }
 }

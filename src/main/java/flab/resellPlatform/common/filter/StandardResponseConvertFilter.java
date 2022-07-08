@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.StandardResponseBucket;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,10 @@ public class StandardResponseConvertFilter implements Filter {
         StandardResponse standardResponse = standardResponseBucket.getStandardResponse();
 
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+
+
+        System.out.println(standardResponse.getMessage());
+        System.out.println(standardResponse.getData());
 
         // write the data in a response
         httpServletResponse.setStatus(httpStatus.value());

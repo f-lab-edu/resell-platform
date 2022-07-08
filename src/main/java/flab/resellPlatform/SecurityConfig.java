@@ -1,14 +1,13 @@
 package flab.resellPlatform;
 
-import flab.resellPlatform.common.filter.JwtAuthenticationFilter;
-import flab.resellPlatform.common.filter.JwtAuthorizationFilter;
-import flab.resellPlatform.common.filter.StandardResponseConvertFilter;
+import com.auth0.jwt.algorithms.Algorithm;
+import flab.resellPlatform.common.filter.*;
 import flab.resellPlatform.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserRepository userRepository;
     private final Environment environment;
     private final MessageSourceAccessor messageSourceAccessor;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -38,8 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .formLogin().disable()  // Spring security에서 기본적으로 제공하는 폼 로그인 사용x
                     .httpBasic().disable()  // username과 pw 들고 가는 basic 방식 사용x, bearer 방식 사용할 예정.
 
-                    .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor))
-                    .addFilter(jwtAuthorizationFilter())
+                    .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor, redisTemplate))
+//                    .addFilter(jwtAuthorizationFilter())
+                    .addFilter(accessJWTAuthorizationFilter())
+                    .addFilter(refreshJWTAuthorizationFilter())
                     .authorizeRequests()
                     .anyRequest().permitAll();
     }
@@ -50,18 +52,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AccessJWTAuthorizationFilter accessJWTAuthorizationFilter() throws Exception {
+        return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm());
     }
 
     @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
-        return new JwtAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor);
+    public RefreshJWTAuthorizationFilter refreshJWTAuthorizationFilter() throws Exception {
+        return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisTemplate);
     }
 
     @Bean
     public RandomValueStringGenerator randomValueStringGenerator() {
         return new RandomValueStringGenerator();
+    }
+
+    @Bean
+    public Algorithm jwtHashingAlgorithm() {
+        return Algorithm.HMAC512(environment.getProperty("jwt.secret.key"));
     }
 }
