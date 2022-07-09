@@ -1,7 +1,8 @@
 package flab.resellPlatform.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import flab.resellPlatform.common.response.StandardResponse;
+import flab.resellPlatform.MessageConfig;
+import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.PrincipleDetails;
@@ -10,44 +11,61 @@ import flab.resellPlatform.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WithMockUser
-@ImportAutoConfiguration
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {SecurityConfig.class, MessageConfig.class})
+@WebAppConfiguration
+@TestPropertySource(locations = "/application.properties")
 class JwtAuthenticationFilterTest {
+
     @MockBean
     UserRepository userRepository;
+
     @MockBean
     UserService userService;
 
     @MockBean
+    RedisTemplate<String, Object> redisTemplate;
+
+    @Mock
+    ValueOperations<String, Object> valueOperations;
+
+    @Mock
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
     MessageSourceAccessor messageSourceAccessor;
@@ -56,6 +74,8 @@ class JwtAuthenticationFilterTest {
     Environment environment;
 
     @Autowired
+    WebApplicationContext webApplicationContext;
+
     MockMvc mockMvc;
 
     ObjectMapper mappper = new ObjectMapper();
@@ -65,6 +85,12 @@ class JwtAuthenticationFilterTest {
 
     @BeforeEach
     void setup() {
+        mockMvc = mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .addFilter(new StandardResponseConvertFilter())
+                .apply(springSecurity())
+                .build();
+
         loginInfo = UserTestFactory.createLoginInfoBuilder().build();
         principleDetails = UserTestFactory.createPrincipleDetailBuilder().build();
         authentication = UserTestFactory.createAuthentication(principleDetails);
@@ -74,10 +100,13 @@ class JwtAuthenticationFilterTest {
     @DisplayName("로그인 성공")
     @WithMockUser
     @Test
+    @DirtiesContext
     void login_success() throws Exception {
         // given
         String body = mappper.writeValueAsString(loginInfo);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/login")

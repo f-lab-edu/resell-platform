@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,13 +39,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .formLogin().disable()  // Spring security에서 기본적으로 제공하는 폼 로그인 사용x
                     .httpBasic().disable()  // username과 pw 들고 가는 basic 방식 사용x, bearer 방식 사용할 예정.
 
-                    .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor, redisTemplate))
-//                    .addFilter(jwtAuthorizationFilter())
+                    .addFilter(jwtAuthenticationFilter())
                     .addFilter(accessJWTAuthorizationFilter())
                     .addFilter(refreshJWTAuthorizationFilter())
                     .authorizeRequests()
                     .anyRequest().permitAll();
     }
+
+
+
+//    @Bean(name="authenticationManager")
+//    @Override
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -52,12 +60,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AccessJWTAuthorizationFilter accessJWTAuthorizationFilter() throws Exception {
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        return new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor, redisTemplate);
+    }
+
+    @Bean
+    public AbstractJWTAuthorizationFilter accessJWTAuthorizationFilter() throws Exception {
         return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm());
     }
 
     @Bean
-    public RefreshJWTAuthorizationFilter refreshJWTAuthorizationFilter() throws Exception {
+    public AbstractJWTAuthorizationFilter refreshJWTAuthorizationFilter() throws Exception {
         return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisTemplate);
     }
 

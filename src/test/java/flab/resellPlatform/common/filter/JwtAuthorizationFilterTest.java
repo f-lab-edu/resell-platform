@@ -9,7 +9,6 @@ import flab.resellPlatform.controller.user.HomeController;
 import flab.resellPlatform.controller.user.UserController;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
-import flab.resellPlatform.repository.user.MybatisUserRepository;
 import flab.resellPlatform.repository.user.UserRepository;
 import flab.resellPlatform.service.user.UserService;
 import org.assertj.core.api.Assertions;
@@ -17,28 +16,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -205,12 +197,13 @@ class JwtAuthorizationFilterTest {
 
     @DisplayName("접속 실패 by IllegalArgumentException")
     @Test
+    @DirtiesContext
     void doFilterInternal_IllegalArgumentException() throws Exception {
 
-        Environment mockEnvironment = mock(Environment.class);
-        when(mockEnvironment.getProperty("jwt.secret.key")).thenReturn(null);
 
         // given
+        environment = mock(Environment.class);
+        when(environment.getProperty("jwt.secret.key")).thenReturn(null);
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when

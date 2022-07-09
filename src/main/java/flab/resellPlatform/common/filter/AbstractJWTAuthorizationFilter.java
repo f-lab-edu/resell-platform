@@ -66,23 +66,18 @@ abstract public class AbstractJWTAuthorizationFilter extends BasicAuthentication
 
         // 원하는 토큰 타입인지 검증
         if (checkTokenType(tokenType)) {
-            System.out.println("1");
 
             // 변조 및 만료 검증
             String username = null;
             try {
-                System.out.println("2");
                 username = JWTUtils.getClaimWithVerificationProcess(tokenData, jwtSecretKey, environment.getProperty("jwt.claim.username"));
             } catch (IllegalArgumentException | AlgorithmMismatchException | InvalidClaimException e) {
                 JWTUtils.returnErrorCodeWithHeader(response, messageSourceAccessor.getMessage("jwt.invalid.request"), HttpStatus.BAD_REQUEST);
-                System.out.println("3.5");
                 return;
             } catch (TokenExpiredException | SignatureVerificationException e) {
-                System.out.println("3");
                 JWTUtils.returnErrorCodeWithHeader(response, messageSourceAccessor.getMessage("jwt.invalid.token"), HttpStatus.UNAUTHORIZED);
                 return;
             }
-            System.out.println("4");
             Optional<UserEntity> userEntity = userRepository.findUser(username);
             if (!postProcessAfterAuthentication(response, chain, userEntity.get(), tokenData))
                 return;

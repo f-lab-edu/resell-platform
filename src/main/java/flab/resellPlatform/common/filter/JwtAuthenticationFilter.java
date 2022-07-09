@@ -1,18 +1,15 @@
 package flab.resellPlatform.common.filter;
 
-import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import flab.resellPlatform.common.CustomJWT;
 import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,13 +23,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
     private final Environment environment;
     private final MessageSourceAccessor messageSourceAccessor;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, Environment environment, MessageSourceAccessor messageSourceAccessor, RedisTemplate<String, Object> redisTemplate) {
+        super(authenticationManager);
+        this.environment = environment;
+        this.messageSourceAccessor = messageSourceAccessor;
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -43,7 +45,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 2. 정상인지 시도. authenticationManager로 로그인 시도를 하면!
             // PrincipleDetailService가 호출, loadUserByUsername() 함수 실행됨.
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
             // 리턴 하는 이유는 권한 관리를 위해서임.
             // JWT 토큰을 사용하면 세션을 사용할 이유가 없지만, 단지 권한 관리를 위해 session을 사용함.
             // Spring security는 session을 사용하여 권한 관리를 하기 때문
@@ -68,7 +70,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = JWTUtils.createJwtToken(
                 principleDetails.getUser().getId(),
                 principleDetails.getUser().getUsername(),
-                environment.getProperty("jwt.token.type.access"),
+                environment.getProperty("jwt.token.type.refresh"),
                 Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")),
                 Algorithm.HMAC512(environment.getProperty(("jwt.secret.key"))));
 
