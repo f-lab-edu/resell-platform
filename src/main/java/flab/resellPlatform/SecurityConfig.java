@@ -1,5 +1,6 @@
 package flab.resellPlatform;
 
+import flab.resellPlatform.common.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,10 +23,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .cors().disable()
                 .csrf().disable()
-                .formLogin().disable()
                 .authorizeRequests()
-                .anyRequest()
+                .mvcMatchers("/", "/users", "/login").permitAll()
+                .mvcMatchers("/users/**").hasAnyRole(Role.USER, Role.ADMIN)
+                .mvcMatchers("/admin").hasRole(Role.ADMIN);
+
+        httpSecurity
+                .formLogin().loginPage("/login")
                 .permitAll();
+
+        httpSecurity.httpBasic();
+
+        httpSecurity
+                .logout()
+                .logoutSuccessUrl("/");
     }
 
 }

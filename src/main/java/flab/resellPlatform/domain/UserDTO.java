@@ -33,4 +33,6 @@ public class UserDTO {
 
     private String shoeSize;
 
+    private String role;
+
 }

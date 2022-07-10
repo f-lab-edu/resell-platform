@@ -8,7 +8,7 @@ import java.util.Optional;
 @Mapper
 public interface UserMapper {
 
-    @Insert("INSERT INTO user(username, password, phoneNumber, name, nickname, email, shoeSize) VALUES(#{username}, #{password}, #{phoneNumber}, #{name}, #{nickname}, #{email}, #{shoeSize})")
+    @Insert("INSERT INTO user(username, password, phoneNumber, name, nickname, email, shoeSize, role) VALUES(#{username}, #{password}, #{phoneNumber}, #{name}, #{nickname}, #{email}, #{shoeSize}, #{role})")
     void save(User user);
 
     @Update("UPDATE user SET username = #{user.username}, password = #{user.password}, phoneNumber = #{user.phoneNumber}, name = #{user.name}, nickname = #{user.nickname}, email = #{user.email}, shoeSize = #{user.shoeSize} WHERE id = #{id}")
