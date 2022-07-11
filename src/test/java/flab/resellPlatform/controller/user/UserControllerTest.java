@@ -1,31 +1,37 @@
 package flab.resellPlatform.controller.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.MessageConfig;
+import flab.resellPlatform.SecurityConfig;
+import flab.resellPlatform.common.TestUtil;
 import flab.resellPlatform.common.utils.UserUtils;
-import flab.resellPlatform.controller.response.StandardResponse;
+import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
+import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
@@ -36,10 +42,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest({UserController.class, MessageConfig.class})
+@WebMvcTest(controllers = {UserController.class, MessageConfig.class},
+            excludeAutoConfiguration = SecurityAutoConfiguration.class,
+            excludeFilters = {
+                @ComponentScan.Filter(type= FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)})
 @WithMockUser
 class UserControllerTest {
 
@@ -59,12 +67,25 @@ class UserControllerTest {
     UserService userService;
 
     ObjectMapper mapper = new ObjectMapper();
+    LoginInfo loginInfo;
+    PrincipleDetails principleDetails;
+    Authentication authentication;
+    UserDTO userDTO;
+    StrictLoginInfo strictLoginInfo;
+
+    @BeforeEach
+    void setup() {
+        strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder().build();
+        userDTO = UserTestFactory.createUserDTOBuilder().build();
+        loginInfo = UserTestFactory.createLoginInfoBuilder().build();
+        principleDetails = UserTestFactory.createPrincipleDetailBuilder().build();
+        authentication = UserTestFactory.createAuthentication(principleDetails);
+    }
 
     @DisplayName("아이디 생성 성공")
     @Test
     void createUser_success() throws Exception {
         // given
-        UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
         when(userService.createUser(any())).thenReturn(Optional.of(userDTO));
         String userData = mapper.writeValueAsString(userDTO);
 
@@ -81,9 +102,7 @@ class UserControllerTest {
     @Test
     void createUser_failByValidation() throws Exception {
         // given
-        UserDTO userDTO = UserTestFactory.createUserDTOBuilder()
-                .email("alstjrdl852naver.com")
-                .build();
+        userDTO.setEmail("alstjrdl852naver.com");
         String userData = mapper.writeValueAsString(userDTO);
 
         // when
@@ -98,19 +117,14 @@ class UserControllerTest {
                 .data(returnObjects)
                 .build();
 
-        expectDefaultResponse(defaultResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, defaultResponse, status().isBadRequest(), resultActions);
     }
 
     @DisplayName("아이디 생성 실패 by 아이디 중복")
     @Test
     void createUser_failByIdDuplication() throws Exception {
         // given
-        UserDTO userDTO = UserTestFactory.createUserDTOBuilder().build();
-        when(userService.createUser(any())).thenAnswer(new Answer<Object>() {
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                throw new SQLIntegrityConstraintViolationException();
-            }
-        });
+        when(userService.createUser(any())).thenThrow(DuplicateKeyException.class);
         String userData = mapper.writeValueAsString(userDTO);
 
         // when
@@ -125,7 +139,7 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.username.duplicated"))
                 .data(returnObjects)
                 .build();
-        expectDefaultResponse(defaultResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, defaultResponse, status().isBadRequest(), resultActions);
     }
 
     @DisplayName("아이디 찾기 성공")
@@ -148,7 +162,7 @@ class UserControllerTest {
                 .data(Map.of("username", targetUsername))
                 .build();
 
-        expectDefaultResponse(standardResponse, status().isOk(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
     }
 
     @DisplayName("아이디 찾기 실패")
@@ -171,14 +185,13 @@ class UserControllerTest {
                 .data(Map.of())
                 .build();
 
-        expectDefaultResponse(standardResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
 
     @DisplayName("비밀번호 찾기 성공 by 임시 비밀번호 발급")
     @Test
     void findPassword_success() throws Exception {
         // given
-        StrictLoginInfo strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(strictLoginInfo);
         String temporaryPassword = "fslkkjlk12";
         when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
@@ -195,7 +208,7 @@ class UserControllerTest {
                 .data(Map.of("password", temporaryPassword))
                 .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
                 .build();
-        expectDefaultResponse(standardResponse, status().isOk(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
 
     }
 
@@ -203,7 +216,6 @@ class UserControllerTest {
     @Test
     void findPassword_failure() throws Exception {
         // given
-        StrictLoginInfo strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(strictLoginInfo);
         String temporaryPassword = "fslkkjlk12";
         when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
@@ -220,7 +232,7 @@ class UserControllerTest {
                 .data(Map.of())
                 .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
                 .build();
-        expectDefaultResponse(standardResponse, status().isBadRequest(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
 
     }
 
@@ -228,7 +240,6 @@ class UserControllerTest {
     @Test
     void updatePassword_success() throws Exception {
         // given
-        LoginInfo loginInfo = UserTestFactory.createLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(loginInfo);
         when(passwordEncoder.encode(any())).thenReturn("encodedPW");
         when(userService.updatePassword((LoginInfo) any())).thenReturn(1);
@@ -245,14 +256,13 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.password.updated.succeeded"))
                 .data(Map.of())
                 .build();
-        expectDefaultResponse(standardResponse, status().isOk(), resultActions);
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
     }
 
     @DisplayName("패스워드 업데이트 실패")
     @Test
     void updatePassword_failure() throws Exception {
         // given
-        LoginInfo loginInfo = UserTestFactory.createLoginInfoBuilder().build();
         String body = mapper.writeValueAsString(loginInfo);
         when(passwordEncoder.encode(any())).thenReturn("encodedPW");
         when(userService.updatePassword((LoginInfo) any())).thenReturn(0);
@@ -269,13 +279,6 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
                 .data(Map.of())
                 .build();
-        expectDefaultResponse(standardResponse, status().isBadRequest(), resultActions);
-    }
-    
-    private void expectDefaultResponse(StandardResponse standardResponse, ResultMatcher status, ResultActions resultActions) throws Exception {
-        String defaultResponseJson = mapper.writeValueAsString(standardResponse);
-        resultActions
-                .andExpect(status)
-                .andExpect(content().string(defaultResponseJson));
+        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
 }

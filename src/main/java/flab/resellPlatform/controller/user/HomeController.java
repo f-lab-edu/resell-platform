@@ -1,19 +1,17 @@
 package flab.resellPlatform.controller.user;
 
-import flab.resellPlatform.common.SessionConst;
-import flab.resellPlatform.controller.response.StandardResponse;
-import flab.resellPlatform.domain.user.LoginInfo;
+import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
+import flab.resellPlatform.common.response.StandardResponse;
+import flab.resellPlatform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/")
@@ -22,32 +20,26 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    @GetMapping
-    public ResponseEntity getHome(HttpServletRequest httpServletRequest) {
-        HttpSession session = httpServletRequest.getSession(false);
-
-        StandardResponse.StandardResponseBuilder standardResponseBuilder = StandardResponse.builder()
-                .data(Map.of());
-
-        if (session == null) {
-            return getStandardResponseEntity(standardResponseBuilder, "common.login.needed", HttpStatus.UNAUTHORIZED);
-        }
-
-        LoginInfo loginInfo = (LoginInfo) session.getAttribute(SessionConst.LOGIN_INFO);
-        if (loginInfo == null) {
-            return getStandardResponseEntity(standardResponseBuilder, "common.login.needed", HttpStatus.UNAUTHORIZED);
-        }
-
-        return getStandardResponseEntity(standardResponseBuilder, "home.welcome", HttpStatus.OK);
+    @GetMapping("/")
+    public void getHomePage() {
+        ThreadLocalStandardResponseBucketHolder.setResponseData("hello", "world");
     }
 
-    private ResponseEntity<StandardResponse> getStandardResponseEntity(StandardResponse.StandardResponseBuilder standardResponseBuilder, String messageCode, HttpStatus httpStatus) {
-        StandardResponse defaultResponse = standardResponseBuilder
-                .message(messageSourceAccessor.getMessage(messageCode))
-                .build();
+    @PreAuthorize(Role.USER)
+    @PostMapping("/api/user")
+    public void testUserAuthority() {
+        ThreadLocalStandardResponseBucketHolder.setResponseData("role", "user");
+    }
 
-        return ResponseEntity
-                .status(httpStatus)
-                .body(defaultResponse);
+    @PreAuthorize(Role.ADMIN)
+    @PostMapping("/api/admin")
+    public void testAdminAuthority() {
+
+        ThreadLocalStandardResponseBucketHolder.setResponseData("role", "admin");
+    }
+
+    @PostMapping("/api/noRole")
+    public void testNoRoleAuthority() {
+        ThreadLocalStandardResponseBucketHolder.setResponseData("role", "no role");
     }
 }

@@ -25,9 +25,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 	testImplementation "org.mockito:mockito-core:4.6.1"
 	testImplementation group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.62.0'
-//Thanks for using https://jar-download.com
 	testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-api', version: '3.14.0'
-//Thanks for using https://jar-download.com
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-test'
@@ -35,8 +33,10 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'com.auth0:java-jwt:3.19.0'
 	implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.1.RELEASE'
 
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
