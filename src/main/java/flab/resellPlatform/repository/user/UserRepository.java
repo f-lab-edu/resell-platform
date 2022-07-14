@@ -3,6 +3,8 @@ package flab.resellPlatform.repository.user;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserEntity;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
@@ -19,7 +21,9 @@ public interface UserRepository {
     * @작성일 6/26/2022
     * @작성자 minsuk
     */
+
     UserEntity save(UserEntity userEntity)  throws DuplicateKeyException;
+    @Cacheable(value = "user", key = "#username")
     Optional<UserEntity> findUser(String username);
     Optional<String> findUsername(String phoneNumber);
     List<UserEntity> findAll();

@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+@Slf4j
 abstract public class AbstractJWTAuthorizationFilter extends BasicAuthenticationFilter {
     // UserRepository는 service layer에서만 접근해야하지만, 이 필터가 요구하는 기능이 #27 브랜치에 있음.
     // 해당 브랜치가 머지되면 UserService로 교체 예정.

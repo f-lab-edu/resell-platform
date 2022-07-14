@@ -4,6 +4,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import flab.resellPlatform.common.filter.*;
 import flab.resellPlatform.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
@@ -28,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserRepository userRepository;
     private final Environment environment;
     private final MessageSourceAccessor messageSourceAccessor;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisSessionTemplate;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -61,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        return new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor, redisTemplate);
+        return new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor, redisSessionTemplate);
     }
 
     @Bean
@@ -71,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AbstractJWTAuthorizationFilter refreshJWTAuthorizationFilter() throws Exception {
-        return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisTemplate);
+        return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisSessionTemplate);
     }
 
     @Bean

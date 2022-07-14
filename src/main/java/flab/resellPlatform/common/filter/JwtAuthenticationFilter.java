@@ -7,6 +7,7 @@ import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,13 +28,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final Environment environment;
     private final MessageSourceAccessor messageSourceAccessor;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisSessionTemplate;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, Environment environment, MessageSourceAccessor messageSourceAccessor, RedisTemplate<String, Object> redisTemplate) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, Environment environment, MessageSourceAccessor messageSourceAccessor, RedisTemplate<String, Object> redisSessionTemplate) {
         super(authenticationManager);
         this.environment = environment;
         this.messageSourceAccessor = messageSourceAccessor;
-        this.redisTemplate = redisTemplate;
+        this.redisSessionTemplate = redisSessionTemplate;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // redis 내 refresh token을 새 refresh token으로 대체
         // 새로운 Access token과 refresh token을 body에 삽입
-        redisTemplate.opsForValue().set(
+        redisSessionTemplate.opsForValue().set(
                 environment.getProperty("jwt.token.type.refresh") + String.valueOf(principleDetails.getUser().getId()),
                 refreshToken,
                 Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")),
