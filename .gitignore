@@ -26,6 +26,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 application-datasource.properties
+application-jwt.properties
 
 ### NetBeans ###
 /nbproject/private/

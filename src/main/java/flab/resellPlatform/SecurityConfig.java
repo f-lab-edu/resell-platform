@@ -1,14 +1,19 @@
 package flab.resellPlatform;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.common.Role;
+import flab.resellPlatform.common.filter.JwtAuthenticationFilter;
+import flab.resellPlatform.common.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper;
+    private final Environment env;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,10 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
 
         httpSecurity
-                .formLogin().loginPage("/login")
-                .permitAll();
-
-        httpSecurity.httpBasic();
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .httpBasic().disable()
+                .formLogin().disable()
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, env));
 
         httpSecurity
                 .logout()
