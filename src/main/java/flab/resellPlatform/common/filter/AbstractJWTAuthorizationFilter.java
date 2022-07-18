@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@Slf4j
 abstract public class AbstractJWTAuthorizationFilter extends BasicAuthenticationFilter {
     // UserRepository는 service layer에서만 접근해야하지만, 이 필터가 요구하는 기능이 #27 브랜치에 있음.
     // 해당 브랜치가 머지되면 UserService로 교체 예정.

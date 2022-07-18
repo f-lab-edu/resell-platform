@@ -29,7 +29,7 @@ public class RedisCacheConfig {
     String masterPW;
 
     @Value("${spring.cache.user.redis.expiration.time}")
-    long cacheExpirationTime;
+    long cacheExpirationTimeMs;
 
     // 캐시
     @Bean
@@ -53,7 +53,7 @@ public class RedisCacheConfig {
     public RedisCacheConfiguration defaultRedisCacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()
-                .entryTtl(Duration.ofMillis(cacheExpirationTime))
+                .entryTtl(Duration.ofMillis(cacheExpirationTimeMs))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
     }

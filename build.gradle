@@ -19,25 +19,28 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	implementation 'com.auth0:java-jwt:3.19.0'
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+	implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.1.RELEASE'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
-	testImplementation "org.mockito:mockito-core:4.6.1"
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.security:spring-security-test'
+
+	runtimeOnly 'mysql:mysql-connector-java'
+
+	testImplementation 'org.mockito:mockito-core:4.6.1'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.62.0'
 	testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-api', version: '3.14.0'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.security:spring-security-test'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'mysql:mysql-connector-java'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'com.auth0:java-jwt:3.19.0'
-	implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.1.RELEASE'
-
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 tasks.named('test') {
