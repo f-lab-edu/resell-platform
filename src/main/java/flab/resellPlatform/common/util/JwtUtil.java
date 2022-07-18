@@ -17,4 +17,8 @@ public class JwtUtil {
                 .compact();
     }
 
+    public static Date generateExpDate(String timeout) {
+        return new Date(System.currentTimeMillis() + Long.parseLong(timeout));
+    }
+
 }

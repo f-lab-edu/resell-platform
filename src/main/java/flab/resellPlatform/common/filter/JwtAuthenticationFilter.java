@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -58,7 +59,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
-        Map<String, Object> userDetailsMap = om.convertValue(userDetails, Map.class);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", userDetails.getUsername());
 
         String TYPE_ACCESS = env.getProperty("jwt.type.access");
         String TYPE_REFRESH = env.getProperty("jwt.type.refresh");
@@ -66,32 +68,29 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String REFRESH_TOKEN_EXP = env.getProperty("jwt.access.expiration");
         String SECRET_KEY = env.getProperty("jwt.secret");
 
-        Date accessTokenExp = generateExpDate(ACCESS_TOKEN_EXP);
-        Date refreshTokenExp = generateExpDate(REFRESH_TOKEN_EXP);
+        Date accessTokenExp = JwtUtil.generateExpDate(ACCESS_TOKEN_EXP);
+        Date refreshTokenExp = JwtUtil.generateExpDate(REFRESH_TOKEN_EXP);
 
         String accessToken = JwtUtil.createToken(
                 TYPE_ACCESS,
                 accessTokenExp,
-                userDetailsMap,
+                claims,
                 SignatureAlgorithm.HS512, SECRET_KEY
         );
 
         String refreshToken = JwtUtil.createToken(
                 TYPE_REFRESH,
                 refreshTokenExp,
-                userDetailsMap,
+                claims,
                 SignatureAlgorithm.HS512, SECRET_KEY
         );
 
         TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
         StandardResponse<TokenResponse> standardResponse = new StandardResponse<>(messageUtil.getMessage("login.success"), tokenResponse);
+        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(om.writeValueAsString(standardResponse));
 
         redisTemplate.opsForValue().set(userDetails.getId().toString(), refreshToken, Long.parseLong(REFRESH_TOKEN_EXP), TimeUnit.MILLISECONDS);
-    }
-
-    private Date generateExpDate(String timeout) {
-        return new Date(System.currentTimeMillis() + Long.parseLong(timeout));
     }
 
 }

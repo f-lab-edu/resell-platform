@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, env, redisTemplate, messageUtil))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), env, userRepository))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), env, userRepository, messageUtil, objectMapper, redisTemplate))
                 .authorizeRequests()
                 .antMatchers("/", "/users", "/login").permitAll()
                 .antMatchers("/users/**").hasAnyRole(Role.USER, Role.ADMIN)
