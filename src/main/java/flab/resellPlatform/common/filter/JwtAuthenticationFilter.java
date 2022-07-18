@@ -2,9 +2,13 @@ package flab.resellPlatform.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.common.form.LoginForm;
+import flab.resellPlatform.common.response.StandardResponse;
+import flab.resellPlatform.common.response.jwt.Token;
+import flab.resellPlatform.common.response.jwt.TokenResponse;
 import flab.resellPlatform.common.util.JwtUtil;
+import flab.resellPlatform.common.util.MessageUtil;
 import flab.resellPlatform.domain.UserDetailsImpl;
-import io.jsonwebtoken.Jwts;
+
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +37,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final ObjectMapper om;
     private final Environment env;
     private final RedisTemplate<String, String> redisTemplate;
+    private final MessageUtil messageUtil;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -61,23 +66,32 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String REFRESH_TOKEN_EXP = env.getProperty("jwt.access.expiration");
         String SECRET_KEY = env.getProperty("jwt.secret");
 
+        Date accessTokenExp = generateExpDate(ACCESS_TOKEN_EXP);
+        Date refreshTokenExp = generateExpDate(REFRESH_TOKEN_EXP);
+
         String accessToken = JwtUtil.createToken(
                 TYPE_ACCESS,
-                new Date(System.currentTimeMillis() + Long.parseLong(ACCESS_TOKEN_EXP)),
+                accessTokenExp,
                 userDetailsMap,
                 SignatureAlgorithm.HS512, SECRET_KEY
         );
 
         String refreshToken = JwtUtil.createToken(
                 TYPE_REFRESH,
-                new Date(System.currentTimeMillis() + Long.parseLong(REFRESH_TOKEN_EXP)),
+                refreshTokenExp,
                 userDetailsMap,
                 SignatureAlgorithm.HS512, SECRET_KEY
         );
 
-        response.addHeader("Authorization",
-                "Bearer " + TYPE_ACCESS + " " + accessToken + " " + TYPE_REFRESH + " " + refreshToken);
+        TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
+        StandardResponse<TokenResponse> standardResponse = new StandardResponse<>(messageUtil.getMessage("login.success"), tokenResponse);
+        response.getWriter().write(om.writeValueAsString(standardResponse));
 
         redisTemplate.opsForValue().set(userDetails.getId().toString(), refreshToken, Long.parseLong(REFRESH_TOKEN_EXP), TimeUnit.MILLISECONDS);
     }
+
+    private Date generateExpDate(String timeout) {
+        return new Date(System.currentTimeMillis() + Long.parseLong(timeout));
+    }
+
 }
