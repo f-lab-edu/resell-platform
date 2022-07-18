@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -77,6 +78,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader("Authorization",
                 "Bearer " + TYPE_ACCESS + " " + accessToken + " " + TYPE_REFRESH + " " + refreshToken);
 
-        redisTemplate.opsForValue().set(userDetails.getId().toString(), refreshToken, Long.parseLong(REFRESH_TOKEN_EXP));
+        redisTemplate.opsForValue().set(userDetails.getId().toString(), refreshToken, Long.parseLong(REFRESH_TOKEN_EXP), TimeUnit.MILLISECONDS);
     }
 }
