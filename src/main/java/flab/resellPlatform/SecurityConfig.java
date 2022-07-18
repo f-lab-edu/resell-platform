@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final Environment env;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic().disable()
                 .formLogin().disable()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, env))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, env, redisTemplate))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), env, userRepository))
                 .authorizeRequests()
                 .antMatchers("/", "/users", "/login").permitAll()
