@@ -2,6 +2,7 @@ package flab.resellPlatform.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.common.form.LoginForm;
+import flab.resellPlatform.common.util.JwtUtil;
 import flab.resellPlatform.domain.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -51,12 +52,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
         Map<String, Object> userDetailsMap = om.convertValue(userDetails, Map.class);
 
-        String jwt = Jwts.builder()
-                .setSubject("jwt-test")
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("jwt.expiration"))))
-                .setClaims(userDetailsMap)
-                .signWith(SignatureAlgorithm.HS512, env.getProperty("jwt.secret"))
-                .compact();
+        String jwt = JwtUtil.createToken(
+                "jwt-test",
+                new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("jwt.expiration"))),
+                userDetailsMap,
+                SignatureAlgorithm.HS512, env.getProperty("jwt.secret")
+        );
 
         response.addHeader("Authorization", "Bearer " + jwt);
     }

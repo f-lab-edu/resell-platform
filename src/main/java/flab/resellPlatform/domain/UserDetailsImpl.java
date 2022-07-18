@@ -1,13 +1,11 @@
 package flab.resellPlatform.domain;
 
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Setter
 public class UserDetailsImpl implements UserDetails {
 
     private User user;
