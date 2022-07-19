@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;

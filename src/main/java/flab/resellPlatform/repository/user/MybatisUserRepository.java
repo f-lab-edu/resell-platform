@@ -4,6 +4,7 @@ import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class MybatisUserRepository implements UserRepository {
 
     private final UserMapper userMapper;

@@ -2,7 +2,7 @@ package flab.resellPlatform.common.filter;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import flab.resellPlatform.MessageConfig;
-import flab.resellPlatform.RedisConfig;
+import flab.resellPlatform.RedisSessionConfig;
 import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.controller.user.HomeController;
@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {SecurityConfig.class, MessageConfig.class, RedisConfig.class, HomeController.class, UserController.class})
+@ContextConfiguration(classes = {SecurityConfig.class, MessageConfig.class, RedisSessionConfig.class, HomeController.class, UserController.class})
 @WebAppConfiguration
 @TestPropertySource(locations = "/application.properties")
 class JwtAuthorizationFilterTest {
@@ -59,7 +59,7 @@ class JwtAuthorizationFilterTest {
     @MockBean private PasswordEncoder passwordEncoder;
 
     @MockBean
-    RedisTemplate<String, Object> redisTemplate;
+    RedisTemplate<String, Object> redisSessionTemplate;
 
     @MockBean
     ValueOperations<String, Object> valueOperations;
@@ -150,7 +150,7 @@ class JwtAuthorizationFilterTest {
         // given
         String storedRefreshTokenData = refreshTokenData;
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(redisSessionTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(storedRefreshTokenData);
 
         // when
@@ -269,5 +269,4 @@ class JwtAuthorizationFilterTest {
         // SignatureVerificationException을 mock으로도 일으킬 수가 없음. 피드백 필요
         Assertions.assertThat(1).isNotNull();
     }
-
 }

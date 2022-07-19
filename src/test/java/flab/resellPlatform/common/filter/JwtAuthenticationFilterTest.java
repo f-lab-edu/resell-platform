@@ -56,7 +56,7 @@ class JwtAuthenticationFilterTest {
     UserService userService;
 
     @MockBean
-    RedisTemplate<String, Object> redisTemplate;
+    RedisTemplate<String, Object> redisSessionTemplate;
 
     @Mock
     ValueOperations<String, Object> valueOperations;
@@ -105,7 +105,7 @@ class JwtAuthenticationFilterTest {
         // given
         String body = mappper.writeValueAsString(loginInfo);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(redisSessionTemplate.opsForValue()).thenReturn(valueOperations);
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
 
         // when
