@@ -47,14 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest().permitAll();
     }
 
-
-
-//    @Bean(name="authenticationManager")
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
