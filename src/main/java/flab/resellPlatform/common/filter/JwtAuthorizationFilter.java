@@ -81,6 +81,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         if (jwtData[1].equals(env.getProperty("jwt.type.access"))) {
             processAccessToken(user);
+            chain.doFilter(request, response);
         }
 
         if (jwtData[1].equals(env.getProperty("jwt.type.refresh"))) {
@@ -160,7 +161,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         );
 
         TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
-        StandardResponse<TokenResponse> standardResponse = new StandardResponse<>(messageUtil.getMessage("login.success"), tokenResponse);
+        StandardResponse<TokenResponse> standardResponse = new StandardResponse<>(messageUtil.getMessage("jwt.refresh.success"), tokenResponse);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(om.writeValueAsString(standardResponse));
 
