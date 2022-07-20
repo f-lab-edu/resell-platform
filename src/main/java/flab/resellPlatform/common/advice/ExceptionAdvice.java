@@ -24,10 +24,10 @@ public class ExceptionAdvice {
     private final MessageUtil messageUtil;
 
     @ExceptionHandler(BindException.class)
-    public StandardResponse<FieldErrors> handleBindException(BindException bindException, Locale locale, HttpServletResponse response) {
+    public StandardResponse handleBindException(BindException bindException, Locale locale, HttpServletResponse response) {
         FieldErrors fieldErrors = FieldErrors.create(bindException, messageSource, locale);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        return new StandardResponse<>(messageUtil.getMessage("common.invalid.input"), fieldErrors);
+        return new StandardResponse(messageUtil.getMessage("common.invalid.input"), fieldErrors);
     }
 
     @ExceptionHandler(UserNotFoundException.class)

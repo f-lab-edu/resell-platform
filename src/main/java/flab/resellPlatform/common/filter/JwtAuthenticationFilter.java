@@ -86,7 +86,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         );
 
         TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
-        StandardResponse<TokenResponse> standardResponse = new StandardResponse<>(messageUtil.getMessage("login.success"), tokenResponse);
+        StandardResponse standardResponse = new StandardResponse(messageUtil.getMessage("login.success"), tokenResponse);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(om.writeValueAsString(standardResponse));
 

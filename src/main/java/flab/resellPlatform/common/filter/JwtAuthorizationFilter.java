@@ -67,7 +67,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
              */
             response.setCharacterEncoding("UTF-8");
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            StandardResponse standardResponse = new StandardResponse<>(messageUtil.getMessage("jwt.invalid.format"));
+            StandardResponse standardResponse = new StandardResponse(messageUtil.getMessage("jwt.invalid.format"));
             response.getWriter().write(om.writeValueAsString(standardResponse));
 
             return;
@@ -161,7 +161,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         );
 
         TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
-        StandardResponse<TokenResponse> standardResponse = new StandardResponse<>(messageUtil.getMessage("jwt.refresh.success"), tokenResponse);
+        StandardResponse standardResponse = new StandardResponse(messageUtil.getMessage("jwt.refresh.success"), tokenResponse);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(om.writeValueAsString(standardResponse));
 
