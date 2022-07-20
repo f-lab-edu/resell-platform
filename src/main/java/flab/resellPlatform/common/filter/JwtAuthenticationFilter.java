@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String TYPE_ACCESS = env.getProperty("jwt.type.access");
         String TYPE_REFRESH = env.getProperty("jwt.type.refresh");
         String ACCESS_TOKEN_EXP = env.getProperty("jwt.access.expiration");
-        String REFRESH_TOKEN_EXP = env.getProperty("jwt.access.expiration");
+        String REFRESH_TOKEN_EXP = env.getProperty("jwt.refresh.expiration");
         String SECRET_KEY = env.getProperty("jwt.secret");
 
         Date accessTokenExp = JwtUtil.generateExpDate(ACCESS_TOKEN_EXP);
