@@ -1,12 +1,10 @@
 package flab.resellPlatform.common.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.common.exception.UserNotFoundException;
-import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.jwt.Token;
 import flab.resellPlatform.common.response.jwt.TokenResponse;
 import flab.resellPlatform.common.util.JwtUtil;
-import flab.resellPlatform.common.util.MessageUtil;
+import flab.resellPlatform.common.util.ResponseCreator;
 import flab.resellPlatform.domain.User;
 import flab.resellPlatform.domain.UserDetailsImpl;
 import flab.resellPlatform.repository.UserRepository;
@@ -35,17 +33,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final Environment env;
     private final UserRepository userRepository;
-    private final MessageUtil messageUtil;
-    private final ObjectMapper om;
     private final RedisTemplate<String, String> redisTemplate;
+    private final ResponseCreator responseCreator;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, Environment env, UserRepository userRepository, MessageUtil messageUtil, ObjectMapper om, RedisTemplate<String, String> redisTemplate) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, Environment env, UserRepository userRepository, RedisTemplate<String, String> redisTemplate, ResponseCreator responseCreator) {
         super(authenticationManager);
         this.env = env;
         this.userRepository = userRepository;
-        this.messageUtil = messageUtil;
-        this.om = om;
         this.redisTemplate = redisTemplate;
+        this.responseCreator = responseCreator;
     }
 
     @Override
@@ -65,10 +61,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
              2. Prefix가 Bearer가 아닌 경우
              3. Token Type이 Access 또는 Refresh가 아닌 경우
              */
-            response.setCharacterEncoding("UTF-8");
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            StandardResponse standardResponse = new StandardResponse(messageUtil.getMessage("jwt.invalid.format"));
-            response.getWriter().write(om.writeValueAsString(standardResponse));
+            responseCreator.createBody(
+                    response,
+                    HttpStatus.BAD_REQUEST,
+                    "jwt.invalid.format",
+                    null
+            );
 
             return;
         }
@@ -109,8 +107,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return username;
         } catch (Exception e) {
             // UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "error=" + messageUtil.getMessage("jwt.invalid.token"));
+            responseCreator.createHeader(
+                    response,
+                    HttpStatus.BAD_REQUEST,
+                    HttpHeaders.WWW_AUTHENTICATE,
+                    "jwt.invalid.token"
+            );
         }
 
         return null;
@@ -128,10 +130,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String prevRefreshToken = redisTemplate.opsForValue().get(userId.toString());
 
         if (prevRefreshToken != null && !prevRefreshToken.equals(token)) {
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "error=" + messageUtil.getMessage("jwt.invalid.token"));
-
-            return;
+            responseCreator.createHeader(
+                    response,
+                    HttpStatus.BAD_REQUEST,
+                    HttpHeaders.WWW_AUTHENTICATE,
+                    "jwt.invalid.token"
+            );
         }
 
         Map<String, Object> claims = new HashMap<>();
@@ -161,9 +165,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         );
 
         TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
-        StandardResponse standardResponse = new StandardResponse(messageUtil.getMessage("jwt.refresh.success"), tokenResponse);
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(om.writeValueAsString(standardResponse));
+
+        responseCreator.createBody(
+                response,
+                HttpStatus.OK,
+                "jwt.refresh.success",
+                tokenResponse
+        );
 
         redisTemplate.opsForValue().set(user.getId().toString(), refreshToken, Long.parseLong(REFRESH_TOKEN_EXP), TimeUnit.MILLISECONDS);
     }

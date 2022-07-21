@@ -2,11 +2,10 @@ package flab.resellPlatform.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.common.form.LoginForm;
-import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.response.jwt.Token;
 import flab.resellPlatform.common.response.jwt.TokenResponse;
 import flab.resellPlatform.common.util.JwtUtil;
-import flab.resellPlatform.common.util.MessageUtil;
+import flab.resellPlatform.common.util.ResponseCreator;
 import flab.resellPlatform.domain.UserDetailsImpl;
 
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final ObjectMapper om;
     private final Environment env;
     private final RedisTemplate<String, String> redisTemplate;
-    private final MessageUtil messageUtil;
+    private final ResponseCreator responseCreator;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -86,9 +86,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         );
 
         TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
-        StandardResponse standardResponse = new StandardResponse(messageUtil.getMessage("login.success"), tokenResponse);
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(om.writeValueAsString(standardResponse));
+
+        responseCreator.createBody(
+                response,
+                HttpStatus.OK,
+                "login.success",
+                tokenResponse
+        );
 
         redisTemplate.opsForValue().set(userDetails.getId().toString(), refreshToken, Long.parseLong(REFRESH_TOKEN_EXP), TimeUnit.MILLISECONDS);
     }

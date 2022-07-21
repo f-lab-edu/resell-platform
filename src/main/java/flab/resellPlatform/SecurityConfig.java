@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.common.Role;
 import flab.resellPlatform.common.filter.JwtAuthenticationFilter;
 import flab.resellPlatform.common.filter.JwtAuthorizationFilter;
-import flab.resellPlatform.common.util.MessageUtil;
+import flab.resellPlatform.common.util.ResponseCreator;
 import flab.resellPlatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final ObjectMapper objectMapper;
     private final Environment env;
     private final RedisTemplate<String, String> redisTemplate;
-    private final MessageUtil messageUtil;
+    private final ResponseCreator responseCreator;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,8 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic().disable()
                 .formLogin().disable()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, env, redisTemplate, messageUtil))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), env, userRepository, messageUtil, objectMapper, redisTemplate))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, env, redisTemplate, responseCreator))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), env, userRepository, redisTemplate, responseCreator))
                 .authorizeRequests()
                 .antMatchers("/", "/users", "/login").permitAll()
                 .antMatchers("/users/**").hasAnyRole(Role.USER, Role.ADMIN)
