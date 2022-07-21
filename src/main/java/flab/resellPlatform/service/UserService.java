@@ -1,7 +1,7 @@
 package flab.resellPlatform.service;
 
+import flab.resellPlatform.common.Role;
 import flab.resellPlatform.common.exception.DuplicateUsernameException;
-import flab.resellPlatform.common.exception.UserNotFoundException;
 import flab.resellPlatform.domain.User;
 import flab.resellPlatform.domain.UserDTO;
 import flab.resellPlatform.repository.UserRepository;
@@ -10,7 +10,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -24,6 +23,8 @@ public class UserService {
     public User createAccount(UserDTO userDTO) throws DuplicateUsernameException {
         String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         userDTO.setPassword(encodedPassword);
+
+        userDTO.setRole(Role.USER);
 
         User userEntity = modelMapper.map(userDTO, User.class);
         return userRepository.save(userEntity);

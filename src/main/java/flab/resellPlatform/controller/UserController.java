@@ -26,7 +26,7 @@ public class UserController {
     private final MessageUtil messageUtil;
 
     @PostMapping("/users")
-    public StandardResponse<CreateAccountSuccess> createAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult) throws BindException, DuplicateUsernameException {
+    public StandardResponse createAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult) throws BindException, DuplicateUsernameException {
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             throw new BindException(bindingResult);
@@ -35,17 +35,17 @@ public class UserController {
         User createdUser = userService.createAccount(user);
         CreateAccountSuccess successData = new CreateAccountSuccess(createdUser.getUsername(), createdUser.getName());
 
-        return new StandardResponse<>(messageUtil.getMessage("user.signup.success"), successData);
+        return new StandardResponse(messageUtil.getMessage("user.signup.success"), successData);
     }
 
     @GetMapping("/users/{userId}")
-    public StandardResponse<User> viewAccount(@PathVariable Long userId) throws UserNotFoundException {
+    public StandardResponse viewAccount(@PathVariable Long userId) throws UserNotFoundException {
         Optional<User> user = userService.viewAccount(userId);
-        return new StandardResponse<>(messageUtil.getMessage("user.view.success"), user.orElseThrow(() -> new UserNotFoundException()));
+        return new StandardResponse(messageUtil.getMessage("user.view.success"), user.orElseThrow(() -> new UserNotFoundException()));
     }
 
     @PutMapping("/users/{userId}")
-    public StandardResponse<User> updateAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult, @PathVariable Long userId) throws BindException {
+    public StandardResponse updateAccount(@Validated @ModelAttribute UserDTO user, BindingResult bindingResult, @PathVariable Long userId) throws BindException {
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             throw new BindException(bindingResult);
@@ -53,7 +53,7 @@ public class UserController {
 
         User updatedUser = userService.updateAccount(userId, user);
 
-        return new StandardResponse<>(messageUtil.getMessage("user.update.success"), updatedUser);
+        return new StandardResponse(messageUtil.getMessage("user.update.success"), updatedUser);
     }
 
 }
