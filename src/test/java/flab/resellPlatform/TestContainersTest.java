@@ -27,6 +27,8 @@ class TestContainersTest extends AbstractDockerComposeBasedTest {
     @Autowired
     UserService userService;
 
+
+
     @DisplayName("DB 업로드 테스트")
     @Test
     public void testDbUploaded() {

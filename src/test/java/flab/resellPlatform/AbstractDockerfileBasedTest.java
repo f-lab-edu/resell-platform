@@ -1,24 +1,19 @@
 package flab.resellPlatform;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 public abstract class AbstractDockerfileBasedTest {
-    /*
-     * @Testcontainers 어노테이션은 @Container가 붙은 타입을 찾아냄. 해당 필드 즉 컨테이너는 관리 대상이됨.
-     * 최초 테스트가 시작하기 전 관리되고 있는 컨테이너들은 start()가 호출됨. 마지막 테스트가 끝나면 stop()이 호출됨.
-     * 출처 : https://www.testcontainers.org/test_framework_integration/junit_5/#extension
-     */
-    @Container
+
     static GenericContainer MYSQL_CONTAINER;
-    @Container
     static final GenericContainer REDIS_CACHE_CONTAINER;
-    @Container
     static final GenericContainer REDIS_SESSION_CONTAINER;
 
     static final int MYSQL_DEFAULT_PORT = 3306;
@@ -61,14 +56,18 @@ public abstract class AbstractDockerfileBasedTest {
                 .withEnv("MYSQL_PASSWORD", "resell1234")
                 .withReuse(true)
                 .withExposedPorts(MYSQL_DEFAULT_PORT);
+
+        // Manual 하게 start
+        REDIS_CACHE_CONTAINER.start();
+        REDIS_SESSION_CONTAINER.start();
+        MYSQL_CONTAINER.start();
     }
 
     @DynamicPropertySource
     public static void overrideProperties(DynamicPropertyRegistry registry) {
         /*
         * Q. How DynamicPropertySource works?
-        *
-        * -
+        * A. 업데이트 예정
          */
         registry.add("spring.session.redis.master.host", REDIS_SESSION_CONTAINER::getHost);
         registry.add("spring.session.redis.master.port", () -> "" + REDIS_SESSION_CONTAINER.getMappedPort(REDIS_DEFAULT_PORT));
@@ -78,5 +77,4 @@ public abstract class AbstractDockerfileBasedTest {
 
         registry.add("spring.datasource.url", () -> "jdbc:mysql://" + MYSQL_CONTAINER.getHost() +":" + MYSQL_CONTAINER.getMappedPort(3306) + "/resell_platform_v1");
     }
-
 }
