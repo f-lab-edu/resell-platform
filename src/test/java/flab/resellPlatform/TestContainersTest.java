@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class TestContainersTest extends AbstractContainerBasedTest{
+class TestContainersTest extends AbstractDockerComposeBasedTest {
 
     @Autowired
     RedisTemplate<String, Object> redisCacheTemplate;

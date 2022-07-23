@@ -4,18 +4,29 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-public abstract class AbstractContainerBasedTest {
-    static final int REDIS_DEFAULT_PORT = 6379;
+@Testcontainers
+public abstract class AbstractDockerfileBasedTest {
+    /*
+     * @Testcontainers 어노테이션은 @Container가 붙은 타입을 찾아냄. 해당 필드 즉 컨테이너는 관리 대상이됨.
+     * 최초 테스트가 시작하기 전 관리되고 있는 컨테이너들은 start()가 호출됨. 마지막 테스트가 끝나면 stop()이 호출됨.
+     * 출처 : https://www.testcontainers.org/test_framework_integration/junit_5/#extension
+     */
+    @Container
+    static GenericContainer MYSQL_CONTAINER;
+    @Container
     static final GenericContainer REDIS_CACHE_CONTAINER;
+    @Container
     static final GenericContainer REDIS_SESSION_CONTAINER;
-    static final String CACHE_PATH = "testcontainers/cache/";
-    static final String SESSION_PATH = "testcontainers/session/";
 
     static final int MYSQL_DEFAULT_PORT = 3306;
-    static GenericContainer MYSQL_CONTAINER;
-    static final String DB_PATH = "testcontainers/database/";
+    static final int REDIS_DEFAULT_PORT = 6379;
 
+    static final String CACHE_PATH = "testcontainers/cache/";
+    static final String DB_PATH = "testcontainers/database/";
+    static final String SESSION_PATH = "testcontainers/session/";
 
     static {
         REDIS_CACHE_CONTAINER = new GenericContainer(
@@ -34,14 +45,12 @@ public abstract class AbstractContainerBasedTest {
                 * 해당 도커 컨테이너는 localhost:randomPort로 접근할 수 있고, 이에 spring 또한 접근할 수 있게됨.
                  */
                 .withExposedPorts(REDIS_DEFAULT_PORT);
-        REDIS_CACHE_CONTAINER.start();
 
         REDIS_SESSION_CONTAINER = new GenericContainer(
                 new ImageFromDockerfile()
                         .withFileFromClasspath("Dockerfile", SESSION_PATH + "Dockerfile"))
                 .withReuse(true)
                 .withExposedPorts(REDIS_DEFAULT_PORT);
-        REDIS_SESSION_CONTAINER.start();
 
         MYSQL_CONTAINER = new GenericContainer(
                 new ImageFromDockerfile()
@@ -52,7 +61,6 @@ public abstract class AbstractContainerBasedTest {
                 .withEnv("MYSQL_PASSWORD", "resell1234")
                 .withReuse(true)
                 .withExposedPorts(MYSQL_DEFAULT_PORT);
-        MYSQL_CONTAINER.start();
     }
 
     @DynamicPropertySource
@@ -60,10 +68,7 @@ public abstract class AbstractContainerBasedTest {
         /*
         * Q. How DynamicPropertySource works?
         *
-        * 해당 클래스를 Override 받을 클래스는 통합 테스트를 진행할 클래스임. JVM 실행 순서 상 sub 클래스가 실행되기 전에
-        * 먼저 super 클래스가 실행됨. 따라서 스프링 컨테이너가 만들어지기 전에 AbstractContainerBasedTest가 실행되고,
-        * 이에 application.properties가 동적으로 오버라이딩됨. 이후 sub 클래스인 통합 테스트를 진행할 클래스가 만들어짐.
-        * 이때 스프링컨테이너가 만들어질때 이전에 이미 동적으로 오버라이딩 된 application.properties를 사용함.
+        * -
          */
         registry.add("spring.session.redis.master.host", REDIS_SESSION_CONTAINER::getHost);
         registry.add("spring.session.redis.master.port", () -> "" + REDIS_SESSION_CONTAINER.getMappedPort(REDIS_DEFAULT_PORT));
