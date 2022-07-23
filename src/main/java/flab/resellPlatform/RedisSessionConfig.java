@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -23,18 +24,22 @@ import java.time.Duration;
 @ConfigurationProperties(value = "spring.session.redis")
 public class RedisSessionConfig {
 
+    @Value("${spring.session.redis.master.host}")
+    String masterHostName;
+
     @Value("${spring.session.redis.master.port}")
     int masterPort;
 
-    @Value("${spring.session.redis.master.password}")
-    String masterPW;
+//    @Value("${spring.session.redis.master.password}")
+//    String masterPW;
 
     // 세션
     @Bean
     public RedisConnectionFactory redisSessionConnectionFactory() {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(masterHostName);
         configuration.setPort(masterPort);
-        configuration.setPassword(masterPW);
+//        configuration.setPassword(masterPW);
         return new LettuceConnectionFactory(configuration);
     }
 
