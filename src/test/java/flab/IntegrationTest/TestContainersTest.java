@@ -1,5 +1,6 @@
-package flab.resellPlatform;
+package flab.IntegrationTest;
 
+import flab.resellPlatform.ResellPlatformApplication;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = ResellPlatformApplication.class)
 @Transactional
 class TestContainersTest extends AbstractDockerComposeBasedTest {
 
@@ -26,8 +27,6 @@ class TestContainersTest extends AbstractDockerComposeBasedTest {
 
     @Autowired
     UserService userService;
-
-
 
     @DisplayName("DB 업로드 테스트")
     @Test

@@ -1,4 +1,4 @@
-package flab.resellPlatform;
+package flab.IntegrationTest;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
