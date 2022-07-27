@@ -2,15 +2,15 @@ version: '3.8'
 # convention : container_name/depends_on/image or build/restart/ports/environment
 services:
   rediscache:
-    build: src/test/resources/testcontainers/cache
+    build: cache
     restart: always
 
   redissession:
-    build: src/test/resources/testcontainers/session
+    build: session
     restart: always
 
   database:
-    build: src/test/resources/testcontainers/database
+    build: database
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=root
