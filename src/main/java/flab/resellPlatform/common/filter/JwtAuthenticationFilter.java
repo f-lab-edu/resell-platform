@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -39,6 +38,26 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final Environment env;
     private final RedisTemplate<String, String> redisTemplate;
     private final ResponseCreator responseCreator;
+
+    private static String typeAccess;
+    private static String typeRefresh;
+    private static String typeAccessExp;
+    private static String typeRefreshExp;
+    private static String secretKey;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper om, Environment env, RedisTemplate<String, String> redisTemplate, ResponseCreator responseCreator) {
+        this.authenticationManager = authenticationManager;
+        this.om = om;
+        this.env = env;
+        this.redisTemplate = redisTemplate;
+        this.responseCreator = responseCreator;
+
+        typeAccess = env.getProperty("jwt.type.access");
+        typeRefresh = env.getProperty("jwt.type.refresh");
+        typeAccessExp = env.getProperty("jwt.access.expiration");
+        typeRefreshExp = env.getProperty("jwt.access.expiration");
+        secretKey = env.getProperty("jwt.secret");
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -62,27 +81,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", userDetails.getUsername());
 
-        String TYPE_ACCESS = env.getProperty("jwt.type.access");
-        String TYPE_REFRESH = env.getProperty("jwt.type.refresh");
-        String ACCESS_TOKEN_EXP = env.getProperty("jwt.access.expiration");
-        String REFRESH_TOKEN_EXP = env.getProperty("jwt.refresh.expiration");
-        String SECRET_KEY = env.getProperty("jwt.secret");
-
-        Date accessTokenExp = JwtUtil.generateExpDate(ACCESS_TOKEN_EXP);
-        Date refreshTokenExp = JwtUtil.generateExpDate(REFRESH_TOKEN_EXP);
+        Date accessTokenExp = JwtUtil.generateExpDate(typeAccessExp);
+        Date refreshTokenExp = JwtUtil.generateExpDate(typeRefreshExp);
 
         String accessToken = JwtUtil.createToken(
-                TYPE_ACCESS,
+                typeAccess,
                 accessTokenExp,
                 claims,
-                SignatureAlgorithm.HS512, SECRET_KEY
+                SignatureAlgorithm.HS512, secretKey
         );
 
         String refreshToken = JwtUtil.createToken(
-                TYPE_REFRESH,
+                typeRefresh,
                 refreshTokenExp,
                 claims,
-                SignatureAlgorithm.HS512, SECRET_KEY
+                SignatureAlgorithm.HS512, secretKey
         );
 
         TokenResponse tokenResponse = new TokenResponse(new Token(accessToken, accessTokenExp), new Token(refreshToken, refreshTokenExp));
@@ -94,7 +107,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 tokenResponse
         );
 
-        redisTemplate.opsForValue().set(userDetails.getId().toString(), refreshToken, Long.parseLong(REFRESH_TOKEN_EXP), TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(userDetails.getId().toString(), refreshToken, Long.parseLong(typeRefreshExp), TimeUnit.MILLISECONDS);
     }
 
 }
