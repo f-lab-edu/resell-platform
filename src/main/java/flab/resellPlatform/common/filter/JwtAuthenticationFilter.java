@@ -7,7 +7,6 @@ import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -77,11 +76,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // redis 내 refresh token을 새 refresh token으로 대체
         // 새로운 Access token과 refresh token을 body에 삽입
-        redisSessionTemplate.opsForValue().set(
-                environment.getProperty("jwt.token.type.refresh") + String.valueOf(principleDetails.getUser().getId()),
-                refreshToken,
-                Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")),
-                TimeUnit.MILLISECONDS);
+       redisSessionTemplate.opsForValue().set(
+               environment.getProperty("jwt.token.type.refresh") + String.valueOf(principleDetails.getUser().getId()),
+               refreshToken,
+               Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")),
+               TimeUnit.MILLISECONDS);
 
         ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
                         .setMessage(messageSourceAccessor.getMessage("common.login.succeeded"));

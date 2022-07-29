@@ -3,7 +3,6 @@ package flab.resellPlatform.repository.user;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserEntity;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
 

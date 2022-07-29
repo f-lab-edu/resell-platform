@@ -22,11 +22,11 @@ import java.time.Duration;
 @EnableCaching
 public class RedisCacheConfig {
 
+    @Value("${spring.cache.redis.master.host}")
+    String masterHostName;
+
     @Value("${spring.cache.redis.master.port}")
     int masterPort;
-
-    @Value("${spring.cache.redis.master.password}")
-    String masterPW;
 
     @Value("${spring.cache.user.redis.expiration.time}")
     long cacheExpirationTimeMs;
@@ -35,8 +35,8 @@ public class RedisCacheConfig {
     @Bean
     public RedisConnectionFactory redisCacheConnectionFactory() {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(masterHostName);
         configuration.setPort(masterPort);
-        configuration.setPassword(masterPW);
         return new LettuceConnectionFactory(configuration);
     }
 

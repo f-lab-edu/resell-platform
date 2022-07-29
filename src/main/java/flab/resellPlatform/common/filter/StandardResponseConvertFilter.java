@@ -30,10 +30,6 @@ public class StandardResponseConvertFilter implements Filter {
 
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-
-        System.out.println(standardResponse.getMessage());
-        System.out.println(standardResponse.getData());
-
         // write the data in a response
         httpServletResponse.setStatus(httpStatus.value());
         response.getWriter().write(
