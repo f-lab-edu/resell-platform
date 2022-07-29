@@ -1,4 +1,4 @@
-package flab.IntegrationTest;
+package flab.integration_test;
 
 import flab.resellPlatform.ResellPlatformApplication;
 import flab.resellPlatform.data.UserTestFactory;

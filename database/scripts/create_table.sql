@@ -1,13 +1,13 @@
 -- -----------------------------------------------------
--- Schema resell_platform_v1
+-- Schema v_1
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `resell_platform_v1` DEFAULT CHARACTER SET utf8 ;
-USE `resell_platform_v1` ;
+CREATE SCHEMA IF NOT EXISTS v_1 CHARACTER SET utf8 ;
+USE v_1;
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`USER`
+-- Table `USER`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`USER` (
+CREATE TABLE IF NOT EXISTS `USER` (
                                              `id` INT NOT NULL AUTO_INCREMENT,
                                              `username` VARCHAR(45) NULL,
     `password` VARCHAR(70) NULL,
@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`USER` (
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`ADDRESS`
+-- Table `ADDRESS`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`ADDRESS` (
+CREATE TABLE IF NOT EXISTS `ADDRESS` (
                                                 `id` INT NOT NULL AUTO_INCREMENT,
                                                 `userId` INT NOT NULL,
                                                 `nickname` VARCHAR(45) NULL,
@@ -36,16 +36,16 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`ADDRESS` (
     PRIMARY KEY (`id`, `userId`),
     CONSTRAINT `fk_ADDRESS_USER1`
     FOREIGN KEY (`userId`)
-    REFERENCES `resell_platform_v1`.`USER` (`id`)
+    REFERENCES `USER` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`BANK_ACCOUNT`
+-- Table `BANK_ACCOUNT`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`BANK_ACCOUNT` (
+CREATE TABLE IF NOT EXISTS `BANK_ACCOUNT` (
                                                      `id` INT NOT NULL AUTO_INCREMENT,
                                                      `userId` INT NOT NULL,
                                                      `bankName` ENUM('국민', '신한', '농협') NULL,
@@ -54,16 +54,16 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`BANK_ACCOUNT` (
     INDEX `fk_USER_ACCOUNT_USER1_idx` (`userId` ASC) VISIBLE,
     CONSTRAINT `fk_USER_ACCOUNT_USER1`
     FOREIGN KEY (`userId`)
-    REFERENCES `resell_platform_v1`.`USER` (`id`)
+    REFERENCES `USER` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`BRAND`
+-- Table `BRAND`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`BRAND` (
+CREATE TABLE IF NOT EXISTS `BRAND` (
                                               `id` INT NOT NULL,
                                               `name` VARCHAR(45) NULL,
     PRIMARY KEY (`id`))
@@ -71,9 +71,9 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`BRAND` (
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`PRODUCT`
+-- Table `PRODUCT`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`PRODUCT` (
+CREATE TABLE IF NOT EXISTS `PRODUCT` (
                                                 `id` INT NOT NULL AUTO_INCREMENT,
                                                 `brandId` INT NOT NULL,
                                                 `name` VARCHAR(45) NULL,
@@ -83,16 +83,16 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`PRODUCT` (
     INDEX `fk_PRODUCT_BRAND1_idx` (`brandId` ASC) VISIBLE,
     CONSTRAINT `fk_PRODUCT_BRAND1`
     FOREIGN KEY (`brandId`)
-    REFERENCES `resell_platform_v1`.`BRAND` (`id`)
+    REFERENCES `BRAND` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`BUY_BID`
+-- Table `BUY_BID`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`BUY_BID` (
+CREATE TABLE IF NOT EXISTS `BUY_BID` (
                                                 `id` INT NOT NULL AUTO_INCREMENT,
                                                 `buyerId` INT NOT NULL,
                                                 `productId` INT NOT NULL,
@@ -105,21 +105,21 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`BUY_BID` (
     INDEX `fk_BID_USER1_idx` (`buyerId` ASC) VISIBLE,
     CONSTRAINT `fk_BID_PRODUCT1`
     FOREIGN KEY (`productId`)
-    REFERENCES `resell_platform_v1`.`PRODUCT` (`id`)
+    REFERENCES `PRODUCT` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_BID_USER1`
     FOREIGN KEY (`buyerId`)
-    REFERENCES `resell_platform_v1`.`USER` (`id`)
+    REFERENCES `USER` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`ORDER`
+-- Table `ORDER`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`ORDER` (
+CREATE TABLE IF NOT EXISTS `ORDER` (
                                               `id` INT NOT NULL AUTO_INCREMENT,
                                               `buyerId` INT NOT NULL,
                                               `sellerId` INT NOT NULL,
@@ -138,31 +138,31 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`ORDER` (
   INDEX `fk_ORDER_USER1_idx` (`buyerId` ASC) VISIBLE,
   CONSTRAINT `fk_ORDER_PRODUCT1`
     FOREIGN KEY (`productId`)
-    REFERENCES `resell_platform_v1`.`PRODUCT` (`id`)
+    REFERENCES `PRODUCT` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ORDER_ADDRESS1`
     FOREIGN KEY (`addressId`)
-    REFERENCES `resell_platform_v1`.`ADDRESS` (`id`)
+    REFERENCES `ADDRESS` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ORDER_USER2`
     FOREIGN KEY (`sellerId`)
-    REFERENCES `resell_platform_v1`.`USER` (`id`)
+    REFERENCES `USER` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ORDER_USER1`
     FOREIGN KEY (`buyerId`)
-    REFERENCES `resell_platform_v1`.`USER` (`id`)
+    REFERENCES `USER` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`INTEREST_PRODUCT`
+-- Table `INTEREST_PRODUCT`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`INTEREST_PRODUCT` (
+CREATE TABLE IF NOT EXISTS `INTEREST_PRODUCT` (
                                                          `id` INT NOT NULL AUTO_INCREMENT,
                                                          `userId` INT NOT NULL,
                                                          `productId` INT NOT NULL,
@@ -171,21 +171,21 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`INTEREST_PRODUCT` (
     INDEX `fk_INTEREST_PRODUCT_PRODUCT1_idx` (`productId` ASC) VISIBLE,
     CONSTRAINT `fk_INTEREST_PRODUCT_USER1`
     FOREIGN KEY (`userId`)
-    REFERENCES `resell_platform_v1`.`USER` (`id`)
+    REFERENCES `USER` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_INTEREST_PRODUCT_PRODUCT1`
     FOREIGN KEY (`productId`)
-    REFERENCES `resell_platform_v1`.`PRODUCT` (`id`)
+    REFERENCES `PRODUCT` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `resell_platform_v1`.`SELL_BID`
+-- Table `SELL_BID`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`SELL_BID` (
+CREATE TABLE IF NOT EXISTS `SELL_BID` (
                                                  `id` INT NOT NULL AUTO_INCREMENT,
                                                  `sellerId` INT NOT NULL,
                                                  `productId` INT NOT NULL,
@@ -198,12 +198,12 @@ CREATE TABLE IF NOT EXISTS `resell_platform_v1`.`SELL_BID` (
     INDEX `fk_BID_USER1_idx` (`sellerId` ASC) VISIBLE,
     CONSTRAINT `fk_BID_PRODUCT10`
     FOREIGN KEY (`productId`)
-    REFERENCES `resell_platform_v1`.`PRODUCT` (`id`)
+    REFERENCES `PRODUCT` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_BID_USER10`
     FOREIGN KEY (`sellerId`)
-    REFERENCES `resell_platform_v1`.`USER` (`id`)
+    REFERENCES `USER` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;

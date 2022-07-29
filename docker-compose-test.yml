@@ -16,3 +16,4 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=resell_platform
       - MYSQL_PASSWORD=resell1234
+      - DB_SCHEMA=v_1

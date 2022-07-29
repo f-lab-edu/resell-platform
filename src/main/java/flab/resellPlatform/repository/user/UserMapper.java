@@ -6,7 +6,6 @@ import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;

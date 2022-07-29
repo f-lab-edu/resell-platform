@@ -1,4 +1,4 @@
-package flab.IntegrationTest;
+package flab.integration_test;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -14,6 +14,7 @@ public abstract class AbstractDockerComposeBasedTest {
 
     static final int MYSQL_DEFAULT_PORT = 3306;
     static final int REDIS_DEFAULT_PORT = 6379;
+    static final String DB_SCHEMA = "v_1";
 
     static DockerComposeContainer dockerComposeContainer;
 
@@ -48,6 +49,6 @@ public abstract class AbstractDockerComposeBasedTest {
                         dockerComposeContainer.getServiceHost("database", MYSQL_DEFAULT_PORT) +
                         ":" +
                         dockerComposeContainer.getServicePort("database", MYSQL_DEFAULT_PORT) +
-                        "/resell_platform_v1");
+                        "/" + DB_SCHEMA);
     }
 }
