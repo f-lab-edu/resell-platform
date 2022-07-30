@@ -1,9 +1,9 @@
 package flab.resellPlatform.controller.user;
 
-import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
@@ -21,25 +23,44 @@ public class HomeController {
     private final MessageSourceAccessor messageSourceAccessor;
 
     @GetMapping("/")
-    public void getHomePage() {
-        ThreadLocalStandardResponseBucketHolder.setResponseData("hello", "world");
+    public StandardResponse getHomePage() {
+        System.out.println("hahaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.request.succeeded"))
+                .data(Map.of("hello", "world"))
+                .build();
+        return standardResponse;
     }
 
     @PreAuthorize(Role.USER)
     @PostMapping("/api/user")
-    public void testUserAuthority() {
-        ThreadLocalStandardResponseBucketHolder.setResponseData("role", "user");
+    public StandardResponse testUserAuthority() {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.request.succeeded"))
+                .data(Map.of("role", "user"))
+                .build();
+
+        return standardResponse;
     }
 
     @PreAuthorize(Role.ADMIN)
     @PostMapping("/api/admin")
-    public void testAdminAuthority() {
-
-        ThreadLocalStandardResponseBucketHolder.setResponseData("role", "admin");
+    public StandardResponse testAdminAuthority() {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.request.succeeded"))
+                .data(Map.of("role", "admin"))
+                .build();
+        return standardResponse;
     }
 
     @PostMapping("/api/noRole")
-    public void testNoRoleAuthority() {
-        ThreadLocalStandardResponseBucketHolder.setResponseData("role", "no role");
+    public StandardResponse testNoRoleAuthority() {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.request.succeeded"))
+                .data(Map.of("role", "no role"))
+                .build();
+
+        return standardResponse;
     }
 }

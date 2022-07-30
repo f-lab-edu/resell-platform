@@ -1,6 +1,7 @@
 package flab.resellPlatform.common;
 
 import flab.resellPlatform.common.response.StandardResponse;
+import flab.resellPlatform.common.utils.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @ControllerAdvice
@@ -30,10 +32,12 @@ public class ExceptionAdvice {
         }
      */
     @ExceptionHandler(BindException.class)
-    public void returnRestRequestError() {
-        ThreadLocalStandardResponseBucketHolder.getResponse()
-                .setHttpStatus(HttpStatus.BAD_REQUEST);
-        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
-                .setMessage(messageSourceAccessor.getMessage("common.argument.invalid"));
+    public ResponseEntity<StandardResponse> returnRestRequestError(HttpServletResponse response) {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.argument.invalid"))
+                .data(Map.of())
+                .build();
+
+        return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
     }
 }

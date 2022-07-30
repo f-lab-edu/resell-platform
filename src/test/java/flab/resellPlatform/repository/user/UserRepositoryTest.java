@@ -1,6 +1,5 @@
 package flab.resellPlatform.repository.user;
 
-import flab.resellPlatform.RedisCacheConfig;
 import flab.resellPlatform.data.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
 import org.assertj.core.api.Assertions;
@@ -17,17 +16,17 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@ContextConfiguration(classes = {UserRepositoryTest.CachingTestConfig.class, MybatisUserRepository.class})
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {MybatisUserRepository.class})
+@Import(value = {UserRepositoryTest.CachingTestConfig.class})
 class UserRepositoryTest {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

@@ -1,14 +1,14 @@
 package flab.resellPlatform.controller.user;
 
-import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
+import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
 
     @GetMapping
-    public void testAuthority()
-    {
-        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
-                .setMessage("Admin Controller test successed");
+    public StandardResponse testAuthority() {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message("Admin Controller test successed")
+                .data(Map.of())
+                .build();
+
+        return standardResponse;
     }
 }

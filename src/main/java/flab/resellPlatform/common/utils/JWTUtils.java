@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -31,10 +30,9 @@ public class JWTUtils {
         return jwtContents[TOKEN_TYPE_INDEX];
     }
 
-    public static void returnErrorCodeWithHeader(HttpServletResponse response, String message, HttpStatus badRequest) {
+    public static void returnErrorCodeWithHeader(HttpServletResponse response, String message, HttpStatus status) {
         response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "error=" + message);
-        ThreadLocalStandardResponseBucketHolder.getResponse()
-                .setHttpStatus(badRequest);
+        ResponseUtils.createCustomMessage(response, status);
     }
 
     public static String getClaimWithVerificationProcess(String tokenData, String jwtSecretKey, String claimName) throws

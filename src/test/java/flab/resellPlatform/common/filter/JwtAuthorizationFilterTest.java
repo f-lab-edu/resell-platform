@@ -2,7 +2,6 @@ package flab.resellPlatform.common.filter;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import flab.resellPlatform.MessageConfig;
-import flab.resellPlatform.RedisSessionConfig;
 import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.controller.user.HomeController;
@@ -15,10 +14,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,13 +26,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Optional;
@@ -45,14 +40,12 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {SecurityConfig.class, MessageConfig.class, RedisSessionConfig.class, HomeController.class, UserController.class})
-@WebAppConfiguration
-@TestPropertySource(locations = "/application.properties")
+@WebMvcTest(controllers = {HomeController.class, UserController.class})
+@Import(value = {SecurityConfig.class, MessageConfig.class})
 class JwtAuthorizationFilterTest {
 
+    // Mock for just dependency existence
     @MockBean private MessageSourceAccessor messageSourceAccessor;
     @MockBean private UserService userService;
     @MockBean private RandomValueStringGenerator randomValueStringGenerator;
@@ -100,11 +93,12 @@ class JwtAuthorizationFilterTest {
     @Value("${jwt.refresh.expiration.time}")
     long refreshTokenExpirationTime;
 
+    @Autowired
     MockMvc mockMvc;
 
     UserEntity userEntity;
-    String accessToken;
-    String refreshToken;
+    String accessTokenHeaderData;
+    String refreshTokenHeaderData;
     String accessTokenData;
     String refreshTokenData;
 
@@ -115,16 +109,11 @@ class JwtAuthorizationFilterTest {
     @BeforeEach
     void setup() {
         userEntity = UserTestFactory.createUserEntityBuilder().build();
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
-                .addFilter(new StandardResponseConvertFilter())
-                .apply(springSecurity())
-                .build();
 
         accessTokenData = JWTUtils.createJwtToken(userEntity.getId(), userEntity.getUsername(), accessTokenTypeName, accessTokenExpirationTime, jwtHashingAlgorithm);
         refreshTokenData = JWTUtils.createJwtToken(userEntity.getId(), userEntity.getUsername(), refreshTokenTypeName, refreshTokenExpirationTime, jwtHashingAlgorithm);
-        accessToken = getJWTTokenInFormat(accessTokenData);
-        refreshToken = getJWTTokenInFormat(accessTokenData);
+        accessTokenHeaderData = getJWTTokenInFormat(accessTokenData);
+        refreshTokenHeaderData = getJWTTokenInFormat(accessTokenData);
     }
 
     @DisplayName("접속 성공 with access token")
@@ -136,7 +125,7 @@ class JwtAuthorizationFilterTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/")
-                .header(authenticationHeader, accessToken)
+                .header(authenticationHeader, accessTokenHeaderData)
                 .with(csrf())
         );
 
@@ -155,7 +144,7 @@ class JwtAuthorizationFilterTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/")
-                .header(authenticationHeader, refreshToken)
+                .header(authenticationHeader, refreshTokenHeaderData)
                 .with(csrf())
         );
 
@@ -224,12 +213,12 @@ class JwtAuthorizationFilterTest {
         when(mockEnvironment.getProperty("jwt.secret.key")).thenReturn(null);
 
         // given
-        refreshToken = getJWTTokenInFormat(refreshTokenData);
+        refreshTokenHeaderData = getJWTTokenInFormat(refreshTokenData);
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/")
-                .header(authenticationHeader, refreshToken)
+                .header(authenticationHeader, refreshTokenHeaderData)
                 .with(csrf())
         );
 
@@ -250,12 +239,12 @@ class JwtAuthorizationFilterTest {
         refreshTokenData = JWTUtils.createJwtToken(userEntity.getId(), userEntity.getUsername(), refreshTokenTypeName, -1000, jwtHashingAlgorithm);
 
         // given
-        refreshToken = getJWTTokenInFormat(refreshTokenData);
+        refreshTokenHeaderData = getJWTTokenInFormat(refreshTokenData);
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/")
-                .header(authenticationHeader, refreshToken)
+                .header(authenticationHeader, refreshTokenHeaderData)
                 .with(csrf())
         );
 

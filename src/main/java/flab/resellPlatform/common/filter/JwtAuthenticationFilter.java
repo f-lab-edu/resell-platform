@@ -2,14 +2,15 @@ package flab.resellPlatform.common.filter;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import flab.resellPlatform.common.ThreadLocalStandardResponseBucketHolder;
+import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.common.utils.JWTUtils;
+import flab.resellPlatform.common.utils.ResponseUtils;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.UserEntity;
-import lombok.Setter;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -82,12 +85,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                Long.parseLong(environment.getProperty("jwt.refresh.expiration.time")),
                TimeUnit.MILLISECONDS);
 
-        ThreadLocalStandardResponseBucketHolder.getResponse().getStandardResponse()
-                        .setMessage(messageSourceAccessor.getMessage("common.login.succeeded"));
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.login.succeeded"))
+                .data(Map.of(
+                        environment.getProperty("jwt.token.type.access"), accessToken,
+                        environment.getProperty("jwt.token.type.key"), environment.getProperty("jwt.prefix"),
+                        environment.getProperty("jwt.expiration.time.key"), environment.getProperty("jwt.access.expiration.time"),
+                        environment.getProperty("jwt.token.type.refresh"), refreshToken
+                        ))
+                .build();
 
-        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token.type.access"), accessToken);
-        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token.type.key"), environment.getProperty("jwt.prefix"));
-        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.expiration.time.key"), environment.getProperty("jwt.access.expiration.time"));
-        ThreadLocalStandardResponseBucketHolder.setResponseData(environment.getProperty("jwt.token.type.refresh"), refreshToken);
+        ResponseUtils.createCustomMessage(response, HttpStatus.OK, standardResponse);
     }
 }
