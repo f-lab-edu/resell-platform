@@ -1,4 +1,4 @@
-package flab.integration_test;
+package flab.integrationtest;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;

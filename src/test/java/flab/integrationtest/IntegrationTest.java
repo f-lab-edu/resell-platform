@@ -1,4 +1,4 @@
-package flab.integration_test;
+package flab.integrationtest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

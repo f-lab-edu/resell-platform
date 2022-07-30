@@ -279,6 +279,7 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
                 .data(Map.of())
                 .build();
+
         TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
 }
