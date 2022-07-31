@@ -28,6 +28,8 @@ public final class UserEntity {
 
     private String shoeSize;
 
+    private String role;
+
     /**
      * @param username
      * @param password
@@ -36,8 +38,9 @@ public final class UserEntity {
      * @param nickname
      * @param email
      * @param shoeSize
+     * @param role
      */
-    public UserEntity(String username, String password, String phoneNumber, String name, String nickname, String email, String shoeSize) {
+    public UserEntity(String username, String password, String phoneNumber, String name, String nickname, String email, String shoeSize, String role) {
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
@@ -45,5 +48,6 @@ public final class UserEntity {
         this.nickname = nickname;
         this.email = email;
         this.shoeSize = shoeSize;
+        this.role = role;
     }
 }

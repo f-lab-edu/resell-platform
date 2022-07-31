@@ -4,42 +4,42 @@
 <mapper namespace="flab.resellPlatform.repository.user.UserMapper">
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into user (username, password, phoneNumber, name, nickname, email, shoeSize)
-        values (#{username}, #{password}, #{phoneNumber}, #{name}, #{nickname}, #{email}, #{shoeSize})
+        INSERT INTO USER (username, password, phoneNumber, name, nickname, email, shoeSize, role)
+        VALUES (#{username}, #{password}, #{phoneNumber}, #{name}, #{nickname}, #{email}, #{shoeSize}, #{role})
     </insert>
 
     <select id="findByUsername" resultType="UserEntity">
-        select *
-        from user
-        where username = #{username}
+        SELECT *
+        FROM USER
+        WHERE username = #{username}
     </select>
 
     <select id="findAll" resultType="UserEntity">
-        select *
-        from user
+        SELECT *
+        FROM USER
     </select>
 
     <select id="getUsernameCount" resultType="int">
-        select COUNT(username)
-        from user
-        where username = #{username}
+        SELECT COUNT(username)
+        FROM USER
+        WHERE username = #{username}
     </select>
 
     <select id="findUsername" resultType="String">
-        select username
-        from user
-        where phoneNumber = #{phoneNumber}
+        SELECT username
+        FROM USER
+        WHERE phoneNumber = #{phoneNumber}
     </select>
 
     <update id="updatePassword">
-        update user
-        set password = #{password}
-        where username = #{username}
+        UPDATE USER
+        SET password = #{password}
+        WHERE username = #{username}
     </update>
 
     <update id="updatePasswordSecurely">
-        update user
-        set password = #{password}
-        where username = #{username} and phoneNumber = #{phoneNumber} and email = #{email}
+        UPDATE USER
+        SET password = #{password}
+        WHERE username = #{username} AND phoneNumber = #{phoneNumber} AND email = #{email}
     </update>
 </mapper>

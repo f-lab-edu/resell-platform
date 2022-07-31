@@ -1,13 +1,13 @@
-package flab.resellPlatform.controller.response;
+package flab.resellPlatform.common.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.Setter;
 
 import java.util.Map;
 
 @Getter
+@Setter
 @Builder
 public class StandardResponse {
     String message;

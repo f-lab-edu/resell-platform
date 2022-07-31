@@ -1,23 +1,24 @@
 package flab.resellPlatform.controller.user;
 
+import flab.resellPlatform.common.utils.ResponseUtils;
 import flab.resellPlatform.common.utils.UserUtils;
-import flab.resellPlatform.controller.response.StandardResponse;
-import flab.resellPlatform.domain.user.LoginInfo;
-import flab.resellPlatform.domain.user.PasswordInquiryForm;
-import flab.resellPlatform.domain.user.StrictLoginInfo;
-import flab.resellPlatform.domain.user.UserDTO;
+import flab.resellPlatform.common.response.StandardResponse;
+import flab.resellPlatform.domain.user.*;
 import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
 import flab.resellPlatform.exception.user.UserInfoNotFoundException;
 import flab.resellPlatform.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,39 +33,37 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/create")
-    public ResponseEntity createUser(@Valid @RequestBody UserDTO user) {
+    public StandardResponse createUser(@Valid @RequestBody UserDTO user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setPhoneNumber(UserUtils.normalizePhoneNumber(user.getPhoneNumber()));
         Optional<UserDTO> joinedInfo = userService.createUser(user);
 
-        StandardResponse defaultResponse = StandardResponse.builder()
+        StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.join.succeeded"))
                 .data(Map.of())
                 .build();
 
-        return ResponseEntity
-                .ok()
-                .body(defaultResponse);
+        return standardResponse;
     }
 
     @GetMapping("/usernameInquiry")
-    public ResponseEntity findUsername(String phoneNumber) {
+    public StandardResponse findUsername(String phoneNumber) {
         String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(phoneNumber);
-        String result = userService.findUsername(normalizedPhoneNumber)
-                .orElseThrow(() -> new PhoneNumberNotFoundException());
+        Optional<String> result = userService.findUsername(normalizedPhoneNumber);
+        if (result.isEmpty()) {
+            throw new PhoneNumberNotFoundException();
+        }
 
-        StandardResponse response = StandardResponse.builder()
+        StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.username.found"))
-                .data(Map.of("username", result))
+                .data(Map.of("username", result.get()))
                 .build();
 
-        return ResponseEntity
-                .ok()
-                .body(response);
+        return standardResponse;
     }
 
     @PostMapping("/password/inquiry")
-    public ResponseEntity findPassword(@Valid @RequestBody StrictLoginInfo strictLoginInfo) {
+    public StandardResponse findPassword(@Valid @RequestBody StrictLoginInfo strictLoginInfo) {
         strictLoginInfo.setPhoneNumber(UserUtils.normalizePhoneNumber(strictLoginInfo.getPhoneNumber()));
 
         // 임시 비밀번호 생성 
@@ -74,23 +73,22 @@ public class UserController {
         
         // 비밀번호 업데이트
         int result = userService.updatePassword(strictLoginInfo);
+
         if (result == 0) {
             throw new UserInfoNotFoundException();
         }
 
-        StandardResponse response = StandardResponse.builder()
+        StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
                 .data(Map.of("password", randomGeneratedPassword))
                 .build();
 
-        return ResponseEntity
-                .ok()
-                .body(response);
+        return standardResponse;
     }
 
+    @PreAuthorize(Role.USER)
     @PostMapping("/password/update")
-    public ResponseEntity updatePassword(LoginInfo newLoginInfo) {
-
+    public StandardResponse updatePassword(LoginInfo newLoginInfo) {
         String encodedPassword = passwordEncoder.encode(newLoginInfo.getPassword());
         newLoginInfo.setPassword(encodedPassword);
 
@@ -99,52 +97,50 @@ public class UserController {
             throw new UserInfoNotFoundException();
         }
 
-        StandardResponse response = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.password.update.succeeded"))
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("user.password.updated.succeeded"))
                 .data(Map.of())
                 .build();
 
-        return ResponseEntity
-                .ok()
-                .body(response);
+        return standardResponse;
     }
 
     @ExceptionHandler(PhoneNumberNotFoundException.class)
-    public ResponseEntity<StandardResponse> catchPhoneNumberNotFound(PhoneNumberNotFoundException e) {
-
-        // custom response 생성
-        StandardResponse response = StandardResponse.builder()
+    public ResponseEntity<StandardResponse> catchDuplicateId(PhoneNumberNotFoundException e, HttpServletResponse response) {
+        StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.phoneNumber.notFound"))
                 .data(Map.of())
                 .build();
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(response);
+
+        return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserInfoNotFoundException.class)
-    public ResponseEntity<StandardResponse> catchUserInfoNotFound(UserInfoNotFoundException e) {
+    /*
+    *
+    * message: "회원가입 실패"
+    * data : {
+    *   object1:
+    *   object2:
+    * }
+     */
 
-        // custom response 생성
-        StandardResponse response = StandardResponse.builder()
+    @ExceptionHandler(UserInfoNotFoundException.class)
+    public ResponseEntity<StandardResponse> catchDuplicateId(UserInfoNotFoundException e, HttpServletResponse response) {
+        StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
                 .data(Map.of())
                 .build();
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(response);
+
+        return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<StandardResponse> catchDuplicateUsername(SQLIntegrityConstraintViolationException e) {
-
-        // custom response 생성
-        StandardResponse response = StandardResponse.builder()
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<StandardResponse> catchDuplicateId(DuplicateKeyException e, HttpServletResponse response) {
+        StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.username.duplicated"))
                 .data(Map.of())
                 .build();
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(response);
+
+        return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
     }
 }

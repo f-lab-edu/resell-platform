@@ -1,14 +1,16 @@
 package flab.resellPlatform.common;
 
-import flab.resellPlatform.controller.response.StandardResponse;
+import flab.resellPlatform.common.response.StandardResponse;
+import flab.resellPlatform.common.utils.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.sql.SQLIntegrityConstraintViolationException;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @ControllerAdvice
@@ -30,17 +32,12 @@ public class ExceptionAdvice {
         }
      */
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<StandardResponse> returnRestRequestError() {
-
-        Map<String, Object> returnObjects = Map.of();
-
-        // custom response 생성
-        StandardResponse defaultResponse = StandardResponse.builder()
+    public ResponseEntity<StandardResponse> returnRestRequestError(HttpServletResponse response) {
+        StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("common.argument.invalid"))
-                .data(returnObjects)
+                .data(Map.of())
                 .build();
-        return ResponseEntity
-                .badRequest()
-                .<StandardResponse>body(defaultResponse);
+
+        return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
     }
 }
