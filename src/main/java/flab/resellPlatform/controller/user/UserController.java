@@ -98,7 +98,7 @@ public class UserController {
         }
 
         StandardResponse standardResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.password.updated.succeeded"))
+                .message(messageSourceAccessor.getMessage("user.password.update.succeeded"))
                 .data(Map.of())
                 .build();
 
