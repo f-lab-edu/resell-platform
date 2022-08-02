@@ -23,4 +23,6 @@ public class User {
 
     private String shoeSize;
 
+    private String role;
+
 }
