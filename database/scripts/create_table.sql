@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS `USER` (
     `shoeSize` VARCHAR(5) NULL,
     `role` ENUM('ROLE_USER', 'ROLE_ADMIN') NULL,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `phonenumber_UNIQUE` (`phoneNumber` ASC) VISIBLE)
+    UNIQUE INDEX `phonenumber_UNIQUE` (`phoneNumber` ASC) VISIBLE,
+    UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE)
     ENGINE = InnoDB;
 
 

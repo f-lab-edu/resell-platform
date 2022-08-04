@@ -1,6 +1,5 @@
 package flab.resellPlatform.controller.user;
 
-import flab.resellPlatform.common.utils.ResponseUtils;
 import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.*;
@@ -36,7 +35,7 @@ public class UserController {
     public StandardResponse createUser(@Valid @RequestBody UserDTO user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setPhoneNumber(UserUtils.normalizePhoneNumber(user.getPhoneNumber()));
-        Optional<UserDTO> joinedInfo = userService.createUser(user);
+        userService.createUser(user);
 
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.join.succeeded"))

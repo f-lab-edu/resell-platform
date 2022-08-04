@@ -18,7 +18,6 @@ import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,13 +32,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,6 +72,7 @@ class JwtAuthenticationFilterTest {
     @Autowired
     WebApplicationContext webApplicationContext;
 
+    @Autowired
     MockMvc mockMvc;
 
     ObjectMapper mappper = new ObjectMapper();
@@ -84,11 +82,6 @@ class JwtAuthenticationFilterTest {
 
     @BeforeEach
     void setup() {
-        mockMvc = mockMvc = MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-
         loginInfo = UserTestFactory.createLoginInfoBuilder().build();
         principleDetails = UserTestFactory.createPrincipleDetailBuilder().build();
         authentication = UserTestFactory.createAuthentication(principleDetails);
