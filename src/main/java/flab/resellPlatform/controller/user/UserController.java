@@ -1,6 +1,5 @@
 package flab.resellPlatform.controller.user;
 
-import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.*;
 import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
@@ -12,8 +11,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,13 +25,9 @@ public class UserController {
 
     private final MessageSourceAccessor messageSourceAccessor;
     private final UserService userService;
-    private final RandomValueStringGenerator randomValueStringGenerator;
-    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/create")
     public StandardResponse createUser(@Valid @RequestBody UserDTO user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setPhoneNumber(UserUtils.normalizePhoneNumber(user.getPhoneNumber()));
         userService.createUser(user);
 
         StandardResponse standardResponse = StandardResponse.builder()
@@ -47,8 +40,7 @@ public class UserController {
 
     @GetMapping("/usernameInquiry")
     public StandardResponse findUsername(String phoneNumber) {
-        String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(phoneNumber);
-        Optional<String> result = userService.findUsername(normalizedPhoneNumber);
+        Optional<String> result = userService.findUsername(phoneNumber);
         if (result.isEmpty()) {
             throw new PhoneNumberNotFoundException();
         }
@@ -63,23 +55,17 @@ public class UserController {
 
     @PostMapping("/password/inquiry")
     public StandardResponse findPassword(@Valid @RequestBody StrictLoginInfo strictLoginInfo) {
-        strictLoginInfo.setPhoneNumber(UserUtils.normalizePhoneNumber(strictLoginInfo.getPhoneNumber()));
 
-        // 임시 비밀번호 생성 
-        String randomGeneratedPassword = randomValueStringGenerator.generate();
-        String encodedPassword = passwordEncoder.encode(randomGeneratedPassword);
-        strictLoginInfo.setPassword(encodedPassword);
-        
         // 비밀번호 업데이트
-        int result = userService.updatePassword(strictLoginInfo);
+        Optional<String> result = userService.updatePassword(strictLoginInfo);
 
-        if (result == 0) {
+        if (result.isEmpty()) {
             throw new UserInfoNotFoundException();
         }
 
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
-                .data(Map.of("password", randomGeneratedPassword))
+                .data(Map.of("password", result.get()))
                 .build();
 
         return standardResponse;
@@ -87,14 +73,9 @@ public class UserController {
 
     @PreAuthorize(Role.USER)
     @PostMapping("/password/update")
-    public StandardResponse updatePassword(LoginInfo newLoginInfo) {
-        String encodedPassword = passwordEncoder.encode(newLoginInfo.getPassword());
-        newLoginInfo.setPassword(encodedPassword);
+    public StandardResponse updatePassword(@Valid @RequestBody LoginInfo newLoginInfo) {
 
-        int result = userService.updatePassword(newLoginInfo);
-        if (result == 0) {
-            throw new UserInfoNotFoundException();
-        }
+        userService.updatePassword(newLoginInfo);
 
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.password.update.succeeded"))

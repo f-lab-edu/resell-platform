@@ -151,9 +151,8 @@ class UserControllerTest {
         // given
         String targetUsername = "michael";
         String requiredPhoneNumber = "010-4589-0000";
-        String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(requiredPhoneNumber);
         String query = "phoneNumber=" + requiredPhoneNumber;
-        when(userService.findUsername(normalizedPhoneNumber)).thenReturn(Optional.of(targetUsername));
+        when(userService.findUsername(requiredPhoneNumber)).thenReturn(Optional.of(targetUsername));
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/users/usernameInquiry" + "?" + query)
@@ -198,7 +197,7 @@ class UserControllerTest {
         String body = mapper.writeValueAsString(strictLoginInfo);
         String temporaryPassword = "fslkkjlk12";
         when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
-        when(userService.updatePassword((StrictLoginInfo) any())).thenReturn(1);
+        when(userService.updatePassword((StrictLoginInfo) any())).thenReturn(Optional.of(temporaryPassword));
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")
@@ -212,30 +211,6 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
                 .build();
         TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
-
-    }
-
-    @DisplayName("비밀번호 찾기 실패 by 유저 정보 불일치")
-    @Test
-    void findPassword_failure() throws Exception {
-        // given
-        String body = mapper.writeValueAsString(strictLoginInfo);
-        String temporaryPassword = "fslkkjlk12";
-        when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
-        when(userService.updatePassword(strictLoginInfo)).thenReturn(0);
-
-        // when
-        ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .with(csrf()));
-
-        // then
-        StandardResponse standardResponse = StandardResponse.builder()
-                .data(Map.of())
-                .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
-                .build();
-        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
 
     }
 
@@ -260,29 +235,5 @@ class UserControllerTest {
                 .data(Map.of())
                 .build();
         TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
-    }
-
-    @DisplayName("패스워드 업데이트 실패")
-    @Test
-    void updatePassword_failure() throws Exception {
-        // given
-        String body = mapper.writeValueAsString(loginInfo);
-        when(passwordEncoder.encode(any())).thenReturn("encodedPW");
-        when(userService.updatePassword((LoginInfo) any())).thenReturn(0);
-
-
-        // when
-        ResultActions resultActions = mockMvc.perform(post("/users/password/update")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .with(csrf()));
-
-        // then
-        StandardResponse standardResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
-                .data(Map.of())
-                .build();
-
-        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
 }

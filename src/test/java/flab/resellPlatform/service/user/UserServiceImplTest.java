@@ -14,6 +14,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Optional;
@@ -29,6 +31,12 @@ class UserServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
+
+    @Mock
+    RandomValueStringGenerator randomValueStringGenerator;
 
     @InjectMocks
     UserServiceImpl userServiceImpl;
