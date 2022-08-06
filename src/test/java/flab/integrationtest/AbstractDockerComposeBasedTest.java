@@ -20,7 +20,7 @@ public abstract class AbstractDockerComposeBasedTest {
 
     static {
         dockerComposeContainer =
-                new DockerComposeContainer(new File("docker-compose-test.yml"))
+                new DockerComposeContainer(new File("docker-compose.yml"))
                         .withExposedService("redissession", REDIS_DEFAULT_PORT,
                                 Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
                         .withExposedService("rediscache", REDIS_DEFAULT_PORT,
