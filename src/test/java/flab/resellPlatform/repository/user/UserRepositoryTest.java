@@ -1,6 +1,6 @@
 package flab.resellPlatform.repository.user;
 
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

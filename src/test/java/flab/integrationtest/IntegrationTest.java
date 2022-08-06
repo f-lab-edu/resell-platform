@@ -3,7 +3,7 @@ package flab.integrationtest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.ResellPlatformApplication;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -6,29 +6,23 @@ import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.controller.user.HomeController;
 import flab.resellPlatform.controller.user.UserController;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
 import flab.resellPlatform.service.user.UserService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.verification.VerificationMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.test.annotation.DirtiesContext;
@@ -109,10 +103,6 @@ class JwtAuthorizationFilterTest {
     String refreshTokenHeaderData;
     String accessTokenData;
     String refreshTokenData;
-
-    String getJWTTokenInFormat(String tokenData) {
-        return jwtPrefix + " " + accessTokenTypeName + " " + tokenData;
-    }
 
     @BeforeEach
     void setup() {
@@ -266,5 +256,9 @@ class JwtAuthorizationFilterTest {
         // SignatureVerificationException을 mock으로도 일으킬 수가 없음. 피드백 필요
         assertThat(1).isNotNull();
         verify(securityContext, never()).setAuthentication(any());
+    }
+
+    String getJWTTokenInFormat(String tokenData) {
+        return jwtPrefix + " " + accessTokenTypeName + " " + tokenData;
     }
 }

@@ -1,11 +1,10 @@
-package flab.integrationtest.passwordupdate;
+package flab.integrationtest.userapi;
 
 import flab.integrationtest.AbstractDockerComposeBasedTest;
 import flab.resellPlatform.ResellPlatformApplication;
 import flab.resellPlatform.common.response.StandardResponse;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
-import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

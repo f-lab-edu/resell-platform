@@ -1,4 +1,4 @@
-package flab.resellPlatform.data;
+package flab.utils;
 
 import flab.resellPlatform.domain.user.*;
 import org.springframework.security.core.Authentication;

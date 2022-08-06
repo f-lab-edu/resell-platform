@@ -1,8 +1,8 @@
-package flab.integrationtest.usernameinquiry;
+package flab.integrationtest.userapi;
 
 import flab.integrationtest.AbstractDockerComposeBasedTest;
 import flab.resellPlatform.ResellPlatformApplication;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

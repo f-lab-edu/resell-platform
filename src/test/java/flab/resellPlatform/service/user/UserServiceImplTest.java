@@ -1,6 +1,6 @@
 package flab.resellPlatform.service.user;
 
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.MessageConfig;
 import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.controller.user.HomeController;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.repository.user.UserRepository;

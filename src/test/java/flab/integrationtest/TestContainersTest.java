@@ -1,7 +1,7 @@
 package flab.integrationtest;
 
 import flab.resellPlatform.ResellPlatformApplication;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
 import org.junit.jupiter.api.DisplayName;

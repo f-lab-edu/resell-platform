@@ -60,6 +60,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        super.unsuccessfulAuthentication(request, response, failed);
+
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("jwt.invalid.user"))
+                .data(Map.of())
+                .build();
+        ResponseUtils.createCustomMessage(response, HttpStatus.OK, standardResponse);
+    }
+
+    @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
         PrincipleDetails principleDetails = (PrincipleDetails) authResult.getPrincipal();

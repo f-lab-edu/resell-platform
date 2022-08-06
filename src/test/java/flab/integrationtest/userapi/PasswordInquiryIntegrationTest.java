@@ -1,26 +1,23 @@
-package flab.integrationtest.usercreate;
+package flab.integrationtest.userapi;
 
 import flab.integrationtest.AbstractDockerComposeBasedTest;
 import flab.resellPlatform.ResellPlatformApplication;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
+import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserDTO;
-import flab.resellPlatform.service.user.UserServiceImpl;
+import flab.resellPlatform.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,14 +25,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = ResellPlatformApplication.class)
 @AutoConfigureMockMvc
 @Transactional
-public class UserCreateIntegrationTest extends AbstractDockerComposeBasedTest {
+public class PasswordInquiryIntegrationTest extends AbstractDockerComposeBasedTest {
 
     UserDTO userDTO;
+    StrictLoginInfo strictLoginInfo;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    UserServiceImpl userServiceImpl;
+    UserService userService;
 
     @Autowired
     MockMvc mockMvc;
@@ -43,66 +41,54 @@ public class UserCreateIntegrationTest extends AbstractDockerComposeBasedTest {
     @BeforeEach
     void setUp() {
         userDTO = UserTestFactory.createUserDTOBuilder().build();
+        strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder().build();
     }
 
-    @DisplayName("성공 시나리오: 고객이 유저 서비스에 회원 가입을 요청한다.")
+    @DisplayName("성공 시나리오: 고객이 유저 서비스에 유저네임, 패스워드, 폰번호, 이메일을 전달한다.")
     @Test
-    void userCreate_success() throws Exception {
+    void usernameInquiry_success() throws Exception {
         // given
-        String body = objectMapper.writeValueAsString(userDTO);
+        userService.createUser(userDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/users/create")
+        String body = objectMapper.writeValueAsString(strictLoginInfo);
+        ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
                 .with(csrf()));
 
-
         // then
         resultActions.andExpect(status().isOk());
-
-        Optional<String> usernameFound = userServiceImpl.findUsername(userDTO.getPhoneNumber());
-        assertThat(usernameFound).isNotEmpty();
-        assertThat(usernameFound.get()).isEqualTo(userDTO.getUsername());
     }
 
-    @DisplayName("실패 시나리오: 고객은 username, password, phone, email, shoesize를 필수로 입력한다.")
+    @DisplayName("실패 시나리오: 필요한 정보를 전달하지 않으면 오류를 반환한다.")
     @Test
-    void userCreate_failedByInvalidInput() throws Exception {
+    void usernameInquiry_failedByInvalidInput() throws Exception {
         // given
-        userDTO = UserTestFactory.createUserDTOBuilder()
-                .username("")
-                .password("")
-                .build();
-        String body = objectMapper.writeValueAsString(userDTO);
-
         // when
-        ResultActions resultActions = mockMvc.perform(post("/users/create")
+        strictLoginInfo = UserTestFactory.createStrictLoginInfoBuilder()
+                .username("")
+                .build();
+        String body = objectMapper.writeValueAsString(strictLoginInfo);
+        ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
                 .with(csrf()));
 
         // then
         resultActions.andExpect(status().isBadRequest());
-        Optional<String> savedUsername = userServiceImpl.findUsername(userDTO.getPhoneNumber());
-        assertThat(savedUsername).isEmpty();
     }
 
-    @DisplayName("실패 시나리오: 유저 서비스는 각 고객마다 고유한 username을 보장해야 한다.")
+    @DisplayName("실패 시나리오: 전달된 정보와 맞는 유저 정보가 없다면 패스워드 실패 메세지를 반환한다.")
     @Test
-    void userCreate_failedByDuplicateUsername() throws Exception {
-
+    void usernameInquiry_failedByMismatchingUserInfo() throws Exception {
         // given
-        userServiceImpl.createUser(userDTO);
-        String body = objectMapper.writeValueAsString(userDTO);
-
         // when
-        ResultActions resultActions = mockMvc.perform(post("/users/create")
+        String body = objectMapper.writeValueAsString(strictLoginInfo);
+        ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
                 .with(csrf()));
-
-        Optional<String> username = userServiceImpl.findUsername(userDTO.getPhoneNumber());
 
         // then
         resultActions.andExpect(status().isBadRequest());
