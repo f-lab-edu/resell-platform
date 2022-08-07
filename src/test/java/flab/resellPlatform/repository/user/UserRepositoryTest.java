@@ -61,7 +61,6 @@ class UserRepositoryTest {
         userRepository.findUser(userEntity.getUsername());
 
         // then
-        Assertions.assertThat(cacheManager).isNotNull();
         verifyNoMoreInteractions(userMapper);
     }
 

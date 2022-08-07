@@ -4,8 +4,7 @@ import flab.resellPlatform.ResellPlatformApplication;
 import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,7 +15,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest(classes = ResellPlatformApplication.class)
-@Transactional
 class TestContainersTest extends AbstractDockerComposeBasedTest {
 
     @Autowired
@@ -28,8 +26,15 @@ class TestContainersTest extends AbstractDockerComposeBasedTest {
     @Autowired
     UserService userService;
 
+    @AfterEach
+    void setup() {
+        redisCacheTemplate.delete(redisCacheTemplate.keys("*"));
+        redisSessionTemplate.delete(redisSessionTemplate.keys("*"));
+    }
+
     @DisplayName("DB 업로드 테스트")
     @Test
+    @Transactional
     public void testDbUploaded() {
         UserDTO inputUserDTO = UserTestFactory.createUserDTOBuilder().build();
         userService.createUser(inputUserDTO);
