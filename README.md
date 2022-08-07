@@ -9,7 +9,7 @@
 - 형상 관리: Github
 - 이슈 관리: Github Issue
 - 진행 관리: Github Project
-- [결정 과정](https://github.com/f-lab-edu/resell-platform/wiki/협업-툴-및-규칙-결정-과정)
+- [결정 과정 ](https://github.com/f-lab-edu/resell-platform/wiki/협업-툴-및-규칙-결정-과정)
 
 <br>
 
@@ -79,7 +79,7 @@
 - 기능 개발 및 통합 테스트 시나리오 작성의 용이함을 위해 Cockburn style의 유스케이스를 작성했습니다.
 [자세한 구현 내용 링크](https://github.com/f-lab-edu/resell-platform/wiki/유스케이스)
 
-### 대표 예시
+### **대표 예시**
 <html>
 <body>
 <!--StartFragment-->
@@ -108,12 +108,10 @@
 - **프로토 타이핑 툴:** 카카오 오븐
 - **구현 목적:** 기능 정의 래퍼런스
 
-[자세한 구현 내용 및 웹 테스트 ](https://github.com/f-lab-edu/resell-platform/wiki/Application-UI)
+[자세한 구현 내용 및 웹 테스트 링크](https://github.com/f-lab-edu/resell-platform/wiki/Application-UI)
 
-**대표 예시)**
-
-![애플리케이션 UI 예시](https://user-images.githubusercontent.com/50356726/172335907-86d653d8-fdcf-4700-af92-5efac2ab018c.png)
-
+### **대표 예시**
+![Untitled Diagram drawio](https://user-images.githubusercontent.com/50356726/183283422-5363c8f9-8154-406e-87ba-c332f2279138.png)
 
 <br>
 
@@ -122,8 +120,8 @@
 - **ERD 설계 툴**: MySQL Workbench
 
   
-[자세한 구현 내용 및 사고 과정](https://github.com/f-lab-edu/resell-platform/wiki/ERD)
+[자세한 구현 내용 및 사고 과정 ](https://github.com/f-lab-edu/resell-platform/wiki/ERD)
 
-**완성본)**
 
-![ERD 그림](https://user-images.githubusercontent.com/50356726/172335779-9e802e98-2169-4c07-aec9-8255c77f6aae.png)
+![Untitled Diagram (3)](https://user-images.githubusercontent.com/50356726/183283583-754f6426-a732-4823-b1e1-e6fddcfb9200.jpg)
+
