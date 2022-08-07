@@ -22,7 +22,7 @@
 ## Backend
 
 - Java11
-- Spring Boot 2.7.0, Spring MVC
+- Spring Boot 2.7.0, Spring MVC, Spring Security
 - Mybatis
 - Junit5, Mockito
 - Gradle 7.x
