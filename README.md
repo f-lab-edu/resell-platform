@@ -55,7 +55,7 @@
 
 ## 해결한 이슈
 
-🗒️[통합테스트 시나리오 작성](https://www.notion.so/cbc35a5e03db4b8dbd7cb3c102f4be32)
+🗒️[유스케이스 기반 통합테스트 작성](https://www.notion.so/cbc35a5e03db4b8dbd7cb3c102f4be32)
 
 📌[docker-compose 파일 내 중복 ****Compose configurations**** 존재(1)](https://www.notion.so/docker-compose-Compose-configurations-1-592768983c7d45b1884f068648c9f13b)
 
