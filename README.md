@@ -13,6 +13,8 @@
 
 
 # **아키텍처**
+![Back-end-CI CD (4)](https://user-images.githubusercontent.com/50356726/183281514-3700f7c4-94f3-45d7-a996-17b9a535f35e.png)
+
 
 # **기술적 이슈**
 
