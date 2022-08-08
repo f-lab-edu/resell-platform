@@ -86,8 +86,6 @@ public class LoginIntegrationTest extends AbstractDockerComposeBasedTest {
         // given
         // 가입되지 않은 사용자
         // userService.createUser(userDTO);
-        Optional<String> username = userService.findUsername(userDTO.getPhoneNumber());
-        Assertions.assertThat(username).isEmpty();
 
         // when
         // 유스케이스/로그인/Fail path

@@ -2,9 +2,7 @@ package flab.integrationtest.userapi;
 
 import flab.integrationtest.AbstractDockerComposeBasedTest;
 import flab.resellPlatform.ResellPlatformApplication;
-import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.LoginInfo;
-import flab.resellPlatform.domain.user.Role;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserService;
 import flab.utils.CustomAssertionUtils;
@@ -17,30 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.stereotype.Controller;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.validation.Valid;
-import java.util.Map;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -87,7 +69,7 @@ public class AuthorizationIntegrationTest extends AbstractDockerComposeBasedTest
         
         // when
         // 유스케이스/인가/Happy path
-        ResultActions resultActions = mockMvc.perform(get("/test")
+        ResultActions resultActions = mockMvc.perform(get("/test/role")
                 .header(environment.getProperty("jwt.header.name"), getJWTTokenInFormat(accessTokenData))
                 .with(csrf()));
 
@@ -108,7 +90,7 @@ public class AuthorizationIntegrationTest extends AbstractDockerComposeBasedTest
         // when
         // 유스케이스/인가/Fail path
         // 1. 인가가 필요한 요청에 인가 정보가 없다면, 실패 메세지를 반환한다.
-        ResultActions resultActions = mockMvc.perform(get("/test")
+        ResultActions resultActions = mockMvc.perform(get("/test/role")
                 .with(csrf()));
 
         // then

@@ -27,8 +27,6 @@ public class UsernameInquiryIntegrationTest extends AbstractDockerComposeBasedTe
 
     UserDTO userDTO;
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @Autowired
     UserServiceImpl userServiceImpl;
 

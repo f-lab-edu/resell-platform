@@ -10,7 +10,19 @@ import java.util.Map;
 
 @RestController
 public class TestController {
+
     @GetMapping("/test")
+    public StandardResponse getHomePage() {
+
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message("Home page test succeeded")
+                .data(Map.of())
+                .build();
+
+        return standardResponse;
+    }
+
+    @GetMapping("/test/role")
     @PreAuthorize(Role.USER)
     public StandardResponse doAuthorizationTest() {
 

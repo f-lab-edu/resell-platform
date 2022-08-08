@@ -45,7 +45,6 @@ public class AccessJWTAuthorizationFilter extends AbstractJWTAuthorizationFilter
                 principleDetails.getAuthorities());
 
         // Spring security의 권한 관리 기능을 사용하기 위해 security의 세션에 접근하여 Authentication 객체 저장
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
         SecurityContext securityContext = (SecurityContext) applicationContext.getBean("securityContext");
         securityContext.setAuthentication(authentication);
     }

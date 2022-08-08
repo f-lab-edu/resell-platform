@@ -81,8 +81,9 @@ abstract public class AbstractJWTAuthorizationFilter extends BasicAuthentication
                 return;
             }
             Optional<UserEntity> userEntity = userRepository.findUser(username);
-            if (!postProcessAfterAuthentication(response, chain, userEntity.get(), tokenData))
+            if (!postProcessAfterAuthentication(response, chain, userEntity.get(), tokenData)) {
                 return;
+            }
         }
         chain.doFilter(request, response);
     }

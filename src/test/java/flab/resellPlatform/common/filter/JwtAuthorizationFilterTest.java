@@ -6,6 +6,7 @@ import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.controller.user.HomeController;
 import flab.resellPlatform.controller.user.UserController;
+import flab.utils.TestController;
 import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
@@ -26,6 +27,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
@@ -40,15 +42,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {HomeController.class, UserController.class})
+@WebMvcTest(controllers = {TestController.class})
 @Import(value = {SecurityConfig.class, MessageConfig.class})
 class JwtAuthorizationFilterTest {
-
-    // Mock for just dependency existence
-    @MockBean private MessageSourceAccessor messageSourceAccessor;
-    @MockBean private UserService userService;
-    @MockBean private RandomValueStringGenerator randomValueStringGenerator;
-    @MockBean private PasswordEncoder passwordEncoder;
 
     @MockBean
     RedisTemplate<String, Object> redisSessionTemplate;
@@ -110,8 +106,8 @@ class JwtAuthorizationFilterTest {
 
         accessTokenData = JWTUtils.createJwtToken(userEntity.getId(), userEntity.getUsername(), accessTokenTypeName, accessTokenExpirationTime, jwtHashingAlgorithm);
         refreshTokenData = JWTUtils.createJwtToken(userEntity.getId(), userEntity.getUsername(), refreshTokenTypeName, refreshTokenExpirationTime, jwtHashingAlgorithm);
-        accessTokenHeaderData = getJWTTokenInFormat(accessTokenData);
-        refreshTokenHeaderData = getJWTTokenInFormat(accessTokenData);
+        accessTokenHeaderData = getJWTTokenInFormat(accessTokenTypeName, accessTokenData);
+        refreshTokenHeaderData = getJWTTokenInFormat(refreshTokenTypeName, refreshTokenData);
     }
 
     @DisplayName("권한 획득 성공 with access token")
@@ -122,7 +118,7 @@ class JwtAuthorizationFilterTest {
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/")
+        ResultActions resultActions = mockMvc.perform(get("/test")
                 .header(authenticationHeader, accessTokenHeaderData)
                 .with(csrf())
         );
@@ -140,8 +136,11 @@ class JwtAuthorizationFilterTest {
         when(redisSessionTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(storedRefreshTokenData);
 
+        System.out.println("storedRefreshTokenData: " + storedRefreshTokenData);
+        System.out.println("refreshTokenHeaderData: " + refreshTokenHeaderData);
+
         // when
-        ResultActions resultActions = mockMvc.perform(get("/")
+        ResultActions resultActions = mockMvc.perform(get("/test")
                 .header(authenticationHeader, refreshTokenHeaderData)
                 .with(csrf())
         );
@@ -155,7 +154,7 @@ class JwtAuthorizationFilterTest {
     void doFilterInternal_no_jwt_header() throws Exception {
         // given
         // when
-        mockMvc.perform(get("/")
+        mockMvc.perform(get("/test")
                 .with(csrf()));
 
         // then
@@ -170,7 +169,7 @@ class JwtAuthorizationFilterTest {
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
-        mockMvc.perform(get("/")
+        mockMvc.perform(get("/test")
                 .header(authenticationHeader, refreshTokenData)
                 .with(csrf()))
                 .andExpect(status().isBadRequest());
@@ -190,7 +189,7 @@ class JwtAuthorizationFilterTest {
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/")
+        ResultActions resultActions = mockMvc.perform(get("/test")
                 .header(authenticationHeader, refreshTokenData)
                 .with(csrf())
         );
@@ -208,11 +207,11 @@ class JwtAuthorizationFilterTest {
         when(mockEnvironment.getProperty("jwt.secret.key")).thenReturn(null);
 
         // given
-        refreshTokenHeaderData = getJWTTokenInFormat(refreshTokenData);
+        refreshTokenHeaderData = getJWTTokenInFormat(refreshTokenTypeName, refreshTokenData);
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/")
+        ResultActions resultActions = mockMvc.perform(get("/test")
                 .header(authenticationHeader, refreshTokenHeaderData)
                 .with(csrf())
         );
@@ -236,11 +235,11 @@ class JwtAuthorizationFilterTest {
         refreshTokenData = JWTUtils.createJwtToken(userEntity.getId(), userEntity.getUsername(), refreshTokenTypeName, -1000, jwtHashingAlgorithm);
 
         // given
-        refreshTokenHeaderData = getJWTTokenInFormat(refreshTokenData);
+        refreshTokenHeaderData = getJWTTokenInFormat(refreshTokenTypeName, refreshTokenData);
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/")
+        ResultActions resultActions = mockMvc.perform(get("/test")
                 .header(authenticationHeader, refreshTokenHeaderData)
                 .with(csrf())
         );
@@ -258,7 +257,7 @@ class JwtAuthorizationFilterTest {
         verify(securityContext, never()).setAuthentication(any());
     }
 
-    String getJWTTokenInFormat(String tokenData) {
-        return jwtPrefix + " " + accessTokenTypeName + " " + tokenData;
+    String getJWTTokenInFormat(String tokenType, String tokenData) {
+        return jwtPrefix + " " + tokenType + " " + tokenData;
     }
 }
