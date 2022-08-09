@@ -1,4 +1,9 @@
 # **👟리셀 플랫폼**
+![image](https://user-images.githubusercontent.com/50356726/183287083-90d7706f-1772-4e0a-9e35-00cbf194c492.png)
+
+<br>
+
+# 🤝소개
 - Kream 리셀 플랫폼을 클론 구현한 프로젝트
 - 백엔드 설계에 집중하기 위해 프론트 UI는 카카오 오븐을 이용한 프로토 타이핑으로 대체함. 프로토 타입 UI와 통신하는 백엔드 API 개발에 주력.
 
@@ -43,33 +48,11 @@
 <br>
 
 # **❓기술적 이슈**
-## 기술 선택 과정
-
-🔐[사용자의 UX를 고려한 로그인(JWT, 세션, 쿠키) 보안 전략 수립 및 구현](https://ujkim-game.tistory.com/74)
-
-🤐[브루트포스 공격 특성을 고려한 비밀번호 해싱 알고리즘 선정 및 Spring 적용](https://ujkim-game.tistory.com/67)
-
-🗳️[[CI,CD] 젠킨스, Github Action 비교](https://www.notion.so/CI-CD-Github-Action-48925eb72a75429a99edcfcbc3534497)
-
-📕[[ms] Session storage selection Redis vs Memcached](https://www.notion.so/ms-Session-storage-selection-Redis-vs-Memcached-33960639090b4096984dd9be6e287267)
-
-## 해결한 이슈
-
-🗒️[유스케이스 기반 통합테스트 작성](https://www.notion.so/cbc35a5e03db4b8dbd7cb3c102f4be32)
-
-📌[docker-compose 파일 내 중복 ****Compose configurations**** 존재(1)](https://www.notion.so/docker-compose-Compose-configurations-1-592768983c7d45b1884f068648c9f13b)
-
-📌[docker-compose 파일 내 중복 ****Compose configurations**** 존재(2)](https://www.notion.so/docker-compose-Compose-configurations-2-718321adbbf34b6886287fc724e64678)
-
-🐳도커와 Testcontainer를 활용한 서버 환경 구축 자동화
-
-🪟[Filter를 사용하여 반복되는 응답 로직 제거](https://ujkim-game.tistory.com/72)
-
-## Small 이슈
-
-🥜Prototype Bean과 MockBean을 이용한 ThreadLocal의 단위 테스트 구축
-
-⚠️@Transactional과 @Cacheable 호환 문제 해결
+- 개발 시에 겪었던 **기술적 Issue들을 문제 상황, 접근 방법과 해결 과정, 결과**로 작성하려고 노력했습니다.
+- 그 중에서도 왜 어떠한 기술을 선택하게 됐는지 **사고 과정**을 중점적으로 작성했습니다.
+- [기술 선택 과정 링크](https://github.com/f-lab-edu/resell-platform/wiki/기술적-Issue#기술-선택-과정)
+- [해결한 이슈 링크](https://github.com/f-lab-edu/resell-platform/wiki/기술적-Issue#해결한-이슈)
+- [Small 이슈 링크](https://github.com/f-lab-edu/resell-platform/wiki/기술적-Issue#small-이슈)
 
 
 <br>
@@ -77,6 +60,7 @@
 # **🔍유스케이스**
 - 프로그래머 2인 개발이기 때문에 기획직군으로부터 받는 상세 기획서가 존재하지 않았습니다.
 - 기능 개발 및 통합 테스트 시나리오 작성의 용이함을 위해 Cockburn style의 유스케이스를 작성했습니다.
+
 [자세한 구현 내용 링크](https://github.com/f-lab-edu/resell-platform/wiki/유스케이스)
 
 ### **대표 예시**
