@@ -72,10 +72,11 @@ public class RedisCacheConfig {
 
     @Bean
     public CacheManager redisCacheManager() {
-        CacheManager cacheManager = RedisCacheManager.RedisCacheManagerBuilder
+        RedisCacheManager cacheManager = RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisCacheConnectionFactory())
                 .cacheDefaults(defaultRedisCacheConfiguration())
                 .build();
-        return new TransactionAwareCacheManagerProxy(cacheManager);
+        cacheManager.setTransactionAware(true);
+        return cacheManager;
     }
 }
