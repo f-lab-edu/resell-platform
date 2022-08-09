@@ -1,2 +1,2 @@
 version: '3.9'
-# convention : container_name/depends_on/image or build/restart/ports/environment
+# 사용법 docker-compose.yml 참조
