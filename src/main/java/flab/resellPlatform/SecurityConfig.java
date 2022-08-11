@@ -5,7 +5,6 @@ import flab.resellPlatform.common.filter.*;
 import flab.resellPlatform.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,8 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
@@ -60,15 +57,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AbstractJWTAuthorizationFilter accessJWTAuthorizationFilter() throws Exception {
-        return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), getApplicationContext());
+        return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), authenticationStoreProxy());
     }
 
     @Bean
-    @Scope(value = "prototype")
-    public SecurityContext securityContext() {
-        return SecurityContextHolder.getContext();
+    public AuthenticationStoreProxy authenticationStoreProxy() {
+        return new AuthSecurityStoreProxy();
     }
-
     @Bean
     public AbstractJWTAuthorizationFilter refreshJWTAuthorizationFilter() throws Exception {
         return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisSessionTemplate);

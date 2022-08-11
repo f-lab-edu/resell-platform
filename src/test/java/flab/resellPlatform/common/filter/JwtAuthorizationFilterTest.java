@@ -4,13 +4,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import flab.resellPlatform.MessageConfig;
 import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.utils.JWTUtils;
-import flab.resellPlatform.controller.user.HomeController;
-import flab.resellPlatform.controller.user.UserController;
 import flab.utils.TestController;
 import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
-import flab.resellPlatform.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,15 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
@@ -53,7 +45,7 @@ class JwtAuthorizationFilterTest {
     ValueOperations<String, Object> valueOperations;
 
     @MockBean
-    SecurityContext securityContext;
+    AuthenticationStoreProxy authenticationStoreProxy;
 
     @Autowired
     Environment environment;
@@ -124,7 +116,7 @@ class JwtAuthorizationFilterTest {
         );
 
         // then
-        verify(securityContext).setAuthentication(any());
+        verify(authenticationStoreProxy).storeAuthentication(any());
     }
 
     @DisplayName("토큰 재발급 성공 with refresh token")
@@ -135,9 +127,6 @@ class JwtAuthorizationFilterTest {
         when(userRepository.findUser(any())).thenReturn(Optional.of(userEntity));
         when(redisSessionTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(storedRefreshTokenData);
-
-        System.out.println("storedRefreshTokenData: " + storedRefreshTokenData);
-        System.out.println("refreshTokenHeaderData: " + refreshTokenHeaderData);
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/test")
@@ -158,7 +147,7 @@ class JwtAuthorizationFilterTest {
                 .with(csrf()));
 
         // then
-        verify(securityContext, never()).setAuthentication(any());
+        verify(authenticationStoreProxy, never()).storeAuthentication(any());
     }
 
     @DisplayName("접속 실패 by 정해진 토큰 형식 아님")
@@ -175,7 +164,7 @@ class JwtAuthorizationFilterTest {
                 .andExpect(status().isBadRequest());
 
         // then
-        verify(securityContext, never()).setAuthentication(any());
+        verify(authenticationStoreProxy, never()).storeAuthentication(any());
     }
 
     @DisplayName("접속 실패 by IllegalArgumentException")
@@ -196,7 +185,7 @@ class JwtAuthorizationFilterTest {
 
         // then
         resultActions.andExpect(status().isBadRequest());
-        verify(securityContext, never()).setAuthentication(any());
+        verify(authenticationStoreProxy, never()).storeAuthentication(any());
     }
 
     @DisplayName("접속 실패 by AlgorithmMismatchException")
@@ -218,7 +207,7 @@ class JwtAuthorizationFilterTest {
 
         // then
         resultActions.andExpect(status().isBadRequest());
-        verify(securityContext, never()).setAuthentication(any());
+        verify(authenticationStoreProxy, never()).storeAuthentication(any());
     }
 
     @DisplayName("접속 실패 by InvalidClaimException")
@@ -226,7 +215,7 @@ class JwtAuthorizationFilterTest {
     void doFilterInternal_InvalidClaimException() throws Exception {
         // InvalidClaimException을 mock으로도 일으킬 수가 없음. 피드백 필요
         assertThat(1).isNotNull();
-        verify(securityContext, never()).setAuthentication(any());
+        verify(authenticationStoreProxy, never()).storeAuthentication(any());
     }
 
     @DisplayName("접속 실패 by TokenExpiredException")
@@ -246,7 +235,7 @@ class JwtAuthorizationFilterTest {
 
         // then
         resultActions.andExpect(status().isUnauthorized());
-        verify(securityContext, never()).setAuthentication(any());
+        verify(authenticationStoreProxy, never()).storeAuthentication(any());
     }
 
     @DisplayName("접속 실패 by SignatureVerificationException")
@@ -254,7 +243,7 @@ class JwtAuthorizationFilterTest {
     void doFilterInternal_SignatureVerificationException() throws Exception {
         // SignatureVerificationException을 mock으로도 일으킬 수가 없음. 피드백 필요
         assertThat(1).isNotNull();
-        verify(securityContext, never()).setAuthentication(any());
+        verify(authenticationStoreProxy, never()).storeAuthentication(any());
     }
 
     String getJWTTokenInFormat(String tokenType, String tokenData) {
