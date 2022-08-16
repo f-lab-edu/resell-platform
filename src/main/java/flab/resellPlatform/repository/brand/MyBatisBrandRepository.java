@@ -12,8 +12,7 @@ public class MyBatisBrandRepository implements BrandRepository {
 
     @Override
     public BrandEntity save(BrandEntity brandEntity) {
-        brandMapper.save(brandEntity);
-        return brandEntity;
+        return brandMapper.save(brandEntity);
     }
 
     @Override
@@ -30,5 +29,10 @@ public class MyBatisBrandRepository implements BrandRepository {
     @Override
     public void delete(Long id) {
         brandMapper.delete(id);
+    }
+
+    @Override
+    public BrandEntity findById(Long id) {
+        return brandMapper.findById(id);
     }
 }

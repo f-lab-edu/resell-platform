@@ -10,5 +10,6 @@ public interface BrandRepository {
     List<BrandEntity> findAll();
     BrandEntity update(Long id, BrandEntity brandEntity);
     void delete(Long id);
+    BrandEntity findById(Long id);
 
 }

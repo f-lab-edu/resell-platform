@@ -20,4 +20,7 @@ public interface BrandMapper {
     @Delete("DELETE FROM brand WHERE id = #[id}")
     void delete(Long id);
 
+    @Select("SELECT * FROM brand WHERE id = #{id}")
+    BrandEntity findById(Long id);
+
 }
