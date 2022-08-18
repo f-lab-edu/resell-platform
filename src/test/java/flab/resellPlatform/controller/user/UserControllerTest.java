@@ -5,6 +5,7 @@ import flab.resellPlatform.MessageConfig;
 import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.TestUtil;
 import flab.resellPlatform.common.response.StandardResponse;
+import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
 import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.PrincipleDetails;
@@ -25,6 +26,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -84,7 +86,7 @@ class UserControllerTest {
     @Test
     void createUser_success() throws Exception {
         // given
-        when(userService.createUser(any())).thenReturn(Optional.of(userDTO));
+        when(userService.createUser(any())).thenReturn(userDTO);
         String userData = mapper.writeValueAsString(userDTO);
 
         // when
@@ -147,7 +149,7 @@ class UserControllerTest {
         String targetUsername = "michael";
         String requiredPhoneNumber = "010-4589-0000";
         String query = "phoneNumber=" + requiredPhoneNumber;
-        when(userService.findUsername(requiredPhoneNumber)).thenReturn(Optional.of(targetUsername));
+        when(userService.findUsername(requiredPhoneNumber)).thenReturn(targetUsername);
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/users/usernameInquiry" + "?" + query)
@@ -169,7 +171,7 @@ class UserControllerTest {
         String targetUsername = "michael";
         String requiredPhoneNumber = "010-4589-0000";
         String query = "phoneNumber=" + requiredPhoneNumber;
-        when(userService.findUsername(requiredPhoneNumber)).thenReturn(Optional.empty());
+        when(userService.findUsername(requiredPhoneNumber)).thenThrow(PhoneNumberNotFoundException.class);
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/users/usernameInquiry" + "?" + query)
@@ -192,7 +194,7 @@ class UserControllerTest {
         String body = mapper.writeValueAsString(strictLoginInfo);
         String temporaryPassword = "fslkkjlk12";
         when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
-        when(userService.updatePassword((StrictLoginInfo) any())).thenReturn(Optional.of(temporaryPassword));
+        when(userService.updatePassword((StrictLoginInfo) any())).thenReturn(temporaryPassword);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")

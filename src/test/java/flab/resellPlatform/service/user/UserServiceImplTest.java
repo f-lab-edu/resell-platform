@@ -60,7 +60,7 @@ class UserServiceImplTest {
 
         try {
             // when
-            Optional<UserDTO> result = userServiceImpl.createUser(applicantDTO);
+            userServiceImpl.createUser(applicantDTO);
         } catch (Exception e) {
             // then
             Assertions.assertThat(e).isInstanceOf(SQLIntegrityConstraintViolationException.class);
@@ -80,8 +80,8 @@ class UserServiceImplTest {
         when(userRepository.save(any())).thenReturn(applicantEntity);
 
         // when
-        Optional<UserDTO> result = userServiceImpl.createUser(applicantDTO);
+        UserDTO result = userServiceImpl.createUser(applicantDTO);
         // then
-        Assertions.assertThat(result.get()).isEqualTo(applicantDTO);
+        Assertions.assertThat(result).isEqualTo(applicantDTO);
     }
 }

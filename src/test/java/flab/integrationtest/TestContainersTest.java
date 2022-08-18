@@ -38,9 +38,9 @@ class TestContainersTest extends AbstractDockerComposeBasedTest {
     public void testDbUploaded() {
         UserDTO inputUserDTO = UserTestFactory.createUserDTOBuilder().build();
         userService.createUser(inputUserDTO);
-        Optional<String> storedUsername = userService.findUsername(inputUserDTO.getPhoneNumber());
+        String storedUsername = userService.findUsername(inputUserDTO.getPhoneNumber());
 
-        assertThat(inputUserDTO.getUsername()).isEqualTo(storedUsername.get());
+        assertThat(inputUserDTO.getUsername()).isEqualTo(storedUsername);
     }
 
     @DisplayName("Redis cache 업로드 테스트")

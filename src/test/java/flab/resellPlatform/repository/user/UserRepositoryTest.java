@@ -17,6 +17,7 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -31,6 +32,9 @@ class UserRepositoryTest {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final String CACHE_NAME = "user";
+
+    @MockBean
+    MessageSourceAccessor messageSourceAccessor;
 
     @MockBean
     UserMapper userMapper;

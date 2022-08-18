@@ -2,9 +2,11 @@ package flab.integrationtest.userapi;
 
 import flab.integrationtest.AbstractDockerComposeBasedTest;
 import flab.resellPlatform.ResellPlatformApplication;
+import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
 import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.service.user.UserServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,9 +64,8 @@ public class UserCreateIntegrationTest extends AbstractDockerComposeBasedTest {
         // then
         resultActions.andExpect(status().isOk());
 
-        Optional<String> usernameFound = userServiceImpl.findUsername(userDTO.getPhoneNumber());
-        assertThat(usernameFound).isNotEmpty();
-        assertThat(usernameFound.get()).isEqualTo(userDTO.getUsername());
+        String usernameFound = userServiceImpl.findUsername(userDTO.getPhoneNumber());
+        assertThat(usernameFound).isEqualTo(userDTO.getUsername());
     }
 
     @DisplayName("실패 시나리오: 고객은 username, password, phone, email, shoesize를 필수로 입력한다.")
@@ -84,8 +86,10 @@ public class UserCreateIntegrationTest extends AbstractDockerComposeBasedTest {
 
         // then
         resultActions.andExpect(status().isBadRequest());
-        Optional<String> savedUsername = userServiceImpl.findUsername(userDTO.getPhoneNumber());
-        assertThat(savedUsername).isEmpty();
+        Assertions.assertThrows(PhoneNumberNotFoundException.class,
+                () -> {
+                    userServiceImpl.findUsername(userDTO.getPhoneNumber());
+                });
     }
 
     @DisplayName("실패 시나리오: 유저 서비스는 각 고객마다 고유한 username을 보장해야 한다.")
@@ -101,8 +105,6 @@ public class UserCreateIntegrationTest extends AbstractDockerComposeBasedTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
                 .with(csrf()));
-
-        Optional<String> username = userServiceImpl.findUsername(userDTO.getPhoneNumber());
 
         // then
         resultActions.andExpect(status().isBadRequest());

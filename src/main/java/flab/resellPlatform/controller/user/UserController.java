@@ -11,6 +11,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,14 +41,11 @@ public class UserController {
 
     @GetMapping("/usernameInquiry")
     public StandardResponse findUsername(String phoneNumber) {
-        Optional<String> result = userService.findUsername(phoneNumber);
-        if (result.isEmpty()) {
-            throw new PhoneNumberNotFoundException();
-        }
+        String result = userService.findUsername(phoneNumber);
 
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.username.found"))
-                .data(Map.of("username", result.get()))
+                .data(Map.of("username", result))
                 .build();
 
         return standardResponse;
@@ -55,17 +53,12 @@ public class UserController {
 
     @PostMapping("/password/inquiry")
     public StandardResponse findPassword(@Valid @RequestBody StrictLoginInfo strictLoginInfo) {
-
         // 비밀번호 업데이트
-        Optional<String> result = userService.updatePassword(strictLoginInfo);
-
-        if (result.isEmpty()) {
-            throw new UserInfoNotFoundException();
-        }
+        String result = userService.updatePassword(strictLoginInfo);
 
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
-                .data(Map.of("password", result.get()))
+                .data(Map.of("password", result))
                 .build();
 
         return standardResponse;
@@ -74,7 +67,6 @@ public class UserController {
     @PreAuthorize(Role.USER)
     @PostMapping("/password/update")
     public StandardResponse updatePassword(@Valid @RequestBody LoginInfo newLoginInfo) {
-
         userService.updatePassword(newLoginInfo);
 
         StandardResponse standardResponse = StandardResponse.builder()
@@ -84,6 +76,15 @@ public class UserController {
 
         return standardResponse;
     }
+
+    /*
+    *
+    * message: "회원가입 실패"
+    * data : {
+    *   object1:
+    *   object2:
+    * }
+     */
 
     @ExceptionHandler(PhoneNumberNotFoundException.class)
     public ResponseEntity<StandardResponse> catchDuplicateId(PhoneNumberNotFoundException e, HttpServletResponse response) {
@@ -95,14 +96,16 @@ public class UserController {
         return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
     }
 
-    /*
-    *
-    * message: "회원가입 실패"
-    * data : {
-    *   object1:
-    *   object2:
-    * }
-     */
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<StandardResponse> catchDuplicateId(UsernameNotFoundException e, HttpServletResponse response) {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("user.username.notFound"))
+                .data(Map.of())
+                .build();
+
+        return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
+    }
+
 
     @ExceptionHandler(UserInfoNotFoundException.class)
     public ResponseEntity<StandardResponse> catchDuplicateId(UserInfoNotFoundException e, HttpServletResponse response) {

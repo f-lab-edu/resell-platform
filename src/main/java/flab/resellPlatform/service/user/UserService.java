@@ -20,7 +20,7 @@ public interface UserService {
     * @작성일 6/19/2022
     * @작성자 minsuk
     */
-    Optional<UserDTO> createUser(UserDTO userInfo);
+    UserDTO createUser(UserDTO userInfo);
 
     /**
     * 사용자 아이디 찾기
@@ -32,7 +32,7 @@ public interface UserService {
     * @작성일 6/19/2022
     * @작성자 minsuk
     */
-    Optional<String> findUsername(String phoneNumber);
+    String findUsername(String phoneNumber);
 
     /**
     * 아이디와 비밀번호로 비밀번호를 변경함.
@@ -56,5 +56,5 @@ public interface UserService {
      * @작성일 6/19/2022
      * @작성자 minsuk
      */
-    Optional<String> updatePassword(StrictLoginInfo strictLoginInfo);
+    String updatePassword(StrictLoginInfo strictLoginInfo);
 }
