@@ -22,7 +22,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -57,6 +56,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        super.unsuccessfulAuthentication(request, response, failed);
+
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("jwt.invalid.user"))
+                .data(Map.of())
+                .build();
+        ResponseUtils.createCustomMessage(response, HttpStatus.OK, standardResponse);
     }
 
     @Override

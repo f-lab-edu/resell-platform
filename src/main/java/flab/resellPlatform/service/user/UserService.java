@@ -20,7 +20,7 @@ public interface UserService {
     * @작성일 6/19/2022
     * @작성자 minsuk
     */
-    Optional<UserDTO> createUser(UserDTO userInfo);
+    UserDTO createUser(UserDTO userInfo);
 
     /**
     * 사용자 아이디 찾기
@@ -32,7 +32,7 @@ public interface UserService {
     * @작성일 6/19/2022
     * @작성자 minsuk
     */
-    Optional<String> findUsername(String phoneNumber);
+    String findUsername(String phoneNumber);
 
     /**
     * 아이디와 비밀번호로 비밀번호를 변경함.
@@ -50,11 +50,11 @@ public interface UserService {
      * 아이디 비밀번호 외에 사용자를 검증할 수 있는 추가적인 데이터들을 이용하여 비밀번호를 변경함.
      *
      * @param strictLoginInfo 비밀번호 찾기에 필요한 정보.
-     * @return int 성공시 1보다 같거나 큰 값 반환, 실패시 0 반환.
+     * @return Optional<String> 성공시 비밀번호 반환, 실패시 Optional.empty() 반환.
      * @exception
      *
      * @작성일 6/19/2022
      * @작성자 minsuk
      */
-    int updatePassword(StrictLoginInfo strictLoginInfo);
+    String updatePassword(StrictLoginInfo strictLoginInfo);
 }

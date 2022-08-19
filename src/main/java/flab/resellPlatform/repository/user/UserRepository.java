@@ -22,7 +22,7 @@ public interface UserRepository {
     */
 
     UserEntity save(UserEntity userEntity)  throws DuplicateKeyException;
-    @Cacheable(value = "user", key = "#username")
+    @Cacheable(value = "user", key = "#username", unless = "#result == null")
     Optional<UserEntity> findUser(String username);
     Optional<String> findUsername(String phoneNumber);
     List<UserEntity> findAll();

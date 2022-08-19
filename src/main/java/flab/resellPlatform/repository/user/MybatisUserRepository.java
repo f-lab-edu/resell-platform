@@ -4,6 +4,7 @@ import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
 import flab.resellPlatform.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class MybatisUserRepository implements UserRepository {
 
     private final UserMapper userMapper;
+    private final MessageSourceAccessor messageSourceAccessor;
 
     @Override
     public UserEntity save(UserEntity userEntity) throws DuplicateKeyException {
@@ -23,7 +25,7 @@ public class MybatisUserRepository implements UserRepository {
             userMapper.save(userEntity);
 
         } catch (SQLException e) {
-            throw new DuplicateKeyException("동일한 값이 존재합니다.", e);
+            throw new DuplicateKeyException(messageSourceAccessor.getMessage("user.username.duplicated"), e);
         }
         return userEntity;
     }

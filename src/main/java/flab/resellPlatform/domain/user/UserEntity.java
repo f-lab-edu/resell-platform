@@ -2,9 +2,6 @@ package flab.resellPlatform.domain.user;
 
 import lombok.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-
 @Getter
 @Setter
 @EqualsAndHashCode

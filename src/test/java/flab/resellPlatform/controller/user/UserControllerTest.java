@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import flab.resellPlatform.MessageConfig;
 import flab.resellPlatform.SecurityConfig;
 import flab.resellPlatform.common.TestUtil;
-import flab.resellPlatform.common.utils.UserUtils;
 import flab.resellPlatform.common.response.StandardResponse;
-import flab.resellPlatform.data.UserTestFactory;
+import flab.resellPlatform.exception.user.PhoneNumberNotFoundException;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.LoginInfo;
 import flab.resellPlatform.domain.user.PrincipleDetails;
 import flab.resellPlatform.domain.user.StrictLoginInfo;
@@ -15,8 +15,6 @@ import flab.resellPlatform.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,14 +26,13 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -89,7 +86,7 @@ class UserControllerTest {
     @Test
     void createUser_success() throws Exception {
         // given
-        when(userService.createUser(any())).thenReturn(Optional.of(userDTO));
+        when(userService.createUser(any())).thenReturn(userDTO);
         String userData = mapper.writeValueAsString(userDTO);
 
         // when
@@ -151,9 +148,8 @@ class UserControllerTest {
         // given
         String targetUsername = "michael";
         String requiredPhoneNumber = "010-4589-0000";
-        String normalizedPhoneNumber = UserUtils.normalizePhoneNumber(requiredPhoneNumber);
         String query = "phoneNumber=" + requiredPhoneNumber;
-        when(userService.findUsername(normalizedPhoneNumber)).thenReturn(Optional.of(targetUsername));
+        when(userService.findUsername(requiredPhoneNumber)).thenReturn(targetUsername);
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/users/usernameInquiry" + "?" + query)
@@ -175,7 +171,7 @@ class UserControllerTest {
         String targetUsername = "michael";
         String requiredPhoneNumber = "010-4589-0000";
         String query = "phoneNumber=" + requiredPhoneNumber;
-        when(userService.findUsername(requiredPhoneNumber)).thenReturn(Optional.empty());
+        when(userService.findUsername(requiredPhoneNumber)).thenThrow(PhoneNumberNotFoundException.class);
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/users/usernameInquiry" + "?" + query)
@@ -198,7 +194,7 @@ class UserControllerTest {
         String body = mapper.writeValueAsString(strictLoginInfo);
         String temporaryPassword = "fslkkjlk12";
         when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
-        when(userService.updatePassword((StrictLoginInfo) any())).thenReturn(1);
+        when(userService.updatePassword((StrictLoginInfo) any())).thenReturn(temporaryPassword);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")
@@ -212,30 +208,6 @@ class UserControllerTest {
                 .message(messageSourceAccessor.getMessage("user.temporary.password.returned"))
                 .build();
         TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
-
-    }
-
-    @DisplayName("비밀번호 찾기 실패 by 유저 정보 불일치")
-    @Test
-    void findPassword_failure() throws Exception {
-        // given
-        String body = mapper.writeValueAsString(strictLoginInfo);
-        String temporaryPassword = "fslkkjlk12";
-        when(randomValueStringGenerator.generate()).thenReturn(temporaryPassword);
-        when(userService.updatePassword(strictLoginInfo)).thenReturn(0);
-
-        // when
-        ResultActions resultActions = mockMvc.perform(post("/users/password/inquiry")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .with(csrf()));
-
-        // then
-        StandardResponse standardResponse = StandardResponse.builder()
-                .data(Map.of())
-                .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
-                .build();
-        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
 
     }
 
@@ -260,29 +232,5 @@ class UserControllerTest {
                 .data(Map.of())
                 .build();
         TestUtil.expectDefaultResponse(mapper, standardResponse, status().isOk(), resultActions);
-    }
-
-    @DisplayName("패스워드 업데이트 실패")
-    @Test
-    void updatePassword_failure() throws Exception {
-        // given
-        String body = mapper.writeValueAsString(loginInfo);
-        when(passwordEncoder.encode(any())).thenReturn("encodedPW");
-        when(userService.updatePassword((LoginInfo) any())).thenReturn(0);
-
-
-        // when
-        ResultActions resultActions = mockMvc.perform(post("/users/password/update")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .with(csrf()));
-
-        // then
-        StandardResponse standardResponse = StandardResponse.builder()
-                .message(messageSourceAccessor.getMessage("user.userInfo.notFound"))
-                .data(Map.of())
-                .build();
-
-        TestUtil.expectDefaultResponse(mapper, standardResponse, status().isBadRequest(), resultActions);
     }
 }

@@ -57,9 +57,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AbstractJWTAuthorizationFilter accessJWTAuthorizationFilter() throws Exception {
-        return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm());
+        return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), authenticationStoreProxy());
     }
 
+    @Bean
+    public AuthenticationStoreProxy authenticationStoreProxy() {
+        return new AuthSecurityStoreProxy();
+    }
     @Bean
     public AbstractJWTAuthorizationFilter refreshJWTAuthorizationFilter() throws Exception {
         return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisSessionTemplate);

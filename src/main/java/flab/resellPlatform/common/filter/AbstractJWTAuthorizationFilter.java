@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import flab.resellPlatform.common.utils.JWTUtils;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.env.Environment;
@@ -28,7 +29,7 @@ abstract public class AbstractJWTAuthorizationFilter extends BasicAuthentication
     protected final UserRepository userRepository;
     protected final Environment environment;
     protected final MessageSourceAccessor messageSourceAccessor;
-    protected Algorithm jwtHashingAlgorithm;
+    protected final Algorithm jwtHashingAlgorithm;
 
 
     public AbstractJWTAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, Environment environment, MessageSourceAccessor messageSourceAccessor, Algorithm jwtHashingAlgorithm) {
@@ -80,8 +81,9 @@ abstract public class AbstractJWTAuthorizationFilter extends BasicAuthentication
                 return;
             }
             Optional<UserEntity> userEntity = userRepository.findUser(username);
-            if (!postProcessAfterAuthentication(response, chain, userEntity.get(), tokenData))
+            if (!postProcessAfterAuthentication(response, chain, userEntity.get(), tokenData)) {
                 return;
+            }
         }
         chain.doFilter(request, response);
     }

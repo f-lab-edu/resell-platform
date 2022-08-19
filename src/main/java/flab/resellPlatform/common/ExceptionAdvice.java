@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,5 +40,15 @@ public class ExceptionAdvice {
                 .build();
 
         return new ResponseEntity<>(standardResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<StandardResponse> returnAccessDeniedError(HttpServletResponse response) {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.access.denied"))
+                .data(Map.of())
+                .build();
+
+        return new ResponseEntity<>(standardResponse, HttpStatus.FORBIDDEN);
     }
 }

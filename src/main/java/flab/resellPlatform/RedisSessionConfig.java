@@ -10,8 +10,6 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import java.time.Duration;
-
 
 @Configuration
 @ConfigurationProperties(value = "spring.session.redis")
@@ -38,6 +36,7 @@ public class RedisSessionConfig {
         redisTemplate.setConnectionFactory(redisSessionConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setEnableTransactionSupport(true);
         return redisTemplate;
     }
 }

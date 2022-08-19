@@ -24,8 +24,6 @@ public class HomeController {
 
     @GetMapping("/")
     public StandardResponse getHomePage() {
-        System.out.println("hahaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("common.request.succeeded"))
                 .data(Map.of("hello", "world"))

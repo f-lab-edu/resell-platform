@@ -1,6 +1,6 @@
 package flab.resellPlatform.service.user;
 
-import flab.resellPlatform.data.UserTestFactory;
+import flab.utils.UserTestFactory;
 import flab.resellPlatform.domain.user.UserDTO;
 import flab.resellPlatform.domain.user.UserEntity;
 import flab.resellPlatform.repository.user.UserRepository;
@@ -14,6 +14,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Optional;
@@ -29,6 +31,12 @@ class UserServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
+
+    @Mock
+    RandomValueStringGenerator randomValueStringGenerator;
 
     @InjectMocks
     UserServiceImpl userServiceImpl;
@@ -52,7 +60,7 @@ class UserServiceImplTest {
 
         try {
             // when
-            Optional<UserDTO> result = userServiceImpl.createUser(applicantDTO);
+            userServiceImpl.createUser(applicantDTO);
         } catch (Exception e) {
             // then
             Assertions.assertThat(e).isInstanceOf(SQLIntegrityConstraintViolationException.class);
@@ -72,8 +80,8 @@ class UserServiceImplTest {
         when(userRepository.save(any())).thenReturn(applicantEntity);
 
         // when
-        Optional<UserDTO> result = userServiceImpl.createUser(applicantDTO);
+        UserDTO result = userServiceImpl.createUser(applicantDTO);
         // then
-        Assertions.assertThat(result.get()).isEqualTo(applicantDTO);
+        Assertions.assertThat(result).isEqualTo(applicantDTO);
     }
 }

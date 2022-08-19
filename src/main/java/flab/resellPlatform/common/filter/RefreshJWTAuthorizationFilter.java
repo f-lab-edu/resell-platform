@@ -36,8 +36,9 @@ public class RefreshJWTAuthorizationFilter extends AbstractJWTAuthorizationFilte
     protected boolean postProcessAfterAuthentication(HttpServletResponse response, FilterChain chain, UserEntity userEntity, String tokenData) {
         // 기존 refresh token과 비교
         Object storedRefreshToken = redisSessionTemplate.opsForValue().get(environment.getProperty("jwt.token.type.refresh") + String.valueOf(userEntity.getId()));
+
         if (storedRefreshToken != null && !storedRefreshToken.equals(tokenData)) {
-            JWTUtils.returnErrorCodeWithHeader(response, messageSourceAccessor.getMessage("jwt.invald.token"), HttpStatus.UNAUTHORIZED);
+            JWTUtils.returnErrorCodeWithHeader(response, messageSourceAccessor.getMessage("jwt.invalid.token"), HttpStatus.UNAUTHORIZED);
             return false;
         }
 
