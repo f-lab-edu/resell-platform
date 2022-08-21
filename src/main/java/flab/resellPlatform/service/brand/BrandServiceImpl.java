@@ -21,7 +21,7 @@ public class BrandServiceImpl implements BrandService {
     public BrandDTO addBrand(BrandDTO brandDTO) {
         BrandEntity brandEntity = modelMapper.map(brandDTO, BrandEntity.class);
         brandRepository.save(brandEntity);
-        return null;
+        return brandDTO;
     }
 
     @Override
