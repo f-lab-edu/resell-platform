@@ -1,18 +1,28 @@
 package flab.resellPlatform.repository.brand;
 
 import flab.resellPlatform.domain.brand.BrandEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class MyBatisBrandRepository implements BrandRepository {
 
-    BrandMapper brandMapper;
+    private final BrandMapper brandMapper;
+    private final MessageSourceAccessor messageSourceAccessor;
 
     @Override
     public BrandEntity save(BrandEntity brandEntity) {
-        return brandMapper.save(brandEntity);
+        try {
+            return brandMapper.save(brandEntity);
+        } catch (SQLException e) {
+            throw new DuplicateKeyException(messageSourceAccessor.getMessage("brand.name.duplicated"));
+        }
     }
 
     @Override

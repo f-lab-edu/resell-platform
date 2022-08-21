@@ -9,7 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testcontainers.shaded.org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,7 +33,7 @@ class MyBatisBrandRepositoryTest {
 
     @DisplayName("브랜드 정보 저장")
     @Test
-    void save() {
+    void save() throws SQLException {
         BrandEntity brandEntity = BrandEntity.builder()
                 .id(1L)
                 .name("Nike")
