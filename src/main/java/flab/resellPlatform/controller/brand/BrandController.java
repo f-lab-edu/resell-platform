@@ -32,7 +32,7 @@ public class BrandController {
 
     @PostMapping
     @PreAuthorize(Role.ADMIN)
-    public StandardResponse addBrand(@Valid @ModelAttribute BrandDTO brandDTO) {
+    public StandardResponse addBrand(@ModelAttribute BrandDTO brandDTO) {
         brandService.addBrand(brandDTO);
 
         StandardResponse standardResponse = StandardResponse.builder()
