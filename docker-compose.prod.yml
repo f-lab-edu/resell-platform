@@ -3,12 +3,11 @@ version: '3.9'
 
 services:
   app:
+    build: .
     depends_on:
-      - session
-      - cache
+      - redissession
+      - rediscache
       - database
-    build:
-      dockerfile: ./Dockerfile
     restart: always
     ports:
       - "8080:8080"
@@ -21,4 +20,3 @@ services:
       - MYSQL_USER=resell_platform
       - MYSQL_PASSWORD=resell1234
       - DB_SCHEMA=v_1
-        
