@@ -1,13 +1,13 @@
 #!/bin/bash
 
-REPOSITORY=/home/ec2-user/app/step1
+REPOSITORY=/home/ec2-user/app/step2
 PROJECT_NAME=resell-platform
 
 cd $REPOSITORY/$PROJECT_NAME/
 
-echo "> Git Pull"
+echo "> Change gradlew to executable"
 
-git pull
+chmod +x gradlew
 
 echo "> 프로젝트 Build 시작"
 

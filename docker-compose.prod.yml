@@ -9,9 +9,8 @@ services:
   redissession:
     build: session
     restart: always
-    
-  app:
 
+  app:
     depends_on:
       - rediscache
       - redissession
