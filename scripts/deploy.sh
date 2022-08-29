@@ -30,7 +30,7 @@ docker rm $(docker ps -a -q)
 sleep 5
 
 echo "> 새 애플리케이션 배포"
-docker-compose -f $PROJECT_NAME/docker-compose.yml -f $PROJECT_NAME/docker-compose.prod.yml up -d
+docker-compose -f $PROJECT_NAME/zip/docker-compose.yml -f $PROJECT_NAME/zip/docker-compose.prod.yml up -d
 
 NEW_DOCKER_ID=$(docker ps -af "ancestor=resell-platform_app" -q)
 echo ">새 애플리케이션 docker id: $NEW_DOCKER_ID"
