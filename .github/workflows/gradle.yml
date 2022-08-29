@@ -36,3 +36,20 @@ jobs:
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: build
+
+    - name: before_deploy
+      run: |
+        zip -r resell-platform * # 해당 디렉토리에 있는 모든 요소들을 zip으로 묶음
+        mkdir -p deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
+        mv resell-platform.zip deploy/resell-platform.zip
+
+    - name: Deploy
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
+    - name: Upload to S3
+      run: |
+        aws s3 cp ./deploy/resell-platform.zip s3://resell-platform-build
