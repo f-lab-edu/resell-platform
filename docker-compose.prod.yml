@@ -5,16 +5,25 @@ services:
   rediscache:
     build: cache
     restart: always
+    networks:
+      - default
+      - back-end
 
   redissession:
     build: session
     restart: always
+    networks:
+      - default
+      - back-end
 
   app:
+    build: .
+    networks:
+      - default
+      - back-end
     depends_on:
       - rediscache
       - redissession
-    build: .
     restart: always
     ports:
       - "8080:8080"
