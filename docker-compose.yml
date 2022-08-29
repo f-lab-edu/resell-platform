@@ -8,26 +8,6 @@ version: '3.9'
 # docker-compose.override는 비어 있을 수 있지만 파일 자체는 존재해야함. 'Share Compose configurations' 방식을 사용한다는 것을 명시하기 위함.
 
 # convention : container_name/depends_on/image or build/restart/ports/environment
-services:
-  rediscache:
-    build: cache
-    restart: always
-
-  redissession:
-    build: session
-    restart: always
-
-  database:
-    build: database
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=resell_platform
-      - MYSQL_PASSWORD=resell1234
-      - DB_SCHEMA=resell_platform_webservice
-    networks:
-      - default
-      - back-end
 networks:
   back-end:
     name: back-end
