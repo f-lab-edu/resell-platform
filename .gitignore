@@ -35,8 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-
-### properties ###
-*jwt.properties
-*real-db.properties

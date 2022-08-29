@@ -1,8 +1,8 @@
 -- -----------------------------------------------------
--- Schema resell_platform_webservice
+-- Schema v_1
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS resell_platform_webservice CHARACTER SET utf8 ;
-USE resell_platform_webservice;
+CREATE SCHEMA IF NOT EXISTS v_1 CHARACTER SET utf8 ;
+USE v_1;
 
 -- -----------------------------------------------------
 -- Table `USER`
