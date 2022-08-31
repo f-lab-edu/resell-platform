@@ -26,7 +26,7 @@ public class HomeController {
     public StandardResponse getHomePage() {
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("common.request.succeeded"))
-                .data(Map.of("hello", "world"))
+                .data(Map.of("hello", "worlds"))
                 .build();
         return standardResponse;
     }

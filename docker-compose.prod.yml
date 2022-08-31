@@ -2,34 +2,14 @@ version: '3.9'
 # 사용법 docker-compose.yml 참조
 
 services:
-  rediscache:
-    build: cache
-    restart: always
-    networks:
-      - default
-      - back-end
-
-  redissession:
-    build: session
-    restart: always
-    networks:
-      - default
-      - back-end
-
   app:
     build: .
     networks:
       - default
       - back-end
-    depends_on:
-      - rediscache
-      - redissession
     restart: always
     ports:
       - "8080:8080"
-    environment:
-      - REDIS_CACHE_HOST_NAME=rediscache
-      - REDIS_SESSION_HOST_NAME=redissession
 
 networks:
   default:
