@@ -32,6 +32,17 @@ jobs:
         distribution: 'temurin'
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
+
+    - name: Read secrets from AWS Secrets Manager into environment variables
+      uses: abhilash1in/aws-secrets-manager-action@v1.1.0
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ap-northeast-2
+        secrets: |
+          /secret/resell-platform-real-db
+        parse-json: false
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:

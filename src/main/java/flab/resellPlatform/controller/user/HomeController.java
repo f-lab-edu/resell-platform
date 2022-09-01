@@ -4,6 +4,7 @@ import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,14 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
+    @Value(value = "${secret.manager.test}")
+    private String testValue;
+
     @GetMapping("/")
     public StandardResponse getHomePage() {
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("common.request.succeeded"))
-                .data(Map.of("hello", "worlds"))
+                .data(Map.of("hello", "worlds", "testKey", testValue))
                 .build();
         return standardResponse;
     }

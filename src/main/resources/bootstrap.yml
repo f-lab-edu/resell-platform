@@ -1,0 +1,7 @@
+aws:
+  secretsmanager:
+    name: resell-platform-real-db
+cloud:
+  aws:
+    region:
+      static: ap-southeast-1
