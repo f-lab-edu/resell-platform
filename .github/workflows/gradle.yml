@@ -44,8 +44,8 @@ jobs:
       uses: abhilash1in/aws-secrets-manager-action@v2.1.0
       with:
         secrets: |
-          *resell-platform-real-db
-        parse-json: true
+          /secret/resell-platform-real-db
+        parse-json: false
 
     - name: Check if env variable is set after fetching secrets
       run: if [ -z ${SECRET_MANAGER_TEST+x} ]; then echo "SECRET_MANAGER_TEST is unset"; else echo "SECRET_MANAGER_TEST is set to '$SECRET_MANAGER_TEST'"; fi
