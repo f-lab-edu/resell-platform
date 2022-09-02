@@ -25,8 +25,8 @@ docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
 sleep 5
 
-echo "> application-jwt.properties, application-real-db.properties 복사 to 프로젝트 dir"
-cp /home/ec2-user/app/application-jwt.properties $REPOSITORY/$PROJECT_NAME/application-jwt.properties
+#echo "> application-jwt.properties, application-real-db.properties 복사 to 프로젝트 dir"
+#cp /home/ec2-user/app/application-jwt.properties $REPOSITORY/$PROJECT_NAME/application-jwt.properties
 #cp /home/ec2-user/app/application-real-db.properties $REPOSITORY/$PROJECT_NAME/application-real-db.properties
 
 echo "> 새 애플리케이션 배포"

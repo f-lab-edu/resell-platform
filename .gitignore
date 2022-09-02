@@ -36,6 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
-### properties ###
-*jwt.properties
-*real-db.properties
+# erased for properties injection test. keep it plz.
+#### properties ###
+#*jwt.properties
+#*real-db.properties

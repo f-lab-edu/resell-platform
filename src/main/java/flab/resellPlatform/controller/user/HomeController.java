@@ -23,7 +23,7 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    @Value(value = "${secret.manager.test}")
+    @Value("${secret.manager.test}")
     private String testValue;
 
     @GetMapping("/")
