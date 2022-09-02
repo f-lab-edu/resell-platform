@@ -46,7 +46,7 @@ jobs:
         secrets: |
           /secret/resell-platform-real-db
           aabb
-        parse-json: false
+        parse-json: true
 
     - name: Check if env variable is set after fetching secrets
       run:  | 
