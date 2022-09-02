@@ -44,7 +44,7 @@ jobs:
       uses: abhilash1in/aws-secrets-manager-action@v2.1.0
       with:
         secrets: |
-          /secret/resell-platform-real-db
+          SECRET*
         parse-json: false
 
     - name: Check if env variable is set after fetching secrets
