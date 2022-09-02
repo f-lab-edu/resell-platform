@@ -51,7 +51,7 @@ jobs:
     - name: Check if env variable is set after fetching secrets
       run:  | 
         if [ -z ${SECRET_MANAGER_TEST+x} ]; then echo "SECRET_MANAGER_TEST is unset"; else echo "SECRET_MANAGER_TEST is set to '$SECRET_MANAGER_TEST'"; fi
-        if [ -z ${AABB+x} ]; then echo "AABB is unset"; else echo "AABB is set to '$AABB'"; fi
+        if [ -z ${AABB_CC+x} ]; then echo "AABB_CC is unset"; else echo "AABB_CC is set to '$AABB_CC'"; fi
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
