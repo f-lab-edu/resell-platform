@@ -33,24 +33,6 @@ jobs:
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
-    - name: Read secrets from AWS Secrets Manager into environment variables
-      uses: abhilash1in/aws-secrets-manager-action@v2.1.0
-      with:
-        secrets: |
-          resell-platform-real-db
-          resell-platform-jwt
-        parse-json: true
-
-    - name: Check if env variable is set after fetching secrets
-      run:  | 
-        if [ -z ${RESELL_PLATFORM_REAL_DB_SECRET_MANAGER_TEST+x} ]; then echo "RESELL_PLATFORM_REAL_DB_SECRET_MANAGER_TEST is unset"; else echo "RESELL_PLATFORM_REAL_DB_SECRET_MANAGER_TEST is set to '$RESELL_PLATFORM_REAL_DB_SECRET_MANAGER_TEST'"; fi
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
@@ -62,6 +44,13 @@ jobs:
         zip -r resell-platform * # 해당 디렉토리에 있는 모든 요소들을 zip으로 묶음
         mkdir -p deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
         mv resell-platform.zip deploy/resell-platform.zip
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Upload to S3
       run: |
