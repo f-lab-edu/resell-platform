@@ -33,6 +33,13 @@ jobs:
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
@@ -44,13 +51,6 @@ jobs:
         zip -r resell-platform * # 해당 디렉토리에 있는 모든 요소들을 zip으로 묶음
         mkdir -p deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
         mv resell-platform.zip deploy/resell-platform.zip
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Upload to S3
       run: |
