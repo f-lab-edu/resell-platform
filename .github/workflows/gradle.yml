@@ -53,7 +53,7 @@ jobs:
         mv resell-platform-app.tar deploy/resell-platform-app.tar
         chmod +x scripts/deploy.sh
         mv scripts/deploy.sh deploy/deploy.sh
-        zip -r resell-platform scripts/*
+        zip -r resell-platform deploy/*
 
 #    - name: before_deploy
 #      run: |
