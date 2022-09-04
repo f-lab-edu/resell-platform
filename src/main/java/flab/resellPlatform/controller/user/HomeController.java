@@ -23,14 +23,11 @@ public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    @Value("${secret.manager.test}")
-    private String testValue;
-
     @GetMapping("/")
     public StandardResponse getHomePage() {
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("common.request.succeeded"))
-                .data(Map.of("hello", "worlds", "testKey", testValue))
+                .data(Map.of("hello", "worlds"))
                 .build();
         return standardResponse;
     }
