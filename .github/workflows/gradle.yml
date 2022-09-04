@@ -51,6 +51,9 @@ jobs:
         docker save resell-platform-app -o resell-platform-app.tar
         mkdir -p deploy
         mv resell-platform-app.tar deploy/resell-platform-app.tar
+        chmod +x scripts/deploy.sh
+        mv scripts/deploy.sh deploy/deploy.sh
+        zip -r resell-platform scripts/*
 
 #    - name: before_deploy
 #      run: |
@@ -61,7 +64,7 @@ jobs:
 
     - name: Upload to S3
       run: |
-        aws s3 cp ./deploy/resell-platform-app.tar s3://resell-platform-image
+        aws s3 cp ./resell-platform.zip s3://resell-platform-image
       #        aws s3 cp ./deploy/resell-platform-app.zip s3://resell-platform-build
 
     - name: deploy with AWS codeDeploy
@@ -69,5 +72,5 @@ jobs:
         --application-name resell-platform-webservice
         --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name resell-platform-webservice-group
-        --s3-location bucket=resell-platform-image,bundleType=tar,key=resell-platform-app.tar
+        --s3-location bucket=resell-platform-image,bundleType=zip,key=resell-platform.zip
 #        --s3-location bucket=resell-platform-build,bundleType=zip,key=resell-platform.zip
