@@ -45,20 +45,29 @@ jobs:
       with:
         arguments: build
 
-    - name: before_deploy
+    - name: before-deploy, build image
       run: |
-        chmod +x scripts/deploy.sh
-        zip -r resell-platform * # 해당 디렉토리에 있는 모든 요소들을 zip으로 묶음
-        mkdir -p deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
-        mv resell-platform.zip deploy/resell-platform.zip
+        docker build -t resell-platform-app .
+        docker save resell-platform-app -o resell-platform-app.tar
+        mkdir -p deploy
+        mv resell-platform-app.tar deploy/resell-platform-app.tar
+
+#    - name: before_deploy
+#      run: |
+#        chmod +x scripts/deploy.sh
+#        zip -r resell-platform * # 해당 디렉토리에 있는 모든 요소들을 zip으로 묶음
+#        mkdir -p deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
+#        mv resell-platform.zip deploy/resell-platform.zip
 
     - name: Upload to S3
       run: |
-        aws s3 cp ./deploy/resell-platform.zip s3://resell-platform-build
+#        aws s3 cp ./deploy/resell-platform-app.zip s3://resell-platform-build
+        aws s3 cp ./deploy/resell-platform-app.tar s3://resell-platform-image
 
     - name: deploy with AWS codeDeploy
       run: aws deploy create-deployment
         --application-name resell-platform-webservice
         --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name resell-platform-webservice-group
-        --s3-location bucket=resell-platform-build,bundleType=zip,key=resell-platform.zip
+        --s3-location bucket=resell-platform-image,bundleType=tar,key=resell-platform-app.tar
+#        --s3-location bucket=resell-platform-build,bundleType=zip,key=resell-platform.zip
