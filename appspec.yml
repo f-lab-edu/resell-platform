@@ -13,6 +13,6 @@ permissions:
 
 hooks:
   ApplicationStart:
-    - location: scripts/deploy.sh # 엔진엑스와 연결되어 있지 않은 스프링 부트를 종료합니다.
-      timeout: 60
+    - location: scripts/deploy.sh
+      timeout: 120
       runas: ec2-user
