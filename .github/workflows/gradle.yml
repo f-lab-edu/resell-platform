@@ -61,8 +61,8 @@ jobs:
 
     - name: Upload to S3
       run: |
-#        aws s3 cp ./deploy/resell-platform-app.zip s3://resell-platform-build
         aws s3 cp ./deploy/resell-platform-app.tar s3://resell-platform-image
+      #        aws s3 cp ./deploy/resell-platform-app.zip s3://resell-platform-build
 
     - name: deploy with AWS codeDeploy
       run: aws deploy create-deployment
