@@ -17,4 +17,5 @@ sleep 5
 
 echo "> 새 애플리케이션 배포"
 docker load -i resell-platform-app.tar
-docker run --publish 8080:8080 resell-platform-app
+docker run -d --publish 8080:8080 resell-platform-app
+sleep 5
