@@ -19,9 +19,10 @@
 <br>
 
 # **🌐아키텍처**
-![Back-end-CI CD (4)](https://user-images.githubusercontent.com/50356726/183281514-3700f7c4-94f3-45d7-a996-17b9a535f35e.png)
+![Back-end-CI CD_0905](https://user-images.githubusercontent.com/50356726/188408969-3eb95d7c-1daa-4f92-8ae0-1a6a1394bfb8.jpg)
 
 <br>
+
 
 # **🔧사용 기술**
 ## Backend
@@ -38,6 +39,7 @@
 - NaverCloud
 - MySQL
 - Github Action
+- AWS EC2, CodeDeploy, S3, SecretsManger
 
 ## Collaboration & Tools
 
