@@ -56,17 +56,9 @@ jobs:
         mv appspec.yml deploy/appspec.yml
         zip -r resell-platform deploy/*
 
-#    - name: before_deploy
-#      run: |
-#        chmod +x scripts/deploy.sh
-#        zip -r resell-platform * # 해당 디렉토리에 있는 모든 요소들을 zip으로 묶음
-#        mkdir -p deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
-#        mv resell-platform.zip deploy/resell-platform.zip
-
     - name: Upload to S3
       run: |
         aws s3 cp ./resell-platform.zip s3://resell-platform-image
-      #        aws s3 cp ./deploy/resell-platform-app.zip s3://resell-platform-build
 
     - name: deploy with AWS codeDeploy
       run: aws deploy create-deployment
@@ -74,4 +66,3 @@ jobs:
         --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name resell-platform-webservice-group
         --s3-location bucket=resell-platform-image,bundleType=zip,key=resell-platform.zip
-#        --s3-location bucket=resell-platform-build,bundleType=zip,key=resell-platform.zip
