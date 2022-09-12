@@ -36,7 +36,6 @@
 ## DevOps
 
 - Ubuntu 20.04
-- NaverCloud
 - MySQL
 - Github Action
 - AWS EC2, CodeDeploy, S3, SecretsManger
