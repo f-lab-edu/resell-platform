@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .httpBasic().disable()  // username과 pw 들고 가는 basic 방식 사용x, bearer 방식 사용할 예정.
 
                     .addFilter(jwtAuthenticationFilter())
-                    .addFilter(accessJWTAuthorizationFilter())
+//                    .addFilter(accessJWTAuthorizationFilter())
                     .addFilter(refreshJWTAuthorizationFilter())
                     .authorizeRequests()
                     .anyRequest().permitAll();
@@ -55,10 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationFilter(authenticationManagerBean(), environment, messageSourceAccessor, redisSessionTemplate);
     }
 
-    @Bean
-    public AbstractJWTAuthorizationFilter accessJWTAuthorizationFilter() throws Exception {
-        return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), authenticationStoreProxy());
-    }
+//    @Bean
+//    public AbstractJWTAuthorizationFilter accessJWTAuthorizationFilter() throws Exception {
+//        return new AccessJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), authenticationStoreProxy());
+//    }
 
     @Bean
     public AuthenticationStoreProxy authenticationStoreProxy() {
@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Bean
     public AbstractJWTAuthorizationFilter refreshJWTAuthorizationFilter() throws Exception {
-        return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisSessionTemplate);
+        return new RefreshJWTAuthorizationFilter(authenticationManagerBean(), userRepository, environment, messageSourceAccessor, jwtHashingAlgorithm(), redisSessionTemplate, authenticationStoreProxy());
     }
 
     @Bean

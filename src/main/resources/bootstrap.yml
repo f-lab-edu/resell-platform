@@ -4,10 +4,10 @@
 # 예시 : /secret/resell-platform_jwt
 # 뜻 : resell-platform 프로젝트의 jwt 프로파일이 활성화됐을 때 해당 보안 암호를 활성화한다.
 # 참조 : https://cloud.spring.io/spring-cloud-static/spring-cloud-aws/2.1.0.RELEASE/single/spring-cloud-aws.html#_integrating_your_spring_cloud_application_with_the_aws_secrets_manager
-aws:
-  secretsmanager:
-    name: resell-platform
-cloud:
-  aws:
-    region:
-      static: ap-northeast-2
+#aws:
+#  secretsmanager:
+#    name: resell-platform
+#cloud:
+#  aws:
+#    region:
+#      static: ap-northeast-2
