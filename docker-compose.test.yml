@@ -4,20 +4,14 @@ services:
   rediscache:
     build: cache
     restart: always
-    ports:
-      - "6379:6379"
 
   redissession:
     build: session
     restart: always
-    ports:
-      - "6380:6379"
 
   database:
     build: database
     restart: always
-    ports:
-      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=resell_platform
