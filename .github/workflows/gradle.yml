@@ -32,7 +32,37 @@ jobs:
         distribution: 'temurin'
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: build
+
+    - name: before-deploy, build image
+      run: |
+        docker build -t resell-platform-app .
+        docker save resell-platform-app -o resell-platform-app.tar
+        mkdir -p deploy
+        mv resell-platform-app.tar deploy/resell-platform-app.tar
+        chmod +x scripts/deploy.sh
+        mv scripts/deploy.sh deploy/deploy.sh
+        mv appspec.yml deploy/appspec.yml
+        zip -r resell-platform deploy/*
+
+    - name: Upload to S3
+      run: |
+        aws s3 cp ./resell-platform.zip s3://resell-platform-image
+
+    - name: deploy with AWS codeDeploy
+      run: aws deploy create-deployment
+        --application-name resell-platform-webservice
+        --deployment-config-name CodeDeployDefault.OneAtATime
+        --deployment-group-name resell-platform-webservice-group
+        --s3-location bucket=resell-platform-image,bundleType=zip,key=resell-platform.zip

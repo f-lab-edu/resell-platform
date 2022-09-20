@@ -4,7 +4,9 @@ import flab.resellPlatform.common.response.StandardResponse;
 import flab.resellPlatform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/")
@@ -21,13 +24,34 @@ import java.util.Map;
 public class HomeController {
 
     private final MessageSourceAccessor messageSourceAccessor;
+    private final RedisTemplate<String, Object> redisSessionTemplate;
 
     @GetMapping("/")
     public StandardResponse getHomePage() {
         StandardResponse standardResponse = StandardResponse.builder()
                 .message(messageSourceAccessor.getMessage("common.request.succeeded"))
-                .data(Map.of("hello", "world"))
+                .data(Map.of("hello", "absSet!"))
                 .build();
+        redisSessionTemplate.opsForValue().get("abc");
+        return standardResponse;
+    }
+
+    @GetMapping("/Home")
+    public StandardResponse getHome() {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.request.succeeded"))
+                .data(Map.of("hello", "noAbc!"))
+                .build();
+        return standardResponse;
+    }
+
+    @GetMapping("/abc")
+    public StandardResponse getAbc() {
+        StandardResponse standardResponse = StandardResponse.builder()
+                .message(messageSourceAccessor.getMessage("common.request.succeeded"))
+                .data(Map.of("hello", "abcs!"))
+                .build();
+        redisSessionTemplate.opsForValue().set("abc", "ddd");
         return standardResponse;
     }
 

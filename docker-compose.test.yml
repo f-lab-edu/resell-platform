@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  rediscache:
+    build: cache
+    restart: always
+
+  redissession:
+    build: session
+    restart: always
+
+  database:
+    build: database
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=resell_platform
+      - MYSQL_PASSWORD=resell1234
+      - DB_SCHEMA=resell_platform_webservice

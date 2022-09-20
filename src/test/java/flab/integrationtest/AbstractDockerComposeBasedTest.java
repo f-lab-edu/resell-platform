@@ -14,13 +14,13 @@ public abstract class AbstractDockerComposeBasedTest {
 
     static final int MYSQL_DEFAULT_PORT = 3306;
     static final int REDIS_DEFAULT_PORT = 6379;
-    static final String DB_SCHEMA = "v_1";
+    static final String DB_SCHEMA = "resell_platform_webservice";
 
     static DockerComposeContainer dockerComposeContainer;
 
     static {
         dockerComposeContainer =
-                new DockerComposeContainer(new File("docker-compose.yml"))
+                new DockerComposeContainer(new File("docker-compose.test.yml"))
                         .withExposedService("redissession", REDIS_DEFAULT_PORT,
                                 Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
                         .withExposedService("rediscache", REDIS_DEFAULT_PORT,
