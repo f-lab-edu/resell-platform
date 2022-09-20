@@ -14,14 +14,15 @@
 - 형상 관리: Github
 - 이슈 관리: Github Issue
 - 진행 관리: Github Project
-- [결정 과정 ](https://github.com/f-lab-edu/resell-platform/wiki/협업-툴-및-규칙-결정-과정)
+- [결정 과정 ](https://github.com/f-lab-edu/resell-platform/wiki/%ED%8C%80-%EC%BB%A8%EB%B2%A4%EC%85%98#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B4%80%EB%A6%AC)
 
 <br>
 
 # **🌐아키텍처**
-![Back-end-CI CD (4)](https://user-images.githubusercontent.com/50356726/183281514-3700f7c4-94f3-45d7-a996-17b9a535f35e.png)
+![Back-end-CI CD_0905](https://user-images.githubusercontent.com/50356726/188408969-3eb95d7c-1daa-4f92-8ae0-1a6a1394bfb8.jpg)
 
 <br>
+
 
 # **🔧사용 기술**
 ## Backend
@@ -35,9 +36,9 @@
 ## DevOps
 
 - Ubuntu 20.04
-- NaverCloud
 - MySQL
 - Github Action
+- AWS EC2, CodeDeploy, S3, SecretsManger
 
 ## Collaboration & Tools
 
@@ -61,7 +62,7 @@
 - 프로그래머 2인 개발이기 때문에 기획직군으로부터 받는 상세 기획서가 존재하지 않았습니다.
 - 기능 개발 및 통합 테스트 시나리오 작성의 용이함을 위해 Cockburn style의 유스케이스를 작성했습니다.
 
-[자세한 구현 내용 링크](https://github.com/f-lab-edu/resell-platform/wiki/유스케이스)
+[자세한 구현 내용 링크](https://github.com/f-lab-edu/resell-platform/wiki/%EC%84%A4%EA%B3%84-%EA%B2%B0%EA%B3%BC#%EC%9C%A0%EC%8A%A4%EC%BC%80%EC%9D%B4%EC%8A%A4)
 
 ### **대표 예시**
 <html>
@@ -92,7 +93,7 @@
 - **프로토 타이핑 툴:** 카카오 오븐
 - **구현 목적:** 기능 정의 래퍼런스
 
-[자세한 구현 내용 및 웹 테스트 링크](https://github.com/f-lab-edu/resell-platform/wiki/Application-UI)
+[자세한 구현 내용 및 웹 테스트 링크](https://github.com/f-lab-edu/resell-platform/wiki/%EC%84%A4%EA%B3%84-%EA%B2%B0%EA%B3%BC#application-ui)
 
 ### **대표 예시**
 ![Untitled Diagram drawio](https://user-images.githubusercontent.com/50356726/183283422-5363c8f9-8154-406e-87ba-c332f2279138.png)
@@ -100,11 +101,11 @@
 <br>
 
 # **📄ERD**
-- **설계 래퍼런스**: [애플리케이션 UI](https://user-images.githubusercontent.com/50356726/172335644-ab179281-5d27-4718-bf0b-91cfa01ab470.png)
+- **설계 래퍼런스**: [애플리케이션 UI](https://github.com/f-lab-edu/resell-platform/wiki/%EC%84%A4%EA%B3%84-%EA%B2%B0%EA%B3%BC#application-ui)
 - **ERD 설계 툴**: MySQL Workbench
 
   
-[자세한 구현 내용 및 사고 과정 ](https://github.com/f-lab-edu/resell-platform/wiki/ERD)
+[자세한 구현 내용 및 사고 과정 ](https://github.com/f-lab-edu/resell-platform/wiki/%EC%84%A4%EA%B3%84-%EA%B2%B0%EA%B3%BC#erd)
 
 
 ![Untitled Diagram (3)](https://user-images.githubusercontent.com/50356726/183283583-754f6426-a732-4823-b1e1-e6fddcfb9200.jpg)
