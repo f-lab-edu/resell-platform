@@ -61,6 +61,6 @@ jobs:
     - name: deploy with AWS codeDeploy
       run: aws deploy create-deployment
         --application-name resell-platform-webservice-qa
-        --deployment-config-name CodeDeployDefault.AllAtOnce
+        --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name resell-platform-webservice-qa-group
         --s3-location bucket=resell-platform-image-qa,bundleType=zip,key=resell-platform.zip
