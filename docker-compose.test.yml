@@ -1,5 +1,7 @@
 version: '3.9'
 
+# Used for QA test too
+
 services:
   rediscache:
     build: cache
@@ -17,3 +19,8 @@ services:
       - MYSQL_USER=resell_platform
       - MYSQL_PASSWORD=resell1234
       - DB_SCHEMA=resell_platform_webservice
+
+networks:
+  back-end:
+    name: back-end
+    driver: bridge

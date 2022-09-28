@@ -8,7 +8,24 @@ version: '3.9'
 # docker-compose.override는 비어 있을 수 있지만 파일 자체는 존재해야함. 'Share Compose configurations' 방식을 사용한다는 것을 명시하기 위함.
 
 # convention : container_name/depends_on/image or build/restart/ports/environment
+
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rediscache
+      - redissession
+      - database
+    environment:
+      - CACHE_HOSTNAME=rediscache
+      - SESSION_HOSTNAME=redissession
+      - DATABASE_HOSTNAME=database
+
 networks:
   back-end:
     name: back-end
     driver: bridge
+

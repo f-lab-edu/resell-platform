@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/app/step2/resell-platform/
+    destination: /home/ec2-user/resell-platform/
     overwrite: yes
 
 permissions:
