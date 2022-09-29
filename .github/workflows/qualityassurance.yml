@@ -54,7 +54,7 @@ jobs:
         mv docker-compose.yml deploy/docker-compose.yml
         mv docker-compose.test.yml deploy/docker-compose.test.yml
         mv resell-platform-app.tar deploy/resell-platform-app.tar
-        chmod +x scripts/deploy.sh
+        chmod +x scripts/deploy-qa.sh
         mv scripts/deploy-qa.sh deploy/deploy.sh
         mv appspec.yml deploy/appspec.yml
         zip -r resell-platform deploy/*
