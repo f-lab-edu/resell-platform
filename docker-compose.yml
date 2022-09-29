@@ -11,7 +11,7 @@ version: '3.9'
 
 services:
   app:
-    build: resell-platform-app
+    image: resell-platform-app
     restart: always
     ports:
       - "8080:8080"
