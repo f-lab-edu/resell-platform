@@ -11,7 +11,7 @@ version: '3.9'
 
 services:
   app:
-    build: .
+    build: resell-platform-app
     restart: always
     ports:
       - "8080:8080"
@@ -23,6 +23,7 @@ services:
       - CACHE_HOSTNAME=rediscache
       - SESSION_HOSTNAME=redissession
       - DATABASE_HOSTNAME=database
+      - SPRING_PROFILES_ACTIVE=jwt,real-db
 
 networks:
   back-end:

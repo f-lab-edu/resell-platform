@@ -15,7 +15,7 @@ docker rm $(docker ps -a -q)
 docker rmi -f $(docker images -a)
 sleep 5
 
-echo "> 새 애플리케이션 배포"
+echo "> 애플리케이션 배포"
 docker load -i resell-platform-app.tar
-docker run -d --publish 8080:8080 -e "SPRING_PROFILES_ACTIVE=jwt,qa-db" resell-platform-app
+docker-compose -f docker-compose.yml -f docker-compose.test.yml up -d
 sleep 5

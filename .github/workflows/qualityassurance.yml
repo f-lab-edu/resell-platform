@@ -48,6 +48,11 @@ jobs:
         docker build -t resell-platform-app .
         docker save resell-platform-app -o resell-platform-app.tar
         mkdir -p deploy
+        mv cache deploy/cache
+        mv session deploy/session
+        mv database deploy/database
+        mv docker-compose.yml deploy/docker-compose.yml
+        mv docker-compose.test.yml deploy/docker-compose.test.yml
         mv resell-platform-app.tar deploy/resell-platform-app.tar
         chmod +x scripts/deploy.sh
         mv scripts/deploy-qa.sh deploy/deploy.sh
